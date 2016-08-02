@@ -8,7 +8,20 @@
     <groupId>com.rivera.oss</groupId>
     <artifactId>embedded-rabbitmq</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
+    <name>Embedded RabbitMQ</name>
+    <description>A library to facilitate running RabbitMQ directly from a JVM application as if it was an embedded service.</description>
+    <url>http://github.com/AlejandroRivera/embedded-rabbitmq</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <inceptionYear>2016</inceptionYear>
     <developers>
         <developer>
             <name>Alejandro Rivera</name>
@@ -19,17 +32,9 @@
             </roles>
         </developer>
     </developers>
-    <inceptionYear>2016</inceptionYear>
-
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
 
     <scm>
-        <url>http://github.com/AlejandroRivera/embedded-rabbitmq</url>
+        <url>http://github.com/AlejandroRivera/embedded-rabbitmq/tree/master</url>
         <connection>scm:git:https://github.com/AlejandroRivera/embedded-rabbitmq.git</connection>
         <developerConnection>scm:git:ssh://github.com/AlejandroRivera/embedded-rabbitmq.git</developerConnection>
     </scm>
