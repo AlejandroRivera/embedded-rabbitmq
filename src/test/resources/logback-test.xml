@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="PATTERN"  value="%yellow(%date{HH:mm:ss.SSS}) %highlight(%-5level) %green(%10.10thread) %cyan(%logger{5}) - %msg%n" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <charset>UTF-8</charset>
+            <Pattern>
+                ${PATTERN}
+            </Pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+
+    <logger name="com.rivera.oss.embedded.rabbitmq" level="DEBUG" />
+    <logger name="org.zeroturnaround.exec" level="INFO" />
+
+</configuration>
