@@ -13,7 +13,6 @@ import org.tukaani.xz.XZInputStream;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.StartedProcess;
-import org.zeroturnaround.exec.listener.ProcessListener;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jOutputStream;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
@@ -36,16 +35,17 @@ import java.util.concurrent.TimeoutException;
 public class EmbeddedRabbitMq {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedRabbitMq.class);
+
   private final long downloadReadTimeoutInMillis;
   private final long downloadConnectionTimeoutInMillis;
   private final long defaultRabbitMqCtlTimeoutInMillis;
+  private final long rabbitMqServerInitializationTimeoutInMillis;
 
   private URL downloadSource;
   private File downloadTarget;
   private File extractionFolder;
   private StartedProcess rabbitMqProcess;
   private PublishingProcessListener rabbitMqProcessListener;
-  private int rabbitMqServerInitializationTimeoutInMillis;
 
   public EmbeddedRabbitMq(URL downloadSource, File downloadTarget,
                           long connectionTimeoutInMillis,
@@ -61,9 +61,8 @@ public class EmbeddedRabbitMq {
     this.downloadConnectionTimeoutInMillis = connectionTimeoutInMillis;
     this.downloadReadTimeoutInMillis = downloadTimeoutInMillis;
 
-    rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
+    this.rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
     this.defaultRabbitMqCtlTimeoutInMillis = defaultRabbitMqCtlTimeout;
-
   }
 
   public void start() throws DownloadException, ProcessException {
