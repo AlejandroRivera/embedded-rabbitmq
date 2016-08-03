@@ -1,4 +1,4 @@
-package com.rivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -1,4 +1,4 @@
-package com.rivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;

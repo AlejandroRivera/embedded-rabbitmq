@@ -1,8 +1,7 @@
-package com.rivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.listener.ProcessListener;

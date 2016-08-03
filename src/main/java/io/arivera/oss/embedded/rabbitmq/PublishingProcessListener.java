@@ -1,4 +1,4 @@
-package com.rivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq;
 
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.listener.ProcessListener;

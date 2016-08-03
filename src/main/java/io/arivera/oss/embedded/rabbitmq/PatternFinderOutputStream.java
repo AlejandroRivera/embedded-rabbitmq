@@ -1,4 +1,4 @@
-package com.rivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
