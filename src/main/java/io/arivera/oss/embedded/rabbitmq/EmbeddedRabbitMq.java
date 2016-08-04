@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -32,41 +30,17 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-//import org.apache.commons.lang3.SystemUtils;
-
-//import org.apache.commons.lang3.StringUtils;
 
 public class EmbeddedRabbitMq {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedRabbitMq.class);
 
-  private final long downloadReadTimeoutInMillis;
-  private final long downloadConnectionTimeoutInMillis;
-  private final long defaultRabbitMqCtlTimeoutInMillis;
-  private final long rabbitMqServerInitializationTimeoutInMillis;
-
-  private URL downloadSource;
-  private File downloadTarget;
-  private File extractionFolder;
+  private EmbeddedRabbitMqConfig config;
   private StartedProcess rabbitMqProcess;
   private PublishingProcessListener rabbitMqProcessListener;
 
-  public EmbeddedRabbitMq(URL downloadSource, File downloadTarget,
-                          long connectionTimeoutInMillis,
-                          long downloadTimeoutInMillis,
-                          File extractionFolder,
-                          long rabbitMqServerInitializationTimeoutInMillis,
-                          long defaultRabbitMqCtlTimeout) {
-    this.downloadSource = downloadSource;
-    this.downloadTarget = downloadTarget;
-
-    this.extractionFolder = extractionFolder;
-
-    this.downloadConnectionTimeoutInMillis = connectionTimeoutInMillis;
-    this.downloadReadTimeoutInMillis = downloadTimeoutInMillis;
-
-    this.rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
-    this.defaultRabbitMqCtlTimeoutInMillis = defaultRabbitMqCtlTimeout;
+  public EmbeddedRabbitMq(EmbeddedRabbitMqConfig config) {
+    this.config = config;
   }
 
   public void start() throws DownloadException, ProcessException {
@@ -76,9 +50,9 @@ public class EmbeddedRabbitMq {
   }
 
   private void download() {
-    LOGGER.info("Downloading '{}'...", downloadSource);
+    LOGGER.info("Downloading '{}'...", config.getDownloadSource());
     LOGGER.debug("Downloading to '{}' with {}ms connection and {}ms download timeout...",
-          downloadTarget, downloadConnectionTimeoutInMillis, downloadReadTimeoutInMillis);
+        config.getDownloadTarget(), config.getDownloadConnectionTimeoutInMillis(), config.getDownloadReadTimeoutInMillis());
 
     final StopWatch stopWatch = new StopWatch();
     stopWatch.start();
@@ -101,7 +75,7 @@ public class EmbeddedRabbitMq {
     }
     while (!semaphore.tryAcquire()) {
       try {
-        LOGGER.debug("Downloaded {} bytes", downloadTarget.length());
+        LOGGER.debug("Downloaded {} bytes", config.getDownloadTarget().length());
         Thread.sleep(500);
       } catch (InterruptedException e) {
         LOGGER.debug("Download indicator interrupted");
@@ -113,9 +87,9 @@ public class EmbeddedRabbitMq {
   private void extract() {
     TarArchiveInputStream archive;
     try {
-      archive = new TarArchiveInputStream(new XZInputStream(new BufferedInputStream(new FileInputStream(downloadTarget))));
+      archive = new TarArchiveInputStream(new XZInputStream(new BufferedInputStream(new FileInputStream(config.getDownloadTarget()))));
     } catch (IOException e) {
-      throw new DownloadException("Download file '" + downloadTarget + "' was not found or is not accessible.", e);
+      throw new DownloadException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
     }
 
     TarArchiveEntry fileToExtract;
@@ -123,7 +97,7 @@ public class EmbeddedRabbitMq {
       fileToExtract = archive.getNextTarEntry();
     } catch (IOException e) {
       throw new DownloadException(
-          "Could not extract files from file '" + downloadTarget + "' due to: " + e.getLocalizedMessage(), e);
+          "Could not extract files from file '" + config.getDownloadTarget() + "' due to: " + e.getLocalizedMessage(), e);
     }
 
     StopWatch stopWatch = new StopWatch();
@@ -131,7 +105,7 @@ public class EmbeddedRabbitMq {
     int fileCounter = 0;
     while (fileToExtract != null) {
       fileCounter++;
-      File destPath = new File(extractionFolder, fileToExtract.getName());
+      File destPath = new File(config.getExtractionFolder(), fileToExtract.getName());
 
       if (fileToExtract.isDirectory()) {
         boolean mkdirs = destPath.mkdirs();
@@ -180,7 +154,7 @@ public class EmbeddedRabbitMq {
     }
     stopWatch.stop();
     IOUtils.closeQuietly(archive);
-    LOGGER.info("Finished extracting {} files from '{}' in {}ms", fileCounter, downloadTarget, stopWatch.getTime());
+    LOGGER.info("Finished extracting {} files from '{}' in {}ms", fileCounter, config.getDownloadTarget(), stopWatch.getTime());
   }
 
   private void run() throws ProcessException {
@@ -194,7 +168,7 @@ public class EmbeddedRabbitMq {
 
       Slf4jOutputStream processOutputStream = Slf4jStream.of(EmbeddedRabbitMq.class).asInfo();
       rabbitMqProcess = new ProcessExecutor()
-          .directory(extractionFolder)
+          .directory(config.getExtractionFolder())
           .command(command)
           .redirectError(processLogger)
           .redirectOutput(processLogger)
@@ -203,7 +177,7 @@ public class EmbeddedRabbitMq {
           .destroyOnExit()
           .start();
 
-      boolean match = initializationWatcher.waitForMatch(rabbitMqServerInitializationTimeoutInMillis, TimeUnit.MILLISECONDS);
+      boolean match = initializationWatcher.waitForMatch(config.getRabbitMqServerInitializationTimeoutInMillis(), TimeUnit.MILLISECONDS);
       if (!match) {
         throw new ProcessException("Could not start RabbitMQ Server. See logs for more details.");
       }
@@ -219,7 +193,7 @@ public class EmbeddedRabbitMq {
       Slf4jStream loggingStream = Slf4jStream.of(EmbeddedRabbitMq.class, "Process.rabbitmqctl");
 
       ProcessResult rabbitMqCtlProcessResult = new ProcessExecutor()
-          .directory(extractionFolder)
+          .directory(config.getExtractionFolder())
           .command(command)
           .redirectError(loggingStream.asError())
           .redirectOutput(loggingStream.asInfo())
@@ -227,7 +201,7 @@ public class EmbeddedRabbitMq {
           .destroyOnExit()
           .start()
           .getFuture()
-          .get(defaultRabbitMqCtlTimeoutInMillis, TimeUnit.MILLISECONDS);
+          .get(config.getDefaultRabbitMqCtlTimeoutInMillis(), TimeUnit.MILLISECONDS);
 
       int exitValue = rabbitMqCtlProcessResult.getExitValue();
       if (exitValue == 0) {
@@ -243,7 +217,7 @@ public class EmbeddedRabbitMq {
 
     try {
       Future<ProcessResult> processfuture = rabbitMqProcess.getFuture();
-      ProcessResult rabbitMqProcessResult = processfuture.get(defaultRabbitMqCtlTimeoutInMillis, TimeUnit.MILLISECONDS);
+      ProcessResult rabbitMqProcessResult = processfuture.get(config.getDefaultRabbitMqCtlTimeoutInMillis(), TimeUnit.MILLISECONDS);
       int exitValue = rabbitMqProcessResult.getExitValue();
       if (exitValue == 0) {
         LOGGER.info("RabbitMQ Server stopped successfully.");
@@ -254,72 +228,6 @@ public class EmbeddedRabbitMq {
       throw new ShutDownException("Error while waiting for RabbitMQ Server to shut down", e);
     }
 
-  }
-
-
-  public static class Builder {
-
-    public static final String GENERIC_UNIX_V3_6_4 =
-        "http://www.rabbitmq.com/releases/rabbitmq-server/v3.6.4/rabbitmq-server-generic-unix-3.6.4.tar.xz";
-    public static final String WINDOWS_V3_6_4 =
-        "http://www.rabbitmq.com/releases/rabbitmq-server/v3.6.4/rabbitmq-server-windows-3.6.4.zip";
-
-    private URL downloadSource;
-    private File downloadTarget;
-    private File extractionFolder;
-    private long connectionTimeoutInMillis;
-    private long readTimeoutInMillis;
-    private long defaultRabbitMqCtlTimeoutInMillis;
-    private long rabbitMqServerInitializationTimeoutInMillis;
-
-    public Builder() {
-      try {
-        this.downloadSource = new URL(SystemUtils.IS_OS_WINDOWS ? WINDOWS_V3_6_4 : GENERIC_UNIX_V3_6_4);
-      } catch (MalformedURLException e) {
-        throw new RuntimeException(e);
-      }
-      this.connectionTimeoutInMillis = TimeUnit.SECONDS.toMillis(2);
-      this.readTimeoutInMillis = TimeUnit.SECONDS.toMillis(30);
-      this.defaultRabbitMqCtlTimeoutInMillis = TimeUnit.SECONDS.toMillis(2);
-      this.rabbitMqServerInitializationTimeoutInMillis = TimeUnit.SECONDS.toMillis(3);
-    }
-
-    public Builder downloadFrom(URL url) {
-      this.downloadSource = url;
-      return this;
-    }
-
-    public Builder saveDownloadTo(File file) {
-      this.downloadTarget = file;
-      return this;
-    }
-
-    public Builder connectionReadTimeout(long duration, TimeUnit timeUnit) {
-      this.readTimeoutInMillis = timeUnit.toMillis(duration);
-      return this;
-    }
-
-    public Builder extractTo(File folder) {
-      this.extractionFolder = folder;
-      return this;
-    }
-
-    public EmbeddedRabbitMq build() {
-      if (downloadTarget == null) {
-        String filename = downloadSource.getPath().substring(downloadSource.getPath().lastIndexOf("/"));
-        this.downloadTarget = new File(SystemUtils.JAVA_IO_TMPDIR + File.separator + filename);
-      }
-      if (extractionFolder == null) {
-        this.extractionFolder = new File(SystemUtils.JAVA_IO_TMPDIR);
-      }
-
-      return new EmbeddedRabbitMq(
-          downloadSource, downloadTarget,
-          connectionTimeoutInMillis, readTimeoutInMillis,
-          extractionFolder,
-          rabbitMqServerInitializationTimeoutInMillis,
-          defaultRabbitMqCtlTimeoutInMillis);
-    }
   }
 
   private static class RabbitMqServerProcessLogger extends Slf4jOutputStream {
@@ -349,11 +257,16 @@ public class EmbeddedRabbitMq {
 
     public void run() {
       try {
-        FileUtils.copyURLToFile(downloadSource, downloadTarget, (int) downloadConnectionTimeoutInMillis, (int) downloadReadTimeoutInMillis);
+        FileUtils.copyURLToFile(
+            config.getDownloadSource(),
+            config.getDownloadTarget(),
+            (int) config.getDownloadConnectionTimeoutInMillis(),
+            (int) config.getDownloadReadTimeoutInMillis());
         stopWatch.stop();
         LOGGER.info("Download finished in {}ms", stopWatch.getTime());
       } catch (IOException e) {
-        throw new DownloadException("Could not download '" + downloadSource + "' to '" + downloadTarget + "'", e);
+        throw new DownloadException(
+            "Could not download '" + config.getDownloadSource() + "' to '" + config.getDownloadTarget() + "'", e);
       } finally {
         semaphore.release();
       }

@@ -22,12 +22,12 @@ public class EmbeddedRabbitMqTest {
 
   @Test
   public void start() throws Exception {
-    EmbeddedRabbitMq rabbitMq = new EmbeddedRabbitMq.Builder()
-        .downloadFrom(new URL(EmbeddedRabbitMq.Builder.GENERIC_UNIX_V3_6_4))
-        .saveDownloadTo(temporaryFolder.newFile("download"))
-        .extractTo(temporaryFolder.newFolder("extracted"))
+    EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
+        .downloadTarget(temporaryFolder.newFile("download"))
+        .extractionFolder(temporaryFolder.newFolder("extracted"))
         .build();
 
+    EmbeddedRabbitMq rabbitMq = new EmbeddedRabbitMq(config);
     rabbitMq.start();
     LOGGER.info("Back in the test!");
 
