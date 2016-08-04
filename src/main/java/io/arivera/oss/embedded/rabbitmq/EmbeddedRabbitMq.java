@@ -1,12 +1,12 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.util.FileUtils;
+import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
+import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
+import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tukaani.xz.XZInputStream;
@@ -31,6 +31,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+//import org.apache.commons.lang3.SystemUtils;
+
+//import org.apache.commons.lang3.StringUtils;
 
 public class EmbeddedRabbitMq {
 
@@ -229,12 +233,12 @@ public class EmbeddedRabbitMq {
       if (exitValue == 0) {
         LOGGER.info("Submitted command to stop RabbitMQ Server successfully.");
       } else {
-        LOGGER.warn("Command '"+StringUtils.join(command, ' ')+"' exited with value: " + exitValue);
+        LOGGER.warn("Command '"+ StringUtils.join(command, " ")+"' exited with value: " + exitValue);
       }
     } catch (IOException e) {
-      throw new ShutDownException("Could not successfully execute: " + StringUtils.join(command, ' '), e);
+      throw new ShutDownException("Could not successfully execute: " + StringUtils.join(command, " "), e);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
-      throw new ShutDownException("Command '" + StringUtils.join(command, ' ') + "' did not finish as expected", e);
+      throw new ShutDownException("Command '" + StringUtils.join(command, " ") + "' did not finish as expected", e);
     }
 
     try {

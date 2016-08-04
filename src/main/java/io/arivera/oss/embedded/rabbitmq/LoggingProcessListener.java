@@ -1,6 +1,6 @@
 package io.arivera.oss.embedded.rabbitmq;
 
-import org.apache.commons.lang3.StringUtils;
+import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
 import org.slf4j.Logger;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
