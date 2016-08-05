@@ -18,7 +18,7 @@
     </root>
 
 
-    <logger name="com.rivera.oss.embedded.rabbitmq" level="DEBUG" />
+    <logger name="io.arivera.oss.embedded.rabbitmq" level="DEBUG" />
     <logger name="org.zeroturnaround.exec" level="INFO" />
 
 </configuration>
