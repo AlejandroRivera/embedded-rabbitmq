@@ -1,6 +1,5 @@
 package io.arivera.oss.embedded.rabbitmq;
 
-import io.arivera.oss.embedded.rabbitmq.util.FileUtils;
 import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
 import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
 import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
@@ -26,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -41,6 +39,11 @@ public class EmbeddedRabbitMq {
 
   public EmbeddedRabbitMq(EmbeddedRabbitMqConfig config) {
     this.config = config;
+
+  }
+
+  public EmbeddedRabbitMqConfig getConfig() {
+    return config;
   }
 
   public void start() throws DownloadException, ProcessException {
@@ -50,38 +53,8 @@ public class EmbeddedRabbitMq {
   }
 
   private void download() {
-    LOGGER.info("Downloading '{}'...", config.getDownloadSource());
-    LOGGER.debug("Downloading to '{}' with {}ms connection and {}ms download timeout...",
-        config.getDownloadTarget(), config.getDownloadConnectionTimeoutInMillis(), config.getDownloadReadTimeoutInMillis());
-
-    final StopWatch stopWatch = new StopWatch();
-    stopWatch.start();
-    final Semaphore semaphore = new Semaphore(1);
-    Thread downloadThread = new Thread(new DownloadTask(stopWatch, semaphore));
-    downloadThread.start();
-    indicateDownloadProgress(semaphore);
-    try {
-      downloadThread.join();
-    } catch (InterruptedException e) {
-      LOGGER.error("Should not have been interrupted!", e);
-    }
-  }
-
-  private void indicateDownloadProgress(final Semaphore semaphore) {
-    try {
-      semaphore.acquire();
-    } catch (InterruptedException e) {
-      throw new IllegalStateException("Acquire should work!");
-    }
-    while (!semaphore.tryAcquire()) {
-      try {
-        LOGGER.debug("Downloaded {} bytes", config.getDownloadTarget().length());
-        Thread.sleep(500);
-      } catch (InterruptedException e) {
-        LOGGER.debug("Download indicator interrupted");
-      }
-    }
-    LOGGER.trace("Download indicator finished normally");
+    Downloader downloader = new Downloader(this.getConfig());
+    downloader.download();
   }
 
   private void extract() {
@@ -139,7 +112,8 @@ public class EmbeddedRabbitMq {
           output = new BufferedOutputStream(new FileOutputStream(destPath));
           IOUtils.copy(archive, output);
         } catch (IOException e) {
-          LOGGER.warn("Error extracting '" + fileToExtract.getName() + "'.", e);
+          throw new DownloadException("Error extracting file '" + fileToExtract.getName() + "' " +
+              "from downloaded file: " + config.getDownloadTarget(), e);
         } finally {
           IOUtils.closeQuietly(output);
         }
@@ -246,30 +220,4 @@ public class EmbeddedRabbitMq {
     }
   }
 
-  private class DownloadTask implements Runnable {
-    private final StopWatch stopWatch;
-    private final Semaphore semaphore;
-
-    public DownloadTask(StopWatch stopWatch, Semaphore semaphore) {
-      this.stopWatch = stopWatch;
-      this.semaphore = semaphore;
-    }
-
-    public void run() {
-      try {
-        FileUtils.copyURLToFile(
-            config.getDownloadSource(),
-            config.getDownloadTarget(),
-            (int) config.getDownloadConnectionTimeoutInMillis(),
-            (int) config.getDownloadReadTimeoutInMillis());
-        stopWatch.stop();
-        LOGGER.info("Download finished in {}ms", stopWatch.getTime());
-      } catch (IOException e) {
-        throw new DownloadException(
-            "Could not download '" + config.getDownloadSource() + "' to '" + config.getDownloadTarget() + "'", e);
-      } finally {
-        semaphore.release();
-      }
-    }
-  }
 }
