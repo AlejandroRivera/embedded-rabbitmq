@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-class Downloader {
+class Downloader implements Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Downloader.class);
   
@@ -20,7 +20,8 @@ class Downloader {
     this.config = config;
   }
 
-  void download() {
+  @Override
+  public void run() {
     DownloadProgressNotifier progressNotifier = new DownloadProgressNotifier(config);
     DownloadTask downloadTask = new DownloadTask(config);
     downloadTask.addListener(progressNotifier);

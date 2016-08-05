@@ -41,12 +41,19 @@ public class EmbeddedRabbitMq {
   }
 
   private void download() {
-    Downloader downloader = new Downloader(this.getConfig());
-    downloader.download();
+    Runnable downloader = new Downloader(this.getConfig());
+    if (config.shouldCachedDownload()) {
+      downloader = new CachedDownloader(downloader, config);
+    }
+    downloader.run();
   }
 
   private void extract() {
-    new Extractor(config).extract();
+    Runnable extractor = new Extractor(config);
+    if (config.shouldCachedDownload()) {
+      extractor = new CachedExtractor(extractor, config);
+    }
+    extractor.run();
   }
 
   private void run() throws ProcessException {

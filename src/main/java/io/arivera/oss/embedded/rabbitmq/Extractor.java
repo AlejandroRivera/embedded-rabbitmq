@@ -16,7 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-class Extractor {
+class Extractor implements Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Extractor.class);
 
@@ -26,7 +26,7 @@ class Extractor {
     this.config = config;
   }
 
-  void extract() {
+  public void run() {
     TarArchiveInputStream archive;
     try {
       archive =

@@ -19,13 +19,17 @@ public class EmbeddedRabbitMqConfig {
   private final long defaultRabbitMqCtlTimeoutInMillis;
   private final long rabbitMqServerInitializationTimeoutInMillis;
 
+  private final boolean shouldCacheDownload;
+  private final boolean deleteCachedFileOnErrors;
+
   protected EmbeddedRabbitMqConfig(URL downloadSource,
                                    File downloadTarget,
                                    File extractionFolder,
                                    long downloadReadTimeoutInMillis,
                                    long downloadConnectionTimeoutInMillis,
                                    long defaultRabbitMqCtlTimeoutInMillis,
-                                   long rabbitMqServerInitializationTimeoutInMillis) {
+                                   long rabbitMqServerInitializationTimeoutInMillis,
+                                   boolean cacheDownload, boolean deleteCachedFile) {
     this.downloadSource = downloadSource;
     this.downloadTarget = downloadTarget;
     this.extractionFolder = extractionFolder;
@@ -33,6 +37,8 @@ public class EmbeddedRabbitMqConfig {
     this.downloadConnectionTimeoutInMillis = downloadConnectionTimeoutInMillis;
     this.defaultRabbitMqCtlTimeoutInMillis = defaultRabbitMqCtlTimeoutInMillis;
     this.rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
+    this.shouldCacheDownload = cacheDownload;
+    this.deleteCachedFileOnErrors = deleteCachedFile;
   }
 
   public long getDownloadReadTimeoutInMillis() {
@@ -63,6 +69,13 @@ public class EmbeddedRabbitMqConfig {
     return extractionFolder;
   }
 
+  public boolean shouldCachedDownload() {
+    return shouldCacheDownload;
+  }
+
+  public boolean shouldDeleteCachedFileOnErrors() {
+    return deleteCachedFileOnErrors;
+  }
 
   public static class Builder {
 
@@ -76,8 +89,11 @@ public class EmbeddedRabbitMqConfig {
     private long defaultRabbitMqCtlTimeoutInMillis;
     private long rabbitMqServerInitializationTimeoutInMillis;
     private URL downloadSource;
+    private File downloadFolder;
     private File downloadTarget;
     private File extractionFolder;
+    private boolean cacheDownload;
+    private boolean deleteCachedFile;
 
     public Builder() {
       try {
@@ -89,6 +105,9 @@ public class EmbeddedRabbitMqConfig {
       this.downloadReadTimeoutInMillis = TimeUnit.SECONDS.toMillis(3);
       this.defaultRabbitMqCtlTimeoutInMillis = TimeUnit.SECONDS.toMillis(2);
       this.rabbitMqServerInitializationTimeoutInMillis = TimeUnit.SECONDS.toMillis(3);
+      this.cacheDownload = true;
+      this.deleteCachedFile = true;
+      this.downloadFolder = new File(System.getProperty("user.home"), ".embeddedrabbitmq");
     }
 
     public Builder downloadReadTimeoutInMillis(long downloadReadTimeoutInMillis) {
@@ -116,6 +135,11 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
+    public Builder downloadFolder(File downloadFolder){
+      this.downloadFolder = downloadFolder;
+      return this;
+    }
+
     public Builder downloadTarget(File downloadTarget) {
       this.downloadTarget = downloadTarget;
       return this;
@@ -126,10 +150,20 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
+    public Builder useCachedDownload(boolean cacheDownload) {
+      this.cacheDownload = cacheDownload;
+      return this;
+    }
+
+    public Builder deleteDownloadedFileOnErrors(boolean deleteCachedFile) {
+      this.deleteCachedFile = deleteCachedFile;
+      return this;
+    }
+
     public EmbeddedRabbitMqConfig build() {
       if (downloadTarget == null) {
         String filename = downloadSource.getPath().substring(downloadSource.getPath().lastIndexOf("/"));
-        this.downloadTarget = new File(SystemUtils.JAVA_IO_TMPDIR + File.separator + filename);
+        this.downloadTarget = new File(downloadFolder, filename);
       }
       if (extractionFolder == null) {
         this.extractionFolder = new File(SystemUtils.JAVA_IO_TMPDIR);
@@ -139,7 +173,8 @@ public class EmbeddedRabbitMqConfig {
           downloadSource, downloadTarget, extractionFolder,
           downloadConnectionTimeoutInMillis, downloadReadTimeoutInMillis,
           defaultRabbitMqCtlTimeoutInMillis,
-          rabbitMqServerInitializationTimeoutInMillis);
+          rabbitMqServerInitializationTimeoutInMillis,
+          cacheDownload, deleteCachedFile);
     }
   }
 }

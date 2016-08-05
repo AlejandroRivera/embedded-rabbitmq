@@ -11,8 +11,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-
 public class EmbeddedRabbitMqTest {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(EmbeddedRabbitMqTest.class);
@@ -23,8 +21,10 @@ public class EmbeddedRabbitMqTest {
   @Test
   public void start() throws Exception {
     EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
-        .downloadTarget(temporaryFolder.newFile("download"))
+//        .downloadFolder(new File(System.getProperty("user.home"), ".embeddedrabbitmq"))
+//        .downloadTarget(new File("/tmp/rabbitmq.tar.xz"))
         .extractionFolder(temporaryFolder.newFolder("extracted"))
+//        .useCachedDownload(false)
         .build();
 
     EmbeddedRabbitMq rabbitMq = new EmbeddedRabbitMq(config);
