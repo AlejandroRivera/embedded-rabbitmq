@@ -26,7 +26,7 @@ public class EmbeddedRabbitMqTest {
 //        .downloadSource(
 //            new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz"), "3.6.5")
 //        .version(PredefinedVersion.LATEST)
-//        .extractionFolder(temporaryFolder.newFolder("extracted"))
+        .extractionFolder(temporaryFolder.newFolder("extracted"))
 //        .useCachedDownload(false)
         .build();
 
