@@ -6,6 +6,9 @@ jdk:
 
 addons:
   apt:
+    sources:
+    - sourceline: 'deb http://packages.erlang-solutions.com/ubuntu/precise contrib'
+      key_url: "http://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc"
     packages:
 #      - oracle-java7-installer
 #      - oracle-java8-installer
