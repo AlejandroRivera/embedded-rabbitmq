@@ -131,11 +131,32 @@ _Warning:_ The content of this folder will be overwritten every time by the newl
 
 ## Troubleshooting:
 
-**Q: RabbitMq fails to start due to `ERROR: node with name "rabbit" already running on "localhost"`. Why is this and what can I do?**
+###### Q: RabbitMQ fails to start due to `ERROR: node with name "rabbit" already running on "localhost"`. Why is this and what can I do?
   
 A: This happens when RabbitMQ fails to be stopped correctly in a previous run. 
 To resolve this issue, manually identify the process and terminate it. To avoid this from happening again, ensure the `stop()` 
 method is invoked in your code.
+
+###### Q: RabbitMQ fails to start with a message `erl command not found`. What's this about?
+
+A: RabbitMQ requires an installation of Erlang to be present in the system. Please install it first.
+
+###### Q: RabbitMQ fails to start with a message `{"init terminating in do_boot",{undef,[{rabbit_prelaunch,start,[]},{init,start_it,1},{init,start_em,1}]}}`
+
+A: Most likely you don't have an updated version of Erlang installed. 
+
+To check the version of Erlang in your system execute:
+```
+$ erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
+```
+
+RabbitMQ requires:
+  * RabbitMQ v3.5.X requires Erlang `R13B03` at a minimum.
+  * RabbitMQ v3.6.X requires Erlang `R16B03` at a minimum (or `17` if you're using SSL/TLS).
+
+For example, if your version is `R14B04`, you can run RabbitMQ v3.5.X but not 3.6.X.
+
+Read more here: http://www.rabbitmq.com/which-erlang.html
 
 ## Acknowledgements
 This project was inspired from other excellent Open Source libraries, particularly [Embedded-MongoDB](https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo) 
