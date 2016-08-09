@@ -2,23 +2,24 @@ language: java
 
 jdk:
   - oraclejdk7
-#  - oraclejdk8
+  - oraclejdk8
 
 addons:
   apt:
     packages:
-#      - oracle-java7-installer
-#      - oracle-java8-installer
-      - erlang-dev
+      - oracle-java7-installer
+      - oracle-java8-installer
 
 cache:
   directories:
     - $HOME/.m2/repository
     - $HOME/.embeddedrabbitmq
 
-script:
+before_install:
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
-#  - mvn clean package
+
+script:
+  - mvn clean package
 
 notifications:
   email:
