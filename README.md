@@ -1,9 +1,16 @@
 # Embedded RabbitMQ
 
 [![Build Status](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq.svg?branch=master)](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq)
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/io-arivera-oss/embedded-rabbitmq)
+![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.arivera.oss/embedded-rabbitmq/badge.svg)
 
 This library allows for the use of various RabbitMQ versions as if it was an embedded service that can be controlled 
 from within the JVM.
+
+## Pre-requisites:
+
+ * This project requires Java 7+
+ * RabbitMQ Broker requires Erlang to be installed. 
 
 ## Quick Start:
 
@@ -19,7 +26,7 @@ For Maven:
 ```
 
 For Ivy:
-```
+```xml
 <dependency org="io.arivera.oss" name="embedded-rabbitmq" rev="X.Y.Z" />
 ```
 
