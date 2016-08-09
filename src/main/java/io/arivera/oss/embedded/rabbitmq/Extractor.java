@@ -54,6 +54,8 @@ class Extractor implements Runnable {
           "Could not extract files from file '" + config.getDownloadTarget() + "' due to: " + e.getLocalizedMessage(), e);
     }
 
+    LOGGER.info("Extracting '{}' to '{}'", config.getDownloadTarget(), config.getExtractionFolder());
+
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     int fileCounter = 0;
@@ -85,6 +87,12 @@ class Extractor implements Runnable {
             LOGGER.warn("File '{}' (original mode {}) could not be made executable probably due to permission issues.",
                 fileToExtract.getName(), mode);
           }
+
+          boolean madeReadable = destPath.setReadable(true);
+          if (!madeReadable) {
+            LOGGER.warn("File '{}' (original mode {}) could not be made readable probably due to permission issues.",
+                fileToExtract.getName(), mode);
+          }
         }
 
         BufferedOutputStream output = null;
@@ -109,6 +117,6 @@ class Extractor implements Runnable {
     }
     stopWatch.stop();
     IOUtils.closeQuietly(archive);
-    LOGGER.info("Finished extracting {} files from '{}' in {}ms", fileCounter, config.getDownloadTarget(), stopWatch.getTime());
+    LOGGER.info("Finished extracting {} files in {}ms", fileCounter, stopWatch.getTime());
   }
 }
