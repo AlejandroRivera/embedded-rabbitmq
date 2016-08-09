@@ -10,11 +10,11 @@ class LoggingProcessListenerDecorator extends ProcessListener {
   private final LoggingProcessListener loggingProcessListener;
   private final ProcessListener inner;
 
-  public LoggingProcessListenerDecorator(Logger logger, ProcessListener inner) {
+  LoggingProcessListenerDecorator(Logger logger, ProcessListener inner) {
     this(inner, new LoggingProcessListener(logger));
   }
 
-  public LoggingProcessListenerDecorator(ProcessListener inner, LoggingProcessListener loggingProcessListener) {
+  LoggingProcessListenerDecorator(ProcessListener inner, LoggingProcessListener loggingProcessListener) {
     this.loggingProcessListener = loggingProcessListener;
     this.inner = inner;
   }

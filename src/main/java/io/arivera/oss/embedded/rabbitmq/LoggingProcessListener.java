@@ -6,11 +6,11 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.listener.ProcessListener;
 
-public class LoggingProcessListener extends ProcessListener {
+class LoggingProcessListener extends ProcessListener {
 
   private final Logger logger;
 
-  public LoggingProcessListener(Logger logger) {
+  LoggingProcessListener(Logger logger) {
     this.logger = logger;
   }
 
