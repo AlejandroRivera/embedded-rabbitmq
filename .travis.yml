@@ -1,0 +1,29 @@
+language: java
+
+jdk:
+  - oraclejdk7
+  - oraclejdk8
+
+addons:
+  apt:
+    packages:
+      - oracle-java7-installer
+      - oracle-java8-installer
+
+cache:
+  directories:
+    - $HOME/.m2/repository
+    - $HOME/.embeddedrabbitmq
+
+before_install:
+  - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
+
+script:
+  - mvn clean package
+
+notifications:
+  email:
+    recipients:
+      - alejandro.rivera.lopez@gmail.com
+    on_success: change
+    on_failure: always
