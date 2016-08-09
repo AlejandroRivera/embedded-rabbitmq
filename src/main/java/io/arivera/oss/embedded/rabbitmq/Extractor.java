@@ -115,6 +115,14 @@ class Extractor implements Runnable {
         break;
       }
     }
+
+    File extractionFolder = config.getExtractionFolder();
+    boolean madeReadable = extractionFolder.setReadable(true);
+    if (!madeReadable) {
+      LOGGER.warn("File '{}' could not be made readable probably due to permission issues.",
+          extractionFolder);
+    }
+
     stopWatch.stop();
     IOUtils.closeQuietly(archive);
     LOGGER.info("Finished extracting {} files in {}ms", fileCounter, stopWatch.getTime());
