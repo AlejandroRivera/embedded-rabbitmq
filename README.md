@@ -131,9 +131,9 @@ _Warning:_ The content of this folder will be overwritten every time by the newl
 
 ## Troubleshooting:
 
-**Q: RabbitMq fails to start due to `Node 'rabbitmq' already running in local`. Why is this and what can I do?**
+**Q: RabbitMq fails to start due to `ERROR: node with name "rabbit" already running on "localhost"`. Why is this and what can I do?**
   
-A: This happens when RabbitMQ fails to be stopped correctly in a previous run, therefore, the Erlang process is still running. 
+A: This happens when RabbitMQ fails to be stopped correctly in a previous run. 
 To resolve this issue, manually identify the process and terminate it. To avoid this from happening again, ensure the `stop()` 
 method is invoked in your code.
 
