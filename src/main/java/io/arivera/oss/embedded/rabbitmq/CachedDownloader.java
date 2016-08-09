@@ -36,11 +36,13 @@ class CachedDownloader implements Runnable {
       downloader.run();
     } catch (DownloadException e) {
       if (config.shouldDeleteCachedFileOnErrors()) {
-        boolean deleted = config.getDownloadTarget().delete();
-        if (deleted) {
-          LOGGER.info("Removed partially downloaded file: {}", config.getDownloadTarget());
-        } else {
-          LOGGER.warn("Could not remove partially downloaded file. Please remove it manually: {}", config.getDownloadTarget());
+        if (config.getDownloadTarget().exists()) {
+          boolean deleted = config.getDownloadTarget().delete();
+          if (deleted) {
+            LOGGER.info("Removed partially downloaded file: {}", config.getDownloadTarget());
+          } else {
+            LOGGER.warn("Could not remove partially downloaded file. Please remove it manually: {}", config.getDownloadTarget());
+          }
         }
       } else {
         LOGGER.info("Partially downloaded file will not be deleted: {}", config.getDownloadTarget());
