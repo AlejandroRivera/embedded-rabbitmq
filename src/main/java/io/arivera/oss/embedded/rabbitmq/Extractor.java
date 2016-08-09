@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 
 class Extractor implements Runnable {
 
@@ -29,11 +31,17 @@ class Extractor implements Runnable {
   public void run() {
     TarArchiveInputStream archive;
     try {
-      archive =
-          new TarArchiveInputStream(
-            new XZInputStream(
-                new BufferedInputStream(
-                    new FileInputStream(config.getDownloadTarget()))));
+      BufferedInputStream bufferedFileInput = new BufferedInputStream(new FileInputStream(config.getDownloadTarget()));
+
+      InputStream compressedInputStream;
+      if (config.getDownloadTarget().toString().endsWith(".xz")) {
+        compressedInputStream = new XZInputStream(bufferedFileInput);
+      } else if (config.getDownloadTarget().toString().endsWith(".gz")) {
+        compressedInputStream = new GZIPInputStream(bufferedFileInput);
+      } else {
+        throw new IllegalArgumentException("Cannot determine compression type for: " + config.getDownloadTarget());
+      }
+      archive = new TarArchiveInputStream(compressedInputStream);
     } catch (IOException e) {
       throw new DownloadException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
     }

@@ -57,7 +57,7 @@ public class EmbeddedRabbitMq {
   }
 
   private void run() throws ProcessException {
-    String command = "rabbitmq_server-3.6.4/sbin/rabbitmq-server";
+    String command = config.getAppFolder().toString() + "/sbin/rabbitmq-server";
     try {
       PatternFinderOutputStream initializationWatcher = new PatternFinderOutputStream(".*completed with \\d+ plugins.*");
       rabbitMqProcessListener = new PublishingProcessListener();
@@ -67,7 +67,7 @@ public class EmbeddedRabbitMq {
 
       Slf4jOutputStream processOutputStream = Slf4jStream.of(EmbeddedRabbitMq.class).asInfo();
       rabbitMqProcess = new ProcessExecutor()
-          .directory(config.getExtractionFolder())
+          .directory(config.getAppFolder())
           .command(command)
           .redirectError(processLogger)
           .redirectOutput(processLogger)
@@ -87,12 +87,12 @@ public class EmbeddedRabbitMq {
 
 
   public void stop() throws ShutDownException {
-    List<String> command = Arrays.asList("rabbitmq_server-3.6.4/sbin/rabbitmqctl", "stop");
+    List<String> command = Arrays.asList( config.getAppFolder() + "/sbin/rabbitmqctl", "stop");
     try {
       Slf4jStream loggingStream = Slf4jStream.of(EmbeddedRabbitMq.class, "Process.rabbitmqctl");
 
       ProcessResult rabbitMqCtlProcessResult = new ProcessExecutor()
-          .directory(config.getExtractionFolder())
+          .directory(config.getAppFolder())
           .command(command)
           .redirectError(loggingStream.asError())
           .redirectOutput(loggingStream.asInfo())
