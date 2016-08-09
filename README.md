@@ -170,3 +170,11 @@ Big thanks to the following OSS projects that made this project possible:
     for execution of native OS processes.
  * [SLF4J API](http://www.slf4j.org/) 
     as a logging facade.
+
+## License
+
+This project is released under [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0), which basically means: 
+> You can do what you like with the software, as long as you include the required notices. 
+> This permissive license contains a patent license from the contributors of the code.
+  
+_Summary courtesy of: <https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)>_ 
