@@ -15,6 +15,7 @@ cache:
     - $HOME/.embeddedrabbitmq
 
 before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew outdated erlang || brew upgrade erlang; fi
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
 
 script:
