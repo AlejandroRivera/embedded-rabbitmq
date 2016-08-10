@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-public class Starter implements Callable<StartedProcess> {
+class Starter implements Callable<StartedProcess> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedRabbitMq.class.getName() + ".Process.rabbitmq-server");
 
   private final EmbeddedRabbitMqConfig config;
 
-  public Starter(EmbeddedRabbitMqConfig config) {
+  Starter(EmbeddedRabbitMqConfig config) {
     this.config = config;
   }
 
