@@ -1,14 +1,10 @@
 language: java
 
-jdk:
-  - oraclejdk7
-  - oraclejdk8
-
-addons:
-  apt:
-    packages:
-      - oracle-java7-installer
-      - oracle-java8-installer
+matrix:
+  include:
+  - os: linux         # Ubuntu 12.04 Precise
+    jdk: oraclejdk7   # Java 1.7.0_76
+  - os: osx           # OS X (10.9) which comes with Oracle's Java 1.7.0_45
 
 cache:
   directories:
@@ -16,6 +12,8 @@ cache:
     - $HOME/.embeddedrabbitmq
 
 before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install erlang; fi      # Erlang 17 will be installed without even updating brew!
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export JAVA_HOME="$(/usr/libexec/java_home -v 1.7)"; fi    # Required by Maven
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
 
 script:
