@@ -9,7 +9,7 @@ public class StringUtils {
     for (T t : collection) {
       stringBuilder.append(t.toString()).append(joinedBy);
     }
-    return stringBuilder.toString();
+    return stringBuilder.substring(0, stringBuilder.length() - joinedBy.length());
   }
 
 }
