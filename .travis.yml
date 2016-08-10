@@ -1,16 +1,13 @@
 language: java
 
-os:
-  - linux
-  - osx
-
-jdk:
-  - oraclejdk7
-
-addons:
-  apt:
-    packages:
-      - oracle-java7-installer
+matrix:
+  include:
+  - os: linux
+    jdk: oraclejdk7
+    addons:
+      apt:
+        packages: oracle-java7-installer
+  - os: osx
 
 cache:
   directories:
