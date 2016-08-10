@@ -21,7 +21,7 @@ class Downloader implements Runnable {
   }
 
   @Override
-  public void run() {
+  public void run() throws DownloadException {
     DownloadProgressNotifier progressNotifier = new DownloadProgressNotifier(config);
     DownloadTask downloadTask = new DownloadTask(config);
     downloadTask.addListener(progressNotifier);

@@ -28,7 +28,7 @@ class Extractor implements Runnable {
     this.config = config;
   }
 
-  public void run() {
+  public void run() throws DownloadException{
     TarArchiveInputStream archive;
     try {
       BufferedInputStream bufferedFileInput = new BufferedInputStream(new FileInputStream(config.getDownloadTarget()));
