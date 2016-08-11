@@ -190,10 +190,6 @@
             <id>travis</id>
             <activation>
                 <property>
-                    <name>TRAVIS</name>
-                    <value>true</value>
-                </property>
-                <property>
                     <name>TRAVIS_OS_NAME</name>
                     <value>linux</value>
                 </property>
