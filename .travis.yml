@@ -22,7 +22,8 @@ before_install:
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
 
 script:
-  - mvn clean deploy -P release -s maven-settings.xml
+  - mvn clean install
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then mvn deploy -DskipTests -P release -s maven-settings.xml; fi
 
 notifications:
   email:
