@@ -144,7 +144,7 @@
                                 <limit>
                                     <counter>INSTRUCTION</counter>
                                     <value>COVEREDRATIO</value>
-                                    <minimum>0.62</minimum>
+                                    <minimum>0.61</minimum>
                                 </limit>
                                 <limit>
                                     <counter>CLASS</counter>
