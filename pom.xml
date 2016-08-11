@@ -41,6 +41,10 @@
         <developerConnection>scm:git:ssh://github.com/AlejandroRivera/embedded-rabbitmq.git</developerConnection>
     </scm>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
         <dependency>
             <!-- Logging Facade -->
@@ -112,6 +116,64 @@
                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <!-- Code Coverage tool -->
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.7.201606060606</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <rule>
+                            <element>BUNDLE</element>
+                            <limits>
+                                <limit>
+                                    <counter>INSTRUCTION</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>0.62</minimum>
+                                </limit>
+                                <limit>
+                                    <counter>CLASS</counter>
+                                    <value>MISSEDCOUNT</value>
+                                    <maximum>6</maximum>
+                                </limit>
+                                <limit>
+                                    <counter>BRANCH</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <maximum>0.34</maximum>
+                                </limit>
+                            </limits>
+                        </rule>
+                        <rule>
+                            <element>CLASS</element>
+                            <excludes>
+                                <exclude>*Test</exclude>
+                            </excludes>
+                            <limits>
+                                <limit>
+                                    <counter>LINE</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>0.00</minimum>
+                                </limit>
+                            </limits>
+                        </rule>
+                    </rules>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -123,6 +185,70 @@
     </distributionManagement>
 
     <profiles>
+        <profile>
+            <!--This profile is to be used only when building from Travis CI and only when using the Linux build (not OS X!)-->
+            <id>travis</id>
+            <activation>
+                <property>
+                    <name>TRAVIS</name>
+                    <value>true</value>
+                </property>
+                <property>
+                    <name>TRAVIS_OS_NAME</name>
+                    <value>linux</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <!--
+                        When building in Travis, we need to generate the JaCoCo Report before uploading results to Coveralls.
+                        This build plugin needs to be listed BEFORE the build plugin for Coveralls. XML declaration order matters!
+                        -->
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.7.7.201606060606</version>
+                        <executions>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <!--
+                                By binding to 'verify' we ensure this is done within the scope of a 'mvn install',
+                                instead of the default of 'mvn site/deploy'
+                                -->
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <!-- Coveralls collects Code Coverage reports from Travis. -->
+                        <groupId>org.eluder.coveralls</groupId>
+                        <artifactId>coveralls-maven-plugin</artifactId>
+                        <version>4.2.0</version>
+                        <configuration>
+                            <repoToken>E5aoVZnhwn16IJJHVCb8aDA85JjCZT1c9</repoToken>
+                            <failOnServiceError>false</failOnServiceError>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <!--
+                                We want to upload the report during a normal 'mvn install', hence we bind to 'verify',
+                                but we won't break the build if the upload fails due to 'failOnServiceError=false'
+                                -->
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>release</id>
             <build>
