@@ -6,6 +6,11 @@ matrix:
     jdk: oraclejdk7   # Java 1.7.0_76
   - os: osx           # OS X (10.9) which comes with Oracle's Java 1.7.0_45
 
+env:
+  global:
+    - secure: "NHlk1hITp3ZP0TtXRHX1Jcpka00/KOPSemG8iCWDIyX/Vw+FzTj0pBprlzdKMndpLRN+NXcOLMl215wbYTbbIbg6vihsvM+zXBCfI38NpcD0Ty2ogbq6cDNbSYJX+AJNZ8PrI1K8NqHU6xMTck7JXjfGcF6/f2cP7Z/Ooc/OMVI6UbEuq7iKOrI+p65y//OzdBjV2pr+LeZbQM+hMgjvTxgB3+kR2OTqsy/NWaXPOz6zyFKMPhd3Bgw3WxdPnB/qG+34xQPX/Sy4O0kw6BCZBPMFZHUDcyQgVg6kgcuBbEE/kBYiSF/feFk/SkXgmBQypQ2LK/9Azg2gmurwEzuoKj18kQwloJFtWfeC7LcF+lUIRq/bK0i/+RAKi5lH3gOHlPgkef+qphvugJffwCJDY9S5aH2YwYMMmNkgr5/RraGCQ1GHV21IYctIn9wVFwWYbhTozDY17YtqV9cykZlxi3kX8IyHfjCIpyVhhzL8fy9gKA0ivDOuxePu1p2E9GLBrEhfzNpA1ksyvD3ftS/ADfWetYbh4bYfDRBMIAzGOxHK2Pr/TlB+8O3m48epO4sMA9dFCuxqdDaThjMgpw59uzIGeico0jrrevRdXZKYfxjN9pX7lQ9Bmi5fsS6xYIoioX7s0deFYdasHJhn2n8EYRfMR5PupXmKAzm2TXmJYys="
+    - secure: "lv8LPy50bPDAO8GYwmgbolrn1hOnDqfX+ndiTDxhyWBlIPbpzWhF0ExA3KF0UuovumNUA2udqvPp3qhBrOVB2r+D4yEk0fypqDEUSDyCubhI8cm/uwXM7v80RsY8/r0gDgsAG87zhW9UYbyEO1h9O5QVjD9NY4FJG9NCKvKkq3RTTtfkkaoXnhyvyJwGPpHcw5L5gd8zTiz+XIFzbEb0X6Yl8GQDPMw4pRPbia/TJqUoMsipOZNIq3sUWgBgB1YS/FRGerT6ZbdCckUshQKI5i3uIimSVQhpmkRuOZPj/99HPQokXtgjyivEZgT2uYIIC+tFtu+C/2n+Y7KOldPidTBYC+x0yTF/erq96btsDkqfLfsxOKLw9tWhuQUkS0eWUc5lRkOrrDiEnqNlaaS7R+6xWGRv031900HEdKyMTXV5Y6kwUX9dYWhIVAcA2oGY81DCUS6YKUeXo1ZpbeT3jEo+D+qIA/rhX7t2HbO1kZSB/j3bkngY/q4B3RC4FJCA6EqR5hG9YYMGdYwJDY+nB+15RbKcezRBjy18vE6NeSdSZycCjCRlCmIGV98RhP3xkYsy0pDQpOqvN/7y7SGTo9DgGhedwUrVc23I+jSv7HMu2r2otm8Hopb7ILv+Zum1OWWen+w+6otZCAxDABhsmkwOhbDdbNMMPaMpajSfhnw="
+
 cache:
   directories:
     - $HOME/.m2/repository
@@ -17,7 +22,7 @@ before_install:
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
 
 script:
-  - mvn clean package
+  - mvn clean deploy -P release -s maven-settings.xml
 
 notifications:
   email:
