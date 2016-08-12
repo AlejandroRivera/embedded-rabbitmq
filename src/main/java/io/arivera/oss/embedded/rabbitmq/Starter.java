@@ -1,5 +1,6 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -23,6 +24,10 @@ class Starter implements Callable<StartedProcess> {
   @Override
   public StartedProcess call()throws ProcessException  {
     String command = config.getAppFolder().toString() + "/sbin/rabbitmq-server";
+    if (SystemUtils.IS_OS_WINDOWS) {
+      command += ".bat";
+    }
+
     try {
       PatternFinderOutputStream initializationWatcher = new PatternFinderOutputStream(".*completed with \\d+ plugins.*");
       PublishingProcessListener rabbitMqProcessListener = new PublishingProcessListener();

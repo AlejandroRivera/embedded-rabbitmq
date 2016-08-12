@@ -1,6 +1,7 @@
 # Embedded RabbitMQ
 
 [![Build Status](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq.svg?branch=master)](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq)
+[![Build status](https://ci.appveyor.com/api/projects/status/r46o01l4ora7ppkf?svg=true)](https://ci.appveyor.com/project/AlejandroRivera/embedded-rabbitmq)
 [![Coverage Status](https://coveralls.io/repos/github/AlejandroRivera/embedded-rabbitmq/badge.svg)](https://coveralls.io/github/AlejandroRivera/embedded-rabbitmq)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/io-arivera-oss/embedded-rabbitmq)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.arivera.oss/embedded-rabbitmq/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.arivera.oss/embedded-rabbitmq)
