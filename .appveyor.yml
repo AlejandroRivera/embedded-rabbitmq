@@ -41,7 +41,7 @@ environment:
     - JAVA_HOME: C:\Program Files\Java\jdk1.7.0
 
 install:
-#  - cmd: erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
+  - cmd: erl -noshell -eval 'io:fwrite("~s\n", [erlang:system_info(otp_release)]).' -s erlang halt
   - cmd: choco install maven -y -f
 
 build_script:
