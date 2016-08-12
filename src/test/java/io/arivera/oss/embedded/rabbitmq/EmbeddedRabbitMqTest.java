@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 public class EmbeddedRabbitMqTest {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(EmbeddedRabbitMqTest.class);
@@ -27,6 +29,7 @@ public class EmbeddedRabbitMqTest {
 //            new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz"), "3.6.5")
         .version(PredefinedVersion.V3_5_7)
         .extractionFolder(temporaryFolder.newFolder("extracted"))
+        .rabbitMqServerInitializationTimeoutInMillis(TimeUnit.SECONDS.toMillis(5))
 //        .useCachedDownload(false)
         .build();
 
