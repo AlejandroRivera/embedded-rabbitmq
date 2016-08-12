@@ -1,6 +1,7 @@
 package io.arivera.oss.embedded.rabbitmq;
 
 import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
+import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -35,7 +36,12 @@ class Stopper implements Runnable {
   }
 
   private void stopUsingRabbitMqCtl() {
-    List<String> command = Arrays.asList( config.getAppFolder() + "/sbin/rabbitmqctl", "stop");
+    String executable = config.getAppFolder() + "/sbin/rabbitmqctl";
+    if (SystemUtils.IS_OS_WINDOWS) {
+      executable += ".bat";
+    }
+
+    List<String> command = Arrays.asList(executable, "stop");
     try {
       Slf4jStream loggingStream = Slf4jStream.of(EmbeddedRabbitMq.class, "Process.rabbitmqctl");
 
