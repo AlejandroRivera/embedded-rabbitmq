@@ -2,6 +2,7 @@ package io.arivera.oss.embedded.rabbitmq;
 
 import io.arivera.oss.embedded.rabbitmq.util.FileUtils;
 import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,7 @@
 package io.arivera.oss.embedded.rabbitmq;
 
 import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
+
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -30,13 +31,13 @@ class Extractor implements Runnable {
     this.config = config;
   }
 
-  public void run() throws  DownloadException {
+  public void run() throws DownloadException {
     String downloadedFile = config.getDownloadTarget().toString();
 
     Runnable extractor;
-    if (downloadedFile.endsWith(".tar.gz") || downloadedFile.endsWith(".tar.xz")){
+    if (downloadedFile.endsWith(".tar.gz") || downloadedFile.endsWith(".tar.xz")) {
       extractor = new TarExtractor();
-    } else if (downloadedFile.endsWith(".zip")){
+    } else if (downloadedFile.endsWith(".zip")) {
       extractor = new ZipExtractor();
     } else {
       throw new DownloadException("Could not determine compression used from filename: " + downloadedFile);
@@ -205,8 +206,8 @@ class Extractor implements Runnable {
             InputStream inputStream = zipFile.getInputStream(entry);
             extractFile(inputStream, outputFile, fileName);
           } catch (IOException e) {
-            throw new DownloadException("Error extracting file '" + fileName + "' " +
-                "from downloaded file: " + config.getDownloadTarget(), e);
+            throw new DownloadException("Error extracting file '" + fileName + "' "
+                + "from downloaded file: " + config.getDownloadTarget(), e);
           }
         }
       }

@@ -22,6 +22,7 @@ package io.arivera.oss.embedded.rabbitmq.util;
 /**
  * Copied from Apache Commons Lang3 v3.4
  */
+@SuppressWarnings("all")
 public class StopWatch {
 
   private static final long NANO_2_MILLIS = 1000000L;

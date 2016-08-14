@@ -4,6 +4,12 @@ public enum OperatingSystem {
 
   WINDOWS("windows"), MAC_OS("mac-standalone"), UNIX("generic-unix");
 
+  private String downloadName;
+
+  OperatingSystem(String downloadName) {
+    this.downloadName = downloadName;
+  }
+
   public static OperatingSystem detect() {
     if (SystemUtils.IS_OS_MAC) {
       return MAC_OS;
@@ -12,12 +18,6 @@ public enum OperatingSystem {
     } else {
       return UNIX;
     }
-  }
-
-  private String downloadName;
-
-  OperatingSystem(String downloadName) {
-    this.downloadName = downloadName;
   }
 
   public String getDownloadNameComponent() {

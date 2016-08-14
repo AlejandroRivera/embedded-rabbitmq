@@ -20,6 +20,7 @@ package io.arivera.oss.embedded.rabbitmq.util;
 /**
  * Copied from Apache Commons Lang3 v3.4
  */
+@SuppressWarnings("all")
 public enum JavaVersion {
   JAVA_0_9(1.5F, "0.9"),
   JAVA_1_1(1.1F, "1.1"),
