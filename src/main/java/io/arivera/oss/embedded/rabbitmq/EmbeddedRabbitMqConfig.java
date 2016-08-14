@@ -146,7 +146,7 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
-    public Builder downloadFolder(File downloadFolder){
+    public Builder downloadFolder(File downloadFolder) {
       if (this.downloadTarget != null) {
         throw new IllegalStateException("Download Target has already been set.");
       }

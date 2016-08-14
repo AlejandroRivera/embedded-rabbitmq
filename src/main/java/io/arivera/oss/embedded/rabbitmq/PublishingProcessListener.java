@@ -19,7 +19,7 @@ class PublishingProcessListener extends ProcessListener {
   public void afterFinish(Process process, ProcessResult result) {
     super.afterFinish(process, result);
     for (Subscriber subscriber : subscribers) {
-        subscriber.processFinished(result.getExitValue());
+      subscriber.processFinished(result.getExitValue());
     }
   }
 

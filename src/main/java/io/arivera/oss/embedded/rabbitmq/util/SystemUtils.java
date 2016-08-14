@@ -22,6 +22,7 @@ import java.io.File;
 /**
  * Copied from Apache Commons Lang3 v3.4
  */
+@SuppressWarnings("all")
 public class SystemUtils {
 
     /**

@@ -20,7 +20,7 @@ class DefaultPathProvider implements PathsProvider {
   }
 
   @Override
-  public URL getDownloadUrl(OperatingSystem operatingSystem){
+  public URL getDownloadUrl(OperatingSystem operatingSystem) {
     String url = String.format(URL_PATTERN,
         version,
         operatingSystem.getDownloadNameComponent(),
@@ -34,7 +34,7 @@ class DefaultPathProvider implements PathsProvider {
   }
 
   @Override
-  public String getExtractionSubFolder(){
+  public String getExtractionSubFolder() {
     return String.format(EXTRACTION_PATH, version);
   }
 }

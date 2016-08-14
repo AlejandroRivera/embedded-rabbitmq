@@ -2,6 +2,7 @@ package io.arivera.oss.embedded.rabbitmq;
 
 import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
 import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -60,7 +61,7 @@ class Stopper implements Runnable {
       if (exitValue == 0) {
         LOGGER.info("Submitted command to stop RabbitMQ Server successfully.");
       } else {
-        LOGGER.warn("Command '"+ StringUtils.join(command, " ")+"' exited with value: " + exitValue);
+        LOGGER.warn("Command '" + StringUtils.join(command, " ") + "' exited with value: " + exitValue);
       }
     } catch (IOException e) {
       throw new ShutDownException("Could not successfully execute: " + StringUtils.join(command, " "), e);
@@ -72,7 +73,8 @@ class Stopper implements Runnable {
   private void waitForRabbitMqServerToFinish() {
     try {
       Future<ProcessResult> processfuture = rabbitMqProcess.getFuture();
-      ProcessResult rabbitMqProcessResult = processfuture.get(config.getDefaultRabbitMqCtlTimeoutInMillis(), TimeUnit.MILLISECONDS);
+      ProcessResult rabbitMqProcessResult = processfuture.get(
+          config.getDefaultRabbitMqCtlTimeoutInMillis(), TimeUnit.MILLISECONDS);
       int exitValue = rabbitMqProcessResult.getExitValue();
       if (exitValue == 0) {
         LOGGER.info("RabbitMQ Server stopped successfully.");

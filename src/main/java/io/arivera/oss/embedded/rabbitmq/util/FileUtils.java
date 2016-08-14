@@ -11,6 +11,7 @@ import java.net.URLConnection;
 /**
  * Copied from Apache Commons IO v2.4
  */
+@SuppressWarnings("all")
 public class FileUtils {
 
   /**
