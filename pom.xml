@@ -180,7 +180,7 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.2.0</version>
                 <configuration>
-                    <repoToken>E5aoVZnhwn16IJJHVCb8aDA85JjCZT1c9</repoToken>
+                    <repoToken>${env.COVERALLS_TOKEN}</repoToken>
                     <failOnServiceError>false</failOnServiceError>
                 </configuration>
             </plugin>
