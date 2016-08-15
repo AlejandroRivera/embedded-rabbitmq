@@ -30,22 +30,25 @@ public enum PredefinedVersion implements Version {
 
   ;
 
-  private String version;
-  private ArchiveType archiveType;
+  final private String version;
+  final private ArchiveType unixArchiveType;
+  final private ArchiveType windowsArchiveType;
 
-  PredefinedVersion(ArchiveType archiveType) {
+  PredefinedVersion(ArchiveType unixArchiveType) {
     this.version = name().replaceAll("V", "").replaceAll("_", ".");
-    this.archiveType = archiveType;
+    this.unixArchiveType = unixArchiveType;
+    this.windowsArchiveType = ArchiveType.ZIP;
   }
 
-  PredefinedVersion(String version, ArchiveType archiveType) {
+  PredefinedVersion(String version, ArchiveType unixArchiveType) {
     this.version = version;
-    this.archiveType = archiveType;
+    this.unixArchiveType = unixArchiveType;
+    this.windowsArchiveType = ArchiveType.ZIP;
   }
 
   @Override
   public DefaultPathProvider getPathsProvider() {
-    return new DefaultPathProvider(version, archiveType);
+    return new DefaultPathProvider(version, unixArchiveType, windowsArchiveType);
   }
 
 }
