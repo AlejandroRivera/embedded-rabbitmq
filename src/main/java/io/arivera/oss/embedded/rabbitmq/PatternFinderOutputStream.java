@@ -21,8 +21,12 @@ class PatternFinderOutputStream extends LogOutputStream implements PublishingPro
   }
 
   public PatternFinderOutputStream(Pattern initializationMarkerPattern) {
-    lock = new Semaphore(1);
-    lock.tryAcquire();
+    try {
+      lock = new Semaphore(1);
+      lock.acquire();
+    } catch (InterruptedException e) {
+      throw new IllegalStateException("Could not acquire a lock we create right above?", e);
+    }
     pattern = initializationMarkerPattern;
     matchFound = false;
   }

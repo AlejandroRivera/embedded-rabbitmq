@@ -191,6 +191,29 @@
                 </dependencies>
                 <executions>
                     <execution>
+                        <!-- Execute `checkstyle:check` to fail the build during the `verify` phase -->
+                        <id>check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <!-- Using FindBugs to prevent bugs that are identifiable by static analysis -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <onlyAnalyze>io.arivera.-</onlyAnalyze>
+                    <fork>false</fork>
+                    <threshold>Low</threshold>
+                    <effort>Max</effort>
+                    <xmlOutput>true</xmlOutput>
+                </configuration>
+                <executions>
+                    <execution>
                         <!-- Execue CheckStyle during the 'verify' phase automatically (via auto-binding) -->
                         <id>check</id>
                         <goals>
