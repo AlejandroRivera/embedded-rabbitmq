@@ -30,9 +30,9 @@ public enum PredefinedVersion implements Version {
 
   ;
 
-  final private String version;
-  final private ArchiveType unixArchiveType;
-  final private ArchiveType windowsArchiveType;
+  private final String version;
+  private final ArchiveType unixArchiveType;
+  private final ArchiveType windowsArchiveType;
 
   PredefinedVersion(ArchiveType unixArchiveType) {
     this.version = name().replaceAll("V", "").replaceAll("_", ".");
