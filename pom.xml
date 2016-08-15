@@ -219,7 +219,8 @@
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>3.0.2</version>
                 <configuration>
-                    <onlyAnalyze>io.arivera.*</onlyAnalyze>
+                    <onlyAnalyze>io.arivera.-</onlyAnalyze>
+                    <fork>false</fork>
                     <threshold>Low</threshold>
                     <effort>Max</effort>
                     <xmlOutput>true</xmlOutput>
