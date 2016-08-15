@@ -124,12 +124,14 @@
                 <version>0.7.7.201606060606</version>
                 <executions>
                     <execution>
+                        <!-- Ensures execution of tests include recording of usage through JaCoCo agent (via auto-binding) -->
                         <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
+                        <!-- Ensures we execute `mvn checkstyle:check` during the `verify` phase (via auto-binding)-->
                         <id>verify</id>
                         <goals>
                             <goal>check</goal>
@@ -141,34 +143,16 @@
                         <rule>
                             <element>BUNDLE</element>
                             <limits>
-                                <limit>
-                                    <counter>INSTRUCTION</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>0.50</minimum>
-                                </limit>
-                                <limit>
-                                    <counter>CLASS</counter>
-                                    <value>MISSEDCOUNT</value>
-                                    <maximum>10</maximum>
-                                </limit>
-                                <limit>
-                                    <counter>BRANCH</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>0.20</minimum>
-                                </limit>
+                                <limit><counter>INSTRUCTION</counter><value>COVEREDRATIO</value><minimum>0.50</minimum></limit>
+                                <limit><counter>CLASS</counter><value>MISSEDCOUNT</value><maximum>10</maximum></limit>
+                                <limit><counter>BRANCH</counter><value>COVEREDRATIO</value><minimum>0.20</minimum></limit>
                             </limits>
                         </rule>
                         <rule>
                             <element>CLASS</element>
-                            <excludes>
-                                <exclude>*Test</exclude>
-                            </excludes>
+                            <excludes><exclude>*Test</exclude></excludes>
                             <limits>
-                                <limit>
-                                    <counter>LINE</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>0.00</minimum>
-                                </limit>
+                                <limit> <counter>LINE</counter><value>COVEREDRATIO</value><minimum>0.00</minimum></limit>
                             </limits>
                         </rule>
                     </rules>
@@ -180,11 +164,13 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.2.0</version>
                 <configuration>
+                    <!-- Will come from Travis secured env var. -->
                     <repoToken>${env.COVERALLS_TOKEN}</repoToken>
                     <failOnServiceError>false</failOnServiceError>
                 </configuration>
             </plugin>
             <plugin>
+                <!-- CheckStyle plugin to enforce coding standards -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.17</version>
@@ -197,6 +183,7 @@
                 </configuration>
                 <dependencies>
                     <dependency>
+                        <!-- Override default v6.11.2 since it's older. Can't use v7.X due to JDK 8 incompatibility -->
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
                         <version>6.19</version>
@@ -204,6 +191,7 @@
                 </dependencies>
                 <executions>
                     <execution>
+                        <!-- Execue CheckStyle during the 'verify' phase automatically (via auto-binding) -->
                         <id>check</id>
                         <goals>
                             <goal>check</goal>
