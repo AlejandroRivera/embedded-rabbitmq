@@ -1,5 +1,6 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
 import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -32,52 +33,69 @@ class Extractor implements Runnable {
   }
 
   public void run() throws DownloadException {
-    String downloadedFile = config.getDownloadTarget().toString();
-
-    Runnable extractor;
-    if (downloadedFile.endsWith(".tar.gz") || downloadedFile.endsWith(".tar.xz")) {
-      extractor = new TarExtractor();
-    } else if (downloadedFile.endsWith(".zip")) {
-      extractor = new ZipExtractor();
-    } else {
-      throw new DownloadException("Could not determine compression used from filename: " + downloadedFile);
-    }
-
+    Runnable extractor = getExtractor(config);
     extractor.run();
   }
 
-  private static void createNewFile(File destPath) {
-    try {
-      boolean newFile = destPath.createNewFile();
-      if (!newFile) {
-        LOGGER.warn("File '{}' already exists. Will attempt to continue...", destPath);
+  CompressedExtractor getExtractor(EmbeddedRabbitMqConfig config) {
+    String downloadedFilename = config.getDownloadTarget().toString();
+    if (ArchiveType.TAR_GZ.matches(downloadedFilename)) {
+      return new TarGzExtractor(config);
+    } else if (ArchiveType.TAR_XZ.matches(downloadedFilename)) {
+      return new TarXzExtractor(config);
+    } else if (ArchiveType.ZIP.matches(downloadedFilename)) {
+      return new ZipExtractor(config);
+    } else {
+      throw new IllegalStateException("Could not determine compression format for file: " + downloadedFilename);
+    }
+  }
+
+  abstract static class CompressedExtractor implements Runnable {
+
+    protected final EmbeddedRabbitMqConfig config;
+
+    CompressedExtractor(EmbeddedRabbitMqConfig config) {
+      this.config = config;
+    }
+
+    protected static void createNewFile(File destPath) {
+      try {
+        boolean newFile = destPath.createNewFile();
+        if (!newFile) {
+          LOGGER.warn("File '{}' already exists. Will attempt to continue...", destPath);
+        }
+      } catch (IOException e) {
+        LOGGER.warn("Could not extract file '" + destPath + "'. Will attempt to continue...", e);
       }
-    } catch (IOException e) {
-      LOGGER.warn("Could not extract file '" + destPath + "'. Will attempt to continue...", e);
     }
+
+    protected static void makeDirectory(File destPath) {
+      boolean mkdirs = destPath.mkdirs();
+      if (!mkdirs) {
+        LOGGER.warn("Directory '{}' could not be created. Will attempt to continue...", destPath);
+      }
+    }
+
+    protected static void extractFile(InputStream archive, File destPath, String fileName) {
+      BufferedOutputStream output = null;
+      try {
+        LOGGER.debug("Extracting '{}'...", fileName);
+        output = new BufferedOutputStream(new FileOutputStream(destPath));
+        IOUtils.copy(archive, output);
+      } catch (IOException e) {
+        throw new DownloadException("Error extracting file '" + fileName + "' ", e);
+      } finally {
+        IOUtils.closeQuietly(output);
+      }
+    }
+
   }
 
-  private static void makeDirectory(File destPath) {
-    boolean mkdirs = destPath.mkdirs();
-    if (!mkdirs) {
-      LOGGER.warn("Directory '{}' could not be created. Will attempt to continue...", destPath);
-    }
-  }
+  abstract static class AbstractTarExtractor extends CompressedExtractor {
 
-  private static void extractFile(InputStream archive, File destPath, String fileName) {
-    BufferedOutputStream output = null;
-    try {
-      LOGGER.debug("Extracting '{}'...", fileName);
-      output = new BufferedOutputStream(new FileOutputStream(destPath));
-      IOUtils.copy(archive, output);
-    } catch (IOException e) {
-      throw new DownloadException("Error extracting file '" + fileName + "' ", e);
-    } finally {
-      IOUtils.closeQuietly(output);
+    AbstractTarExtractor(EmbeddedRabbitMqConfig config) {
+      super(config);
     }
-  }
-
-  private class TarExtractor implements Runnable {
 
     @Override
     public void run() throws DownloadException {
@@ -85,15 +103,7 @@ class Extractor implements Runnable {
       TarArchiveInputStream archive;
       try {
         BufferedInputStream bufferedFileInput = new BufferedInputStream(new FileInputStream(config.getDownloadTarget()));
-
-        InputStream compressedInputStream;
-        if (downloadedFile.endsWith(".xz")) {
-          compressedInputStream = new XZInputStream(bufferedFileInput);
-        } else if (downloadedFile.endsWith(".gz")) {
-          compressedInputStream = new GZIPInputStream(bufferedFileInput);
-        } else {
-          throw new IllegalArgumentException("Cannot determine compression type for: " + config.getDownloadTarget());
-        }
+        InputStream compressedInputStream = getCompressedInputStream(downloadedFile, bufferedFileInput);
         archive = new TarArchiveInputStream(compressedInputStream);
       } catch (IOException e) {
         throw new DownloadException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
@@ -111,18 +121,19 @@ class Extractor implements Runnable {
       }
     }
 
+    protected abstract InputStream getCompressedInputStream(String downloadedFile,
+                                                            BufferedInputStream bufferedFileInput) throws IOException;
+
     private void extractTar(TarArchiveInputStream archive) {
       TarArchiveEntry fileToExtract;
       try {
         fileToExtract = archive.getNextTarEntry();
       } catch (IOException e) {
-        throw new DownloadException(
-            "Could not extract files from file '" + config.getDownloadTarget() + "' due to: " + e.getLocalizedMessage(), e);
+        throw new DownloadException("Could not extract files from file '" + config.getDownloadTarget()
+            + "' due to: " + e.getLocalizedMessage(), e);
       }
 
-      int fileCounter = 0;
       while (fileToExtract != null) {
-        fileCounter++;
         File destPath = new File(config.getExtractionFolder(), fileToExtract.getName());
 
         if (fileToExtract.isDirectory()) {
@@ -167,7 +178,37 @@ class Extractor implements Runnable {
 
   }
 
-  private class ZipExtractor implements Runnable {
+  private static class TarGzExtractor extends AbstractTarExtractor {
+
+    public TarGzExtractor(EmbeddedRabbitMqConfig config) {
+      super(config);
+    }
+
+    @Override
+    protected InputStream getCompressedInputStream(String downloadedFile,
+                                                   BufferedInputStream bufferedFileInput)
+        throws IOException {
+      return new GZIPInputStream(bufferedFileInput);
+    }
+  }
+
+  private static class TarXzExtractor extends AbstractTarExtractor {
+
+    public TarXzExtractor(EmbeddedRabbitMqConfig config) {
+      super(config);
+    }
+
+    protected InputStream getCompressedInputStream(String downloadedFile,
+                                                   BufferedInputStream bufferedFileInput) throws IOException {
+      return new XZInputStream(bufferedFileInput);
+    }
+  }
+
+  private static class ZipExtractor extends CompressedExtractor {
+
+    public ZipExtractor(EmbeddedRabbitMqConfig config) {
+      super(config);
+    }
 
     @Override
     public void run() throws DownloadException {
@@ -213,4 +254,5 @@ class Extractor implements Runnable {
       }
     }
   }
+
 }
