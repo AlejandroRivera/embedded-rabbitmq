@@ -16,7 +16,7 @@ public enum RabbitMqEnvVar {
   NODE_IP_ADDRESS,
 
   /**
-   * The port to bind this RabbitMQ broker node
+   * The port to bind this RabbitMQ broker node.
    *
    * <p>Default value: {@code 5672}</p>
    */
@@ -120,13 +120,13 @@ public enum RabbitMqEnvVar {
    */
   SERVER_START_ARGS;
 
-  private final static String ENV_VAR_PREFIX = "RABBITMQ_";
+  private static final String ENV_VAR_PREFIX = "RABBITMQ_";
 
   RabbitMqEnvVar() {
   }
 
   /**
-   * @return Returns the environment variable name (with the prefix {@code RABBITMQ_})</p>
+   * @return environment variable name (with the prefix {@code RABBITMQ_}).
    */
   public String getEnvVarName() {
     return ENV_VAR_PREFIX + name();
