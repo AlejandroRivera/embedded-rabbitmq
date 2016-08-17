@@ -47,6 +47,7 @@ class Stopper implements Runnable {
       Slf4jStream loggingStream = Slf4jStream.of(EmbeddedRabbitMq.class, "Process.rabbitmqctl");
 
       ProcessResult rabbitMqCtlProcessResult = new ProcessExecutor()
+          .environment(config.getEnvVars())
           .directory(config.getAppFolder())
           .command(command)
           .redirectError(loggingStream.asError())

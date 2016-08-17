@@ -38,6 +38,7 @@ class Starter implements Callable<StartedProcess> {
       LoggingProcessListenerDecorator processEventsLogger = new LoggingProcessListenerDecorator(LOGGER, rabbitMqProcessListener);
 
       StartedProcess rabbitMqProcess = new ProcessExecutor()
+          .environment(config.getEnvVars())
           .directory(config.getAppFolder())
           .command(command)
           .redirectError(processOutputLogger)

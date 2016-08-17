@@ -5,6 +5,8 @@ import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class EmbeddedRabbitMqConfig {
@@ -23,6 +25,8 @@ public class EmbeddedRabbitMqConfig {
   private final boolean shouldCacheDownload;
   private final boolean deleteCachedFileOnErrors;
 
+  private final Map<String, String> envVars;
+
   protected EmbeddedRabbitMqConfig(URL downloadSource,
                                    File downloadTarget,
                                    File extractionFolder,
@@ -31,7 +35,8 @@ public class EmbeddedRabbitMqConfig {
                                    long downloadConnectionTimeoutInMillis,
                                    long defaultRabbitMqCtlTimeoutInMillis,
                                    long rabbitMqServerInitializationTimeoutInMillis,
-                                   boolean cacheDownload, boolean deleteCachedFile) {
+                                   boolean cacheDownload, boolean deleteCachedFile,
+                                   Map<String, String> envVars) {
     this.downloadSource = downloadSource;
     this.downloadTarget = downloadTarget;
     this.extractionFolder = extractionFolder;
@@ -42,6 +47,7 @@ public class EmbeddedRabbitMqConfig {
     this.rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
     this.shouldCacheDownload = cacheDownload;
     this.deleteCachedFileOnErrors = deleteCachedFile;
+    this.envVars = envVars;
   }
 
   public long getDownloadReadTimeoutInMillis() {
@@ -84,6 +90,10 @@ public class EmbeddedRabbitMqConfig {
     return appFolder;
   }
 
+  public Map<String, String> getEnvVars() {
+    return envVars;
+  }
+
   public static class Builder {
 
     private long downloadReadTimeoutInMillis;
@@ -98,6 +108,7 @@ public class EmbeddedRabbitMqConfig {
     private boolean deleteCachedFile;
     private PredefinedVersion version;
     private String appFolder;
+    private Map<String, String> envVars;
 
     public Builder() {
       this.downloadConnectionTimeoutInMillis = TimeUnit.SECONDS.toMillis(2);
@@ -107,6 +118,7 @@ public class EmbeddedRabbitMqConfig {
       this.cacheDownload = true;
       this.deleteCachedFile = true;
       this.downloadFolder = new File(System.getProperty("user.home"), ".embeddedrabbitmq");
+      this.envVars = new HashMap<>();
     }
 
     public Builder downloadReadTimeoutInMillis(long downloadReadTimeoutInMillis) {
@@ -177,6 +189,21 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
+    public Builder envVar(String key, String value) {
+      this.envVars.put(key, value);
+      return this;
+    }
+
+    public Builder envVar(RabbitMqEnvVar key, String value) {
+      this.envVar(key.getEnvVarName(), value);
+      return this;
+    }
+
+    public Builder envVars(Map<String, String> map) {
+      this.envVars.putAll(map);
+      return this;
+    }
+
     public EmbeddedRabbitMqConfig build() {
       if (downloadSource == null) {
         if (version == null) {
@@ -202,7 +229,8 @@ public class EmbeddedRabbitMqConfig {
           downloadConnectionTimeoutInMillis, downloadReadTimeoutInMillis,
           defaultRabbitMqCtlTimeoutInMillis,
           rabbitMqServerInitializationTimeoutInMillis,
-          cacheDownload, deleteCachedFile);
+          cacheDownload, deleteCachedFile,
+          envVars);
     }
   }
 }
