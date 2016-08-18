@@ -17,7 +17,8 @@ class LoggingProcessListener extends ProcessListener {
 
   @Override
   public void beforeStart(ProcessExecutor executor) {
-    logger.debug("Executing '{}'...", StringUtils.join(executor.getCommand(), " "));
+    logger.debug("Executing '{}' with environment vars: {}",
+        StringUtils.join(executor.getCommand(), " "), executor.getEnvironment());
   }
 
   @Override
