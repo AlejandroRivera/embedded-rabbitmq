@@ -1,5 +1,6 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.extract;
 
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
 import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
 
@@ -32,7 +33,7 @@ class Extractor implements Runnable {
     this.config = config;
   }
 
-  public void run() throws DownloadException {
+  public void run() throws ExtractException {
     Runnable extractor = getExtractor(config);
     extractor.run();
   }
@@ -83,7 +84,7 @@ class Extractor implements Runnable {
         output = new BufferedOutputStream(new FileOutputStream(destPath));
         IOUtils.copy(archive, output);
       } catch (IOException e) {
-        throw new DownloadException("Error extracting file '" + fileName + "' ", e);
+        throw new ExtractException("Error extracting file '" + fileName + "' ", e);
       } finally {
         IOUtils.closeQuietly(output);
       }
@@ -98,7 +99,7 @@ class Extractor implements Runnable {
     }
 
     @Override
-    public void run() throws DownloadException {
+    public void run() throws ExtractException {
       String downloadedFile = config.getDownloadTarget().toString();
       TarArchiveInputStream archive;
       try {
@@ -106,7 +107,7 @@ class Extractor implements Runnable {
         InputStream compressedInputStream = getCompressedInputStream(downloadedFile, bufferedFileInput);
         archive = new TarArchiveInputStream(compressedInputStream);
       } catch (IOException e) {
-        throw new DownloadException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
+        throw new ExtractException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
       }
 
       try {
@@ -129,7 +130,7 @@ class Extractor implements Runnable {
       try {
         fileToExtract = archive.getNextTarEntry();
       } catch (IOException e) {
-        throw new DownloadException("Could not extract files from file '" + config.getDownloadTarget()
+        throw new ExtractException("Could not extract files from file '" + config.getDownloadTarget()
             + "' due to: " + e.getLocalizedMessage(), e);
       }
 
@@ -211,12 +212,12 @@ class Extractor implements Runnable {
     }
 
     @Override
-    public void run() throws DownloadException {
+    public void run() throws ExtractException {
       ZipFile zipFile;
       try {
         zipFile = new ZipFile(config.getDownloadTarget());
       } catch (IOException e) {
-        throw new DownloadException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
+        throw new ExtractException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
       }
 
       try {
@@ -247,7 +248,7 @@ class Extractor implements Runnable {
             InputStream inputStream = zipFile.getInputStream(entry);
             extractFile(inputStream, outputFile, fileName);
           } catch (IOException e) {
-            throw new DownloadException("Error extracting file '" + fileName + "' "
+            throw new ExtractException("Error extracting file '" + fileName + "' "
                 + "from downloaded file: " + config.getDownloadTarget(), e);
           }
         }

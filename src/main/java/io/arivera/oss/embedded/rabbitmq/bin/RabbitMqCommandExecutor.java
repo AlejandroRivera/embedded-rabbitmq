@@ -1,5 +1,7 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.bin;
 
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMq;
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 
 import org.apache.commons.io.output.NullOutputStream;

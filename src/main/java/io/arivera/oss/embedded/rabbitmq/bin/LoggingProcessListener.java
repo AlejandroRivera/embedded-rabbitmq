@@ -1,4 +1,4 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.bin;
 
 import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
 

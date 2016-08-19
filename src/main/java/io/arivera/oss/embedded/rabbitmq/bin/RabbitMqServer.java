@@ -1,4 +1,6 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.bin;
+
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.zeroturnaround.exec.ProcessResult;

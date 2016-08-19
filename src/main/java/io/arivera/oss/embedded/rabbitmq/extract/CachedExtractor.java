@@ -1,9 +1,11 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.extract;
+
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CachedExtractor implements Runnable {
+class CachedExtractor implements Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CachedExtractor.class);
 
@@ -19,7 +21,7 @@ public class CachedExtractor implements Runnable {
   public void run() {
     try {
       extractor.run();
-    } catch (DownloadException e) {
+    } catch (ExtractException e) {
       if (config.shouldDeleteCachedFileOnErrors()) {
         boolean deleted = config.getDownloadTarget().delete();
         if (deleted) {

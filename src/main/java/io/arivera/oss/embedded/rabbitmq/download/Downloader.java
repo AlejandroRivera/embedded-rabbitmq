@@ -1,5 +1,6 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.download;
 
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.util.FileUtils;
 import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
 

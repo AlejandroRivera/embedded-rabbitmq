@@ -1,4 +1,6 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.download;
+
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

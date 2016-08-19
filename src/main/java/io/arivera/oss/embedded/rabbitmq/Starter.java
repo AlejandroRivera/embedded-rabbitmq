@@ -1,5 +1,7 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqServer;
+
 import org.zeroturnaround.exec.ProcessResult;
 
 import java.io.IOException;

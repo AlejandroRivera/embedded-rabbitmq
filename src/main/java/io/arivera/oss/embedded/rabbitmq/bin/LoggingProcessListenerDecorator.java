@@ -1,4 +1,4 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.bin;
 
 import org.slf4j.Logger;
 import org.zeroturnaround.exec.ProcessExecutor;

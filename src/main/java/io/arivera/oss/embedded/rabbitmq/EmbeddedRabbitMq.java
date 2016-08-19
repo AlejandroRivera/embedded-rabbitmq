@@ -1,5 +1,10 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.download.DownloadException;
+import io.arivera.oss.embedded.rabbitmq.download.DownloaderFactory;
+import io.arivera.oss.embedded.rabbitmq.extract.ExtractException;
+import io.arivera.oss.embedded.rabbitmq.extract.ExtractorFactory;
+
 import org.zeroturnaround.exec.ProcessResult;
 
 import java.util.concurrent.Future;
@@ -14,25 +19,19 @@ public class EmbeddedRabbitMq {
     this.config = config;
   }
 
-  public void start() throws DownloadException, ProcessException {
+  public void start() throws DownloadException, ExtractException, ProcessException {
     download();
     extract();
     run();
   }
 
   private void download() throws DownloadException {
-    Runnable downloader = new Downloader(config);
-    if (config.shouldCachedDownload()) {
-      downloader = new CachedDownloader(downloader, config);
-    }
+    Runnable downloader = DownloaderFactory.getNewInstance(config);
     downloader.run();
   }
 
-  private void extract() throws DownloadException {
-    Runnable extractor = new Extractor(config);
-    if (config.shouldCachedDownload()) {
-      extractor = new CachedExtractor(extractor, config);
-    }
+  private void extract() throws ExtractException {
+    Runnable extractor = ExtractorFactory.getNewInstance(config);
     extractor.run();
   }
 
