@@ -1,12 +1,14 @@
 package io.arivera.oss.embedded.rabbitmq;
 
-import org.zeroturnaround.exec.StartedProcess;
+import org.zeroturnaround.exec.ProcessResult;
+
+import java.util.concurrent.Future;
 
 
 public class EmbeddedRabbitMq {
 
   private EmbeddedRabbitMqConfig config;
-  private StartedProcess rabbitMqProcess;
+  private Future<ProcessResult> rabbitMqProcess;
 
   public EmbeddedRabbitMq(EmbeddedRabbitMqConfig config) {
     this.config = config;

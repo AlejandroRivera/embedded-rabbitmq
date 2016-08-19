@@ -3,7 +3,6 @@ package io.arivera.oss.embedded.rabbitmq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessResult;
-import org.zeroturnaround.exec.StartedProcess;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -16,11 +15,11 @@ class Stopper implements Runnable {
   private static final Logger LOGGER = LoggerFactory.getLogger(Stopper.class);
 
   private final EmbeddedRabbitMqConfig config;
-  private final StartedProcess rabbitMqProcess;
+  private final Future<ProcessResult> rabbitMqProcess;
   private final long timeoutDuration;
   private final TimeUnit timeoutUnit;
 
-  Stopper(EmbeddedRabbitMqConfig config, StartedProcess rabbitMqProcess) {
+  Stopper(EmbeddedRabbitMqConfig config, Future<ProcessResult> rabbitMqProcess) {
     this.config = config;
     this.rabbitMqProcess = rabbitMqProcess;
     timeoutDuration = config.getDefaultRabbitMqCtlTimeoutInMillis();
@@ -53,9 +52,7 @@ class Stopper implements Runnable {
 
   private void waitForRabbitMqServerToFinish() {
     try {
-      Future<ProcessResult> processfuture = rabbitMqProcess.getFuture();
-      ProcessResult rabbitMqProcessResult = processfuture.get(
-          timeoutDuration, TimeUnit.MILLISECONDS);
+      ProcessResult rabbitMqProcessResult = rabbitMqProcess.get(timeoutDuration, TimeUnit.MILLISECONDS);
       int exitValue = rabbitMqProcessResult.getExitValue();
       if (exitValue == 0) {
         LOGGER.info("RabbitMQ Server stopped successfully.");
