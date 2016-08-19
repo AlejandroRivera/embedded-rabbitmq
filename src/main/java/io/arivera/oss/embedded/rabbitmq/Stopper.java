@@ -1,18 +1,11 @@
 package io.arivera.oss.embedded.rabbitmq;
 
-import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
-import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.StartedProcess;
-import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -24,10 +17,14 @@ class Stopper implements Runnable {
 
   private final EmbeddedRabbitMqConfig config;
   private final StartedProcess rabbitMqProcess;
+  private final long timeoutDuration;
+  private final TimeUnit timeoutUnit;
 
   Stopper(EmbeddedRabbitMqConfig config, StartedProcess rabbitMqProcess) {
     this.config = config;
     this.rabbitMqProcess = rabbitMqProcess;
+    timeoutDuration = config.getDefaultRabbitMqCtlTimeoutInMillis();
+    timeoutUnit = TimeUnit.MILLISECONDS;
   }
 
   @Override
@@ -37,37 +34,20 @@ class Stopper implements Runnable {
   }
 
   private void stopUsingRabbitMqCtl() {
-    String executable = config.getAppFolder() + "/sbin/rabbitmqctl";
-    if (SystemUtils.IS_OS_WINDOWS) {
-      executable += ".bat";
-    }
-
-    List<String> command = Arrays.asList(executable, "stop");
     try {
-      Slf4jStream loggingStream = Slf4jStream.of(EmbeddedRabbitMq.class, "Process.rabbitmqctl");
-
-      ProcessResult rabbitMqCtlProcessResult = new ProcessExecutor()
-          .environment(config.getEnvVars())
-          .directory(config.getAppFolder())
-          .command(command)
-          .redirectError(loggingStream.asError())
-          .redirectOutput(loggingStream.asInfo())
-          .addListener(new LoggingProcessListener(loggingStream.asDebug().getLogger()))
-          .destroyOnExit()
-          .start()
-          .getFuture()
-          .get(config.getDefaultRabbitMqCtlTimeoutInMillis(), TimeUnit.MILLISECONDS);
+      Future<ProcessResult> resultFuture = new RabbitMqCtl(config).stop();
+      ProcessResult rabbitMqCtlProcessResult = resultFuture.get(timeoutDuration, timeoutUnit);
 
       int exitValue = rabbitMqCtlProcessResult.getExitValue();
       if (exitValue == 0) {
         LOGGER.info("Submitted command to stop RabbitMQ Server successfully.");
       } else {
-        LOGGER.warn("Command '" + StringUtils.join(command, " ") + "' exited with value: " + exitValue);
+        LOGGER.warn("Command to stop RabbitMQ Sever failed with exit value: " + exitValue);
       }
     } catch (IOException e) {
-      throw new ShutDownException("Could not successfully execute: " + StringUtils.join(command, " "), e);
+      throw new ShutDownException("Could not successfully execute command to stop RabbitMQ Server", e);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
-      throw new ShutDownException("Command '" + StringUtils.join(command, " ") + "' did not finish as expected", e);
+      throw new ShutDownException("Error while waiting for command to shut down RabbitMQ to finish", e);
     }
   }
 
@@ -75,7 +55,7 @@ class Stopper implements Runnable {
     try {
       Future<ProcessResult> processfuture = rabbitMqProcess.getFuture();
       ProcessResult rabbitMqProcessResult = processfuture.get(
-          config.getDefaultRabbitMqCtlTimeoutInMillis(), TimeUnit.MILLISECONDS);
+          timeoutDuration, TimeUnit.MILLISECONDS);
       int exitValue = rabbitMqProcessResult.getExitValue();
       if (exitValue == 0) {
         LOGGER.info("RabbitMQ Server stopped successfully.");
