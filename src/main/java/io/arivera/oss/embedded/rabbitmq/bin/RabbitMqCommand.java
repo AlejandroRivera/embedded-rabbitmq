@@ -55,6 +55,7 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
 
   private final EmbeddedRabbitMqConfig config;
   private final String command;
+  private final File executableFile;
   private final List<String> arguments;
 
   private Logger processOutputLogger;
@@ -96,7 +97,7 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
     String extension = IS_WIN ? WIN_EXT : UNIT_EXT;
     this.config = config;
     this.command = command + extension;
-    File executableFile = new File(new File(config.getAppFolder(), EXECUTABLE_FOLDER), this.command);
+    this.executableFile = new File(new File(config.getAppFolder(), EXECUTABLE_FOLDER), this.command);
     if (!(executableFile.exists())) {
       throw new IllegalArgumentException("The given command could not be found using the path: " + executableFile);
     }
@@ -139,14 +140,14 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
   public StartedProcess call() throws RabbitMqCommandException {
 
     List<String> fullCommand = new ArrayList<>(arguments);
-    fullCommand.add(0, command);
+    fullCommand.add(0, executableFile.toString());
 
     Slf4jStream loggingStream = Slf4jStream.of(processOutputLogger);
     LoggingProcessListener loggingListener = new LoggingProcessListener(processOutputLogger);
 
     ProcessExecutor processExecutor = new ProcessExecutor()
         .environment(config.getEnvVars())
-        .directory(new File(config.getAppFolder(), EXECUTABLE_FOLDER))
+        .directory(config.getAppFolder())
         .command(fullCommand)
         .destroyOnExit()
         .addListener(loggingListener)               // Logs process events (like start, stop...)
