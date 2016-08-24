@@ -35,8 +35,8 @@ public enum RabbitMqEnvVar {
    *
    * <p>Default:
    * <ul>
-   *   <li>Unix: {@literal rabbit@$HOSTNAME}</li>
-   *   <li>Widnows: {@literal rabbit@%COMPUTERNAME%</li>
+   *   <li>Unix: {@code rabbit@$HOSTNAME}</li>
+   *   <li>Windows: {@code rabbit@%COMPUTERNAME%}</li>
    * </ul>
    */
   NODENAME,
