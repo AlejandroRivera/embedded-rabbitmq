@@ -103,11 +103,13 @@ class Extractor implements Runnable {
       String downloadedFile = config.getDownloadTarget().toString();
       TarArchiveInputStream archive;
       try {
-        BufferedInputStream bufferedFileInput = new BufferedInputStream(new FileInputStream(config.getDownloadTarget()));
+        BufferedInputStream bufferedFileInput =
+            new BufferedInputStream(new FileInputStream(config.getDownloadTarget()));
         InputStream compressedInputStream = getCompressedInputStream(downloadedFile, bufferedFileInput);
         archive = new TarArchiveInputStream(compressedInputStream);
       } catch (IOException e) {
-        throw new ExtractionException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
+        throw new ExtractionException(
+            "Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
       }
 
       try {
@@ -217,7 +219,8 @@ class Extractor implements Runnable {
       try {
         zipFile = new ZipFile(config.getDownloadTarget());
       } catch (IOException e) {
-        throw new ExtractionException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
+        throw new ExtractionException(
+            "Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
       }
 
       try {

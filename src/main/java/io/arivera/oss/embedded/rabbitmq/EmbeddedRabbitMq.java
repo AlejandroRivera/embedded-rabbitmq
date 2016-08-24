@@ -23,6 +23,13 @@ public class EmbeddedRabbitMq {
     this.config = config;
   }
 
+  /**
+   * Starts the RabbitMQ server process and blocks the current thread until the initialization is completed.
+   *
+   * @throws DownloadException when there's an issue downloading the appropriate artifact
+   * @throws ExtractionException when there's an issue extracting the files from the downloaded artifact
+   * @throws StartupException when there's an issue starting the RabbitMQ server
+   */
   public void start() throws DownloadException, ExtractionException, StartupException {
     if (rabbitMqProcess != null) {
       throw new IllegalStateException("Start shouldn't be called more than once unless stop() has been called before.");
@@ -46,6 +53,11 @@ public class EmbeddedRabbitMq {
     rabbitMqProcess = new StartupHelper(config).call();
   }
 
+  /**
+   * Submits the command to stop RabbitMQ and blocks the current thread until the shutdown is completed.
+   *
+   * @throws ShutDownException if there's an issue shutting down the RabbitMQ server
+   */
   public void stop() throws ShutDownException {
     if (rabbitMqProcess == null) {
       throw new IllegalStateException("Stop shouldn't be called unless 'start()' was successful.");

@@ -31,6 +31,7 @@ class LoggingProcessListener extends ProcessListener {
 
   @Override
   public void afterFinish(Process process, ProcessResult result) {
+    assert executor != null;  // "beforeStart()" must be called previously
     try {
       executor.checkExitValue(result);
       logger.debug("Process finished (exit code: {}).", result.getExitValue());

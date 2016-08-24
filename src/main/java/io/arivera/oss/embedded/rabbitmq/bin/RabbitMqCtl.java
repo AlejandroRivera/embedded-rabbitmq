@@ -8,7 +8,7 @@ import java.util.concurrent.Future;
 
 /**
  * This is a wrapper around {@link RabbitMqCommand} to make it easier to execute "{@value COMMAND}" commands.
- *
+ * <p>
  * The methods contained in this class aren't exhaustive. Please refer to the manual for a complete list.
  *
  * @see <a href="https://www.rabbitmq.com/man/rabbitmqctl.1.man.html">rabbitmqctl(1) manual page</a>
@@ -23,6 +23,16 @@ public class RabbitMqCtl {
     this.config = config;
   }
 
+  /**
+   * This method exposes a way to invoke {@value COMMAND} with any arguments. This is useful when the class methods
+   * don't expose the desired functionality.
+   * <p>
+   * For example:
+   * <pre><code>
+   * RabbitMqCtl command = new RabbitMqCtl(config);
+   * command.execute("list_users");
+   * </code></pre>
+   */
   public Future<ProcessResult> execute(String... arguments) throws RabbitMqCommandException {
     return new RabbitMqCommand(config, COMMAND, arguments)
         .call()

@@ -13,6 +13,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * A helper class used to shut down a specific RabbitMQ Process and wait until it's the process is stopped.
+ */
 public class ShutdownHelper implements Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ShutdownHelper.class);
@@ -22,6 +25,9 @@ public class ShutdownHelper implements Runnable {
   private final long timeoutDuration;
   private final TimeUnit timeoutUnit;
 
+  /**
+   * Constructs a new instance that will be used to shut down the given RabbitMQ server process.
+   */
   public ShutdownHelper(EmbeddedRabbitMqConfig config, Future<ProcessResult> rabbitMqProcess) {
     this.config = config;
     this.rabbitMqProcess = rabbitMqProcess;

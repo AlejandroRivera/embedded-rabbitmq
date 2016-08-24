@@ -45,7 +45,8 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
 
   private static final String EXECUTABLE_FOLDER = "sbin";
 
-  private static final ProcessListener NULL_LISTENER = new ProcessListener() { };
+  private static final ProcessListener NULL_LISTENER = new ProcessListener() {
+  };
   private static final NullOutputStream NULL_OUTPUT_STREAM = new NullOutputStream();
 
   private static final boolean IS_WIN = SystemUtils.IS_OS_WINDOWS;
@@ -61,6 +62,30 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
   private ProcessListener eventsListener;
 
   /**
+   * Constructs a new instance this class to execute arbitrary RabbitMQ commands with arbitrary arguments.
+   *
+   * By default:
+   * <ul>
+   *   <li>
+   *     the resulting processes's output will be logged using a Logger with a name matching the command.
+   *     See {@link #logWith(Logger)} to use another Logger
+   *   </li>
+   *   <li>
+   *     the output from STDOUT will be logged as {@code INFO}
+   *   </li>
+   *   <li>
+   *     the output from STDERR will e logged as {@code ERROR}
+   *   </li>
+   *   <li>
+   *     the output can be programmatically accessed by retrieving the {@link org.zeroturnaround.exec.ProcessResult}
+   *     from the resulting {@link #call()} execution. To obtain the output as a stream as it's being produced,
+   *     see {@link #writeOutputTo(OutputStream)}.
+   *   </li>
+   *   <li>
+   *     the process' events will be ignored. See {@link #listenToEvents(ProcessListener)} to define a listener.
+   *   </li>
+   * </ul>
+   *
    * @param config    the configuration information used to launch the process with the correct context.
    * @param command   command name, without any path or extension. For example, for a command like
    *                  "{@code rabbitmq-plugins.bat list}", use "{@code rabbitmq-plugins}" as value
@@ -86,6 +111,8 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
 
   /**
    * Output from the process will be written here as it happens.
+   *
+   * @see ProcessExecutor#redirectOutputAlsoTo(OutputStream)
    */
   public RabbitMqCommand writeOutputTo(OutputStream outputStream) {
     this.outputStream = outputStream;
@@ -122,8 +149,8 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
         .directory(config.getAppFolder())
         .command(fullCommand)
         .destroyOnExit()
-        .addListener(eventsListener)                // Notifies asynchronously of process events (start/finish/stop)
         .addListener(loggingListener)               // Logs process events (like start, stop...)
+        .addListener(eventsListener)                // Notifies asynchronously of process events (start/finish/stop)
         .redirectError(loggingStream.asError())     // Logging for output made to STDERR
         .redirectOutput(loggingStream.asInfo())     // Logging for output made to STDOUT
         .redirectOutputAlsoTo(outputStream)         // Pipe output to this stream for the application to process

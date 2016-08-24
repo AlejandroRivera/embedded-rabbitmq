@@ -21,17 +21,33 @@ public class RabbitMqServer {
   private OutputStream outputStream;
   private ProcessListener listener;
 
+  /**
+   * Creates a new RabbitMqServer with NOOP settings for output capturing and event listening.
+   *
+   * @see #writeOutputTo(OutputStream)
+   * @see #listeningToEventsWith(ProcessListener)
+   */
   public RabbitMqServer(EmbeddedRabbitMqConfig config) {
     this.config = config;
     this.outputStream = new NullOutputStream();
-    this.listener = new ProcessListener(){};
+    this.listener = new NullProcessListener();
   }
 
+  /**
+   * Use this method if you wish the output of the process is streamed somewhere as it happens.
+   *
+   * @return this same instance of the class to allow for chaining calls.
+   *
+   * @see RabbitMqCommand#writeOutputTo(OutputStream)
+   */
   public RabbitMqServer writeOutputTo(OutputStream outputStream) {
     this.outputStream = outputStream;
     return this;
   }
 
+  /**
+   * Use this method to register a listener to be notified of process events, like start, stop, etc.
+   */
   public RabbitMqServer listeningToEventsWith(ProcessListener listener) {
     this.listener = listener;
     return this;
@@ -46,14 +62,10 @@ public class RabbitMqServer {
    * <p>
    * To read the output, either:
    * <ul>
-   *   <li>
-   *     wait for the returning Future to finish and use {@link ProcessResult} output getter methods, or
-   *   </li>
-   *   <li>
-   *     provide an Output Stream through {@link #}to receive it as it happens.
-   *   </li>
+   * <li> wait for the returning Future to finish and use {@link ProcessResult} output getter methods, or </li>
+   * <li> provide an Output Stream through {@link #writeOutputTo(OutputStream)} to receive it as it happens. </li>
    * </ul>
-   *
+   * <p>
    * To be notified of process events, such as the process starting or finishing, provide a
    */
   public Future<ProcessResult> start() throws RabbitMqCommandException {
@@ -75,5 +87,8 @@ public class RabbitMqServer {
         .listenToEvents(listener)
         .call()
         .getFuture();
+  }
+
+  private static class NullProcessListener extends ProcessListener {
   }
 }
