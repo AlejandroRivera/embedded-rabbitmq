@@ -1,5 +1,7 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -7,11 +9,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.ProcessResult;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class EmbeddedRabbitMqTest {
 
@@ -50,6 +55,14 @@ public class EmbeddedRabbitMqTest {
     assertThat(connection.isOpen(), equalTo(true));
     Channel channel = connection.createChannel();
     assertThat(channel.isOpen(), equalTo(true));
+
+    ProcessResult listUsersResult = new RabbitMqCtl(config)
+        .execute("list_users")
+        .get();
+
+    assertThat(listUsersResult.getExitValue(), is(0));
+    assertThat(listUsersResult.getOutput().getString(), containsString("guest"));
+
 
     Thread.sleep(1000);
 

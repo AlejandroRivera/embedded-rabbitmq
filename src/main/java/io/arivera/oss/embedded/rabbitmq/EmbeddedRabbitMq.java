@@ -2,8 +2,12 @@ package io.arivera.oss.embedded.rabbitmq;
 
 import io.arivera.oss.embedded.rabbitmq.download.DownloadException;
 import io.arivera.oss.embedded.rabbitmq.download.DownloaderFactory;
-import io.arivera.oss.embedded.rabbitmq.extract.ExtractException;
+import io.arivera.oss.embedded.rabbitmq.extract.ExtractionException;
 import io.arivera.oss.embedded.rabbitmq.extract.ExtractorFactory;
+import io.arivera.oss.embedded.rabbitmq.helpers.ShutDownException;
+import io.arivera.oss.embedded.rabbitmq.helpers.ShutdownHelper;
+import io.arivera.oss.embedded.rabbitmq.helpers.StartupException;
+import io.arivera.oss.embedded.rabbitmq.helpers.StartupHelper;
 
 import org.zeroturnaround.exec.ProcessResult;
 
@@ -19,7 +23,10 @@ public class EmbeddedRabbitMq {
     this.config = config;
   }
 
-  public void start() throws DownloadException, ExtractException, ProcessException {
+  public void start() throws DownloadException, ExtractionException, StartupException {
+    if (rabbitMqProcess != null) {
+      throw new IllegalStateException("Start shouldn't be called more than once unless stop() has been called before.");
+    }
     download();
     extract();
     run();
@@ -30,20 +37,21 @@ public class EmbeddedRabbitMq {
     downloader.run();
   }
 
-  private void extract() throws ExtractException {
+  private void extract() throws ExtractionException {
     Runnable extractor = ExtractorFactory.getNewInstance(config);
     extractor.run();
   }
 
-  private void run() throws ProcessException {
-    rabbitMqProcess = new Starter(config).call();
+  private void run() throws StartupException {
+    rabbitMqProcess = new StartupHelper(config).call();
   }
 
   public void stop() throws ShutDownException {
     if (rabbitMqProcess == null) {
       throw new IllegalStateException("Stop shouldn't be called unless 'start()' was successful.");
     }
-    new Stopper(config, rabbitMqProcess).run();
+    new ShutdownHelper(config, rabbitMqProcess).run();
+    rabbitMqProcess = null;
   }
 
 }

@@ -33,7 +33,7 @@ class Extractor implements Runnable {
     this.config = config;
   }
 
-  public void run() throws ExtractException {
+  public void run() throws ExtractionException {
     Runnable extractor = getExtractor(config);
     extractor.run();
   }
@@ -84,7 +84,7 @@ class Extractor implements Runnable {
         output = new BufferedOutputStream(new FileOutputStream(destPath));
         IOUtils.copy(archive, output);
       } catch (IOException e) {
-        throw new ExtractException("Error extracting file '" + fileName + "' ", e);
+        throw new ExtractionException("Error extracting file '" + fileName + "' ", e);
       } finally {
         IOUtils.closeQuietly(output);
       }
@@ -99,7 +99,7 @@ class Extractor implements Runnable {
     }
 
     @Override
-    public void run() throws ExtractException {
+    public void run() throws ExtractionException {
       String downloadedFile = config.getDownloadTarget().toString();
       TarArchiveInputStream archive;
       try {
@@ -107,7 +107,7 @@ class Extractor implements Runnable {
         InputStream compressedInputStream = getCompressedInputStream(downloadedFile, bufferedFileInput);
         archive = new TarArchiveInputStream(compressedInputStream);
       } catch (IOException e) {
-        throw new ExtractException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
+        throw new ExtractionException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
       }
 
       try {
@@ -130,7 +130,7 @@ class Extractor implements Runnable {
       try {
         fileToExtract = archive.getNextTarEntry();
       } catch (IOException e) {
-        throw new ExtractException("Could not extract files from file '" + config.getDownloadTarget()
+        throw new ExtractionException("Could not extract files from file '" + config.getDownloadTarget()
             + "' due to: " + e.getLocalizedMessage(), e);
       }
 
@@ -212,12 +212,12 @@ class Extractor implements Runnable {
     }
 
     @Override
-    public void run() throws ExtractException {
+    public void run() throws ExtractionException {
       ZipFile zipFile;
       try {
         zipFile = new ZipFile(config.getDownloadTarget());
       } catch (IOException e) {
-        throw new ExtractException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
+        throw new ExtractionException("Download file '" + config.getDownloadTarget() + "' was not found or is not accessible.", e);
       }
 
       try {
@@ -248,7 +248,7 @@ class Extractor implements Runnable {
             InputStream inputStream = zipFile.getInputStream(entry);
             extractFile(inputStream, outputFile, fileName);
           } catch (IOException e) {
-            throw new ExtractException("Error extracting file '" + fileName + "' "
+            throw new ExtractionException("Error extracting file '" + fileName + "' "
                 + "from downloaded file: " + config.getDownloadTarget(), e);
           }
         }

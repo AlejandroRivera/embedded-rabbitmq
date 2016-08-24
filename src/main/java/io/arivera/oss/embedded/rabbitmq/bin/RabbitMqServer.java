@@ -4,8 +4,8 @@ import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.zeroturnaround.exec.ProcessResult;
+import org.zeroturnaround.exec.listener.ProcessListener;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.Future;
 
@@ -14,18 +14,27 @@ import java.util.concurrent.Future;
  */
 public class RabbitMqServer {
 
-  public static final String COMMAND = "rabbitmq-server";
+  private static final String COMMAND = "rabbitmq-server";
 
   private final EmbeddedRabbitMqConfig config;
-  private final OutputStream outputStream;
+
+  private OutputStream outputStream;
+  private ProcessListener listener;
 
   public RabbitMqServer(EmbeddedRabbitMqConfig config) {
-    this(config, new NullOutputStream());
+    this.config = config;
+    this.outputStream = new NullOutputStream();
+    this.listener = new ProcessListener(){};
   }
 
-  public RabbitMqServer(EmbeddedRabbitMqConfig config, OutputStream outputStream) {
-    this.config = config;
+  public RabbitMqServer writeOutputTo(OutputStream outputStream) {
     this.outputStream = outputStream;
+    return this;
+  }
+
+  public RabbitMqServer listeningToEventsWith(ProcessListener listener) {
+    this.listener = listener;
+    return this;
   }
 
   /**
@@ -38,15 +47,16 @@ public class RabbitMqServer {
    * To read the output, either:
    * <ul>
    *   <li>
-   *     wait for the Future to finish and use {@link ProcessResult} output methods, or
+   *     wait for the returning Future to finish and use {@link ProcessResult} output getter methods, or
    *   </li>
    *   <li>
-   *     provide an Output Stream through the {@link RabbitMqServer#RabbitMqServer(EmbeddedRabbitMqConfig, OutputStream) constructor}
-   *     to receive it as it happens.
+   *     provide an Output Stream through {@link #}to receive it as it happens.
    *   </li>
    * </ul>
+   *
+   * To be notified of process events, such as the process starting or finishing, provide a
    */
-  public Future<ProcessResult> start() throws IOException {
+  public Future<ProcessResult> start() throws RabbitMqCommandException {
     return execute();
   }
 
@@ -55,15 +65,15 @@ public class RabbitMqServer {
    * <p>
    * This means the process will exit immediately and no PID file will be written to file.
    */
-  public Future<ProcessResult> startDetached() throws IOException {
+  public Future<ProcessResult> startDetached() throws RabbitMqCommandException {
     return execute("-detached");
   }
 
-  public Future<ProcessResult> execute(String... arguments) throws IOException {
-    return new RabbitMqCommandExecutor(config, COMMAND, arguments)
-        .captureOutput(outputStream)
+  private Future<ProcessResult> execute(String... arguments) throws RabbitMqCommandException {
+    return new RabbitMqCommand(config, COMMAND, arguments)
+        .writeOutputTo(outputStream)
+        .listenToEvents(listener)
         .call()
         .getFuture();
   }
-
 }

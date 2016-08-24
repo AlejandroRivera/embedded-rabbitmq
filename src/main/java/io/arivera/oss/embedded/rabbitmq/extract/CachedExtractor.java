@@ -21,7 +21,7 @@ class CachedExtractor implements Runnable {
   public void run() {
     try {
       extractor.run();
-    } catch (ExtractException e) {
+    } catch (ExtractionException e) {
       if (config.shouldDeleteCachedFileOnErrors()) {
         boolean deleted = config.getDownloadTarget().delete();
         if (deleted) {
