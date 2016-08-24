@@ -36,7 +36,7 @@ public class StartupHelper implements Callable<Future<ProcessResult>> {
    *
    * @return an unfinished future representing the eventual result of the {@code rabbitmq-server} process running in "foreground".
    * @throws StartupException if anything fails while attempting to start and confirm successful initialization.
-   * @see {@link ShutdownHelper} to safely shutdown the process
+   * @see ShutdownHelper
    */
   @Override
   public Future<ProcessResult> call() throws StartupException {

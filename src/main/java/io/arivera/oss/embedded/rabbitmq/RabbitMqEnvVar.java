@@ -33,7 +33,11 @@ public enum RabbitMqEnvVar {
    *
    * <p>To run multiple nodes, see the clustering guide.</p>
    *
-   * <p>Default: {@code Unix*: rabbit@$HOSTNAME}, Windows: {@coderabbit@%COMPUTERNAME%}</p>
+   * <p>Default:
+   * <ul>
+   *   <li>Unix: {@literal rabbit@$HOSTNAME}</li>
+   *   <li>Widnows: {@literal rabbit@%COMPUTERNAME%</li>
+   * </ul>
    */
   NODENAME,
 

@@ -10,7 +10,7 @@ import java.io.OutputStream;
 import java.util.concurrent.Future;
 
 /**
- * A wrapper for the command "<code>{@value #COMMAND}</code>", used for starting the RabbitMQ broker.
+ * A wrapper for the command "<code>{@value RabbitMqServer#COMMAND}</code>", used for starting the RabbitMQ broker.
  */
 public class RabbitMqServer {
 
