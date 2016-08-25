@@ -7,8 +7,8 @@ public class DownloaderFactory {
   /**
    * @return an appropriate instance depending on the given configuration.
    */
-  public static Runnable getNewInstance(EmbeddedRabbitMqConfig config) {
-    Runnable downloader = new Downloader(config);
+  public static Downloader getNewInstance(EmbeddedRabbitMqConfig config) {
+    Downloader downloader = new BasicDownloader(config);
     if (config.shouldCachedDownload()) {
       downloader = new CachedDownloader(downloader, config);
     }

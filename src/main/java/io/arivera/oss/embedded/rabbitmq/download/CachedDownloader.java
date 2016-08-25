@@ -7,15 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-class CachedDownloader implements Runnable {
+class CachedDownloader extends Downloader.Decorator {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CachedDownloader.class);
 
-  private final Runnable downloader;
   private final EmbeddedRabbitMqConfig config;
 
-  CachedDownloader(Runnable downloader, EmbeddedRabbitMqConfig config) {
-    this.downloader = downloader;
+  CachedDownloader(Downloader downloader, EmbeddedRabbitMqConfig config) {
+    super(downloader);
     this.config = config;
   }
 
@@ -35,7 +34,7 @@ class CachedDownloader implements Runnable {
 
   private void download() {
     try {
-      downloader.run();
+      innerDownloader.run();
     } catch (DownloadException e) {
       if (config.shouldDeleteCachedFileOnErrors()) {
         if (config.getDownloadTarget().exists()) {

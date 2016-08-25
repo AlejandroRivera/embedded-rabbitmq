@@ -1,6 +1,7 @@
 package io.arivera.oss.embedded.rabbitmq;
 
 import io.arivera.oss.embedded.rabbitmq.download.DownloadException;
+import io.arivera.oss.embedded.rabbitmq.download.Downloader;
 import io.arivera.oss.embedded.rabbitmq.download.DownloaderFactory;
 import io.arivera.oss.embedded.rabbitmq.extract.ExtractionException;
 import io.arivera.oss.embedded.rabbitmq.extract.ExtractorFactory;
@@ -40,7 +41,7 @@ public class EmbeddedRabbitMq {
   }
 
   private void download() throws DownloadException {
-    Runnable downloader = DownloaderFactory.getNewInstance(config);
+    Downloader downloader = DownloaderFactory.getNewInstance(config);
     downloader.run();
   }
 
