@@ -4,6 +4,7 @@ import io.arivera.oss.embedded.rabbitmq.download.DownloadException;
 import io.arivera.oss.embedded.rabbitmq.download.Downloader;
 import io.arivera.oss.embedded.rabbitmq.download.DownloaderFactory;
 import io.arivera.oss.embedded.rabbitmq.extract.ExtractionException;
+import io.arivera.oss.embedded.rabbitmq.extract.Extractor;
 import io.arivera.oss.embedded.rabbitmq.extract.ExtractorFactory;
 import io.arivera.oss.embedded.rabbitmq.helpers.ShutDownException;
 import io.arivera.oss.embedded.rabbitmq.helpers.ShutdownHelper;
@@ -46,7 +47,7 @@ public class EmbeddedRabbitMq {
   }
 
   private void extract() throws ExtractionException {
-    Runnable extractor = ExtractorFactory.getNewInstance(config);
+    Extractor extractor = ExtractorFactory.getNewInstance(config);
     extractor.run();
   }
 

@@ -7,8 +7,8 @@ public class ExtractorFactory {
   /**
    * Returns an Extractor instance appropriate based on the given configuration.
    */
-  public static Runnable getNewInstance(EmbeddedRabbitMqConfig config) {
-    Runnable extractor = new Extractor(config);
+  public static Extractor getNewInstance(EmbeddedRabbitMqConfig config) {
+    Extractor extractor = new BasicExtractor(config);
     if (config.shouldCachedDownload()) {
       extractor = new CachedExtractor(extractor, config);
     }
