@@ -8,7 +8,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-class DefaultPathProvider implements PathsProvider {
+public class DefaultPathProvider implements PathsProvider {
 
   private static final String URL_PATTERN = "http://www.rabbitmq.com/releases/rabbitmq-server/v%s/rabbitmq-server-%s-%s.%s";
   private static final String EXTRACTION_PATH = "rabbitmq_server-%s";
