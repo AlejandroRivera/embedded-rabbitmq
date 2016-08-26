@@ -42,7 +42,7 @@ public class EmbeddedRabbitMq {
   }
 
   private void download() throws DownloadException {
-    Downloader downloader = DownloaderFactory.getNewInstance(config);
+    Downloader downloader = new DownloaderFactory(config).getNewInstance();
     downloader.run();
   }
 
