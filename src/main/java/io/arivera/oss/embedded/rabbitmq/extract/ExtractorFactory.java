@@ -4,10 +4,16 @@ import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 
 public class ExtractorFactory {
 
+  private EmbeddedRabbitMqConfig config;
+
+  public ExtractorFactory(EmbeddedRabbitMqConfig config) {
+    this.config = config;
+  }
+
   /**
    * Returns an Extractor instance appropriate based on the given configuration.
    */
-  public static Extractor getNewInstance(EmbeddedRabbitMqConfig config) {
+  public Extractor getNewInstance() {
     Extractor extractor = new BasicExtractor(config);
     if (config.shouldCachedDownload()) {
       extractor = new CachedExtractor(extractor, config);

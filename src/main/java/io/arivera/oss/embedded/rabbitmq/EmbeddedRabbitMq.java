@@ -47,7 +47,7 @@ public class EmbeddedRabbitMq {
   }
 
   private void extract() throws ExtractionException {
-    Extractor extractor = ExtractorFactory.getNewInstance(config);
+    Extractor extractor = new ExtractorFactory(config).getNewInstance();
     extractor.run();
   }
 
