@@ -1,6 +1,5 @@
 package io.arivera.oss.embedded.rabbitmq;
 
-import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 
@@ -172,29 +171,9 @@ public class EmbeddedRabbitMqConfig {
      * @see #version(Version)
      */
     public Builder downloadFrom(final URL downloadSource, final String appFolderName) {
-      this.artifactRepository = new ArtifactRepository() {
-        @Override
-        public URL getUrl(Version version, OperatingSystem operatingSystem) {
-          return downloadSource;
-        }
-      };
+      this.artifactRepository = new CustomArtifactRepository(downloadSource);
 
-      this.version = new Version() {
-        @Override
-        public String getVersionAsString() {
-          throw new RuntimeException("This value isn't needed for custom downloads.");
-        }
-
-        @Override
-        public ArchiveType getArchiveType(OperatingSystem operatingSystem) {
-          throw new RuntimeException("This value isn't needed for custom downloads.");
-        }
-
-        @Override
-        public String getExtractionFolder() {
-          return appFolderName;
-        }
-      };
+      this.version = new CustomVersion(appFolderName);
       return this;
     }
 
@@ -350,5 +329,7 @@ public class EmbeddedRabbitMqConfig {
           cacheDownload, deleteCachedFile,
           envVars);
     }
+
   }
+
 }
