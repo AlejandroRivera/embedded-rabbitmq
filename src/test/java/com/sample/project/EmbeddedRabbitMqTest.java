@@ -16,6 +16,8 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessResult;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -33,11 +35,17 @@ public class EmbeddedRabbitMqTest {
 
   @Test
   public void start() throws Exception {
+    File configFile = temporaryFolder.newFile("rabbitmq.config");
+    FileOutputStream fileOutputStream = new FileOutputStream(configFile);
+    fileOutputStream.write(String.format("[{rabbit, [{tcp_listeners, [%d]}]}].", PORT).getBytes("utf-8"));
+    fileOutputStream.close();
+
     EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
         .version(PredefinedVersion.V3_5_7)
         .downloadFrom(OfficialArtifactRepository.RABBITMQ)
 //        .downloadFrom(new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_6_milestone1/rabbitmq-server-mac-standalone-3.6.5.901.tar.xz"), "rabbitmq_server-3.6.5.901")
-        .envVar(RabbitMqEnvVar.NODE_PORT, String.valueOf(PORT))
+//        .envVar(RabbitMqEnvVar.NODE_PORT, String.valueOf(PORT))
+        .envVar(RabbitMqEnvVar.CONFIG_FILE, configFile.toString().replace(".config", ""))
         .extractionFolder(temporaryFolder.newFolder("extracted"))
         .rabbitMqServerInitializationTimeoutInMillis(TimeUnit.SECONDS.toMillis(5))
 //        .useCachedDownload(false)

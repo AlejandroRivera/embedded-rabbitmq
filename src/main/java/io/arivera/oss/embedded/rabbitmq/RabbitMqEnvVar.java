@@ -122,7 +122,14 @@ public enum RabbitMqEnvVar {
    *
    * <p>Default: None</p>
    */
-  SERVER_START_ARGS;
+  SERVER_START_ARGS,
+
+  /**
+   * Defines the location of the RabbitMQ core configuration file.
+   *
+   * <p>The value should not contain the suffix {@code .config} since Erlang will append it automatically.</p>
+   */
+  CONFIG_FILE;
 
   private static final String ENV_VAR_PREFIX = "RABBITMQ_";
 
