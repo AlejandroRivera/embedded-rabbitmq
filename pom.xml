@@ -156,7 +156,7 @@
                             <element>BUNDLE</element>
                             <limits>
                                 <limit><counter>INSTRUCTION</counter><value>COVEREDRATIO</value><minimum>0.50</minimum></limit>
-                                <limit><counter>CLASS</counter><value>MISSEDCOUNT</value><maximum>10</maximum></limit>
+                                <limit><counter>CLASS</counter><value>MISSEDCOUNT</value><maximum>15</maximum></limit>
                                 <limit><counter>BRANCH</counter><value>COVEREDRATIO</value><minimum>0.20</minimum></limit>
                             </limits>
                         </rule>
