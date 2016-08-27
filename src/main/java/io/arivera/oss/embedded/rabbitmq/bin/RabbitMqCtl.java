@@ -87,7 +87,7 @@ public class RabbitMqCtl {
    * <p>
    * For reset and force_reset to succeed the RabbitMQ application must have been stopped, e.g. with {@link #stopApp()}
    */
-  public Future<ProcessResult> forceRset() throws RabbitMqCommandException {
+  public Future<ProcessResult> forceReset() throws RabbitMqCommandException {
     return execute("force_reset");
   }
 
