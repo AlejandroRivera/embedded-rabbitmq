@@ -94,7 +94,7 @@ public class RabbitMqCommandTest {
 
     when(factory.createInstance()).thenReturn(processExecutor);
 
-    String appFolder = this.version.getPathsProvider().getExtractionSubFolder();
+    String appFolder = version.getExtractionFolder();
     File executableFilesFolder = tempFolder.newFolder(appFolder, RabbitMqCommand.EXECUTABLE_FOLDER);
     executableFile = new File(executableFilesFolder, command + RabbitMqCommand.getCommandExtension());
     assertTrue("Fake executable file couldn't be created!", executableFile.createNewFile());

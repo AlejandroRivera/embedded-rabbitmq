@@ -1,5 +1,6 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 
@@ -101,15 +102,14 @@ public class EmbeddedRabbitMqConfig {
     private long downloadConnectionTimeoutInMillis;
     private long defaultRabbitMqCtlTimeoutInMillis;
     private long rabbitMqServerInitializationTimeoutInMillis;
-    private URL downloadSource;
     private File downloadFolder;
     private File downloadTarget;
     private File extractionFolder;
     private boolean cacheDownload;
     private boolean deleteCachedFile;
-    private PredefinedVersion version;
-    private String appFolder;
+    private Version version;
     private Map<String, String> envVars;
+    private ArtifactRepository artifactRepository;
 
     /**
      * Creates a new instance of the Configuration Builder.
@@ -124,6 +124,7 @@ public class EmbeddedRabbitMqConfig {
       this.cacheDownload = true;
       this.deleteCachedFile = true;
       this.downloadFolder = new File(System.getProperty("user.home"), DOWNLOAD_FOLDER);
+      this.artifactRepository = OfficialArtifactRepository.RABBITMQ;
       this.envVars = new HashMap<>();
     }
 
@@ -148,19 +149,52 @@ public class EmbeddedRabbitMqConfig {
     }
 
     /**
-     * @param downloadSource the URL from which to download the OS-specific artifact. For example: {@code
-     *                       https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz}
-     * @param version        this number will be used to deduce the folder name under which the files will be extracted.
-     *                       For example, {code rabbitmq-server-generic-unix-3.6.5.tar.xz} extracts the binary {@code
-     *                       rabbitmq-server} file to {@code rabbitmq_server-3.6.5/sbin/rabbitmq-server}, then the value
-     *                       here should be {@code 3.6.5}
+     * Defines where the artifact should be downloaded from and characteristics of the downloaded artifact.
+     * <p>
+     * Default is {@link OfficialArtifactRepository#RABBITMQ}
+     *
+     * @see OfficialArtifactRepository
      */
-    public Builder downloadSource(URL downloadSource, String version) {
-      if (this.version != null) {
-        throw new IllegalStateException("Pre-defined Version has already been set.");
-      }
-      this.downloadSource = downloadSource;
-      this.appFolder = "rabbitmq_server-" + version;
+    public Builder downloadFrom(ArtifactRepository repository) {
+      this.artifactRepository = repository;
+      return this;
+    }
+
+    /**
+     * @param downloadSource the URL from which to download the OS-specific artifact.
+     *                       For example: {@code https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz}
+     *
+     * @param appFolderName  this is the name of the folder under which all application files are found.
+     *                       For example, {@code rabbitmq-server-generic-unix-3.6.5.tar.xz} extracts everything into
+     *                       to {@code rabbitmq_server-3.6.5/*}. Therefore, the value here should be
+     *                       {@code "rabbitmq_server-3.6.5"}
+     *
+     * @see #version(Version)
+     */
+    public Builder downloadFrom(final URL downloadSource, final String appFolderName) {
+      this.artifactRepository = new ArtifactRepository() {
+        @Override
+        public URL getUrl(Version version, OperatingSystem operatingSystem) {
+          return downloadSource;
+        }
+      };
+
+      this.version = new Version() {
+        @Override
+        public String getVersionAsString() {
+          throw new RuntimeException("This value isn't needed for custom downloads.");
+        }
+
+        @Override
+        public ArchiveType getArchiveType(OperatingSystem operatingSystem) {
+          throw new RuntimeException("This value isn't needed for custom downloads.");
+        }
+
+        @Override
+        public String getExtractionFolder() {
+          return appFolderName;
+        }
+      };
       return this;
     }
 
@@ -172,11 +206,10 @@ public class EmbeddedRabbitMqConfig {
      * folder.
      * <p>
      * Default value if none is specified: {@link PredefinedVersion#LATEST}
+     *
+     * @see #downloadFrom(URL, String)
      */
-    public Builder version(PredefinedVersion version) {
-      if (this.downloadSource != null || this.appFolder != null) {
-        throw new IllegalStateException("Download source has been set manually.");
-      }
+    public Builder version(Version version) {
       this.version = version;
       return this;
     }
@@ -286,13 +319,17 @@ public class EmbeddedRabbitMqConfig {
      * Builds an immutable instance of {@link EmbeddedRabbitMqConfig} using smart defaults.
      */
     public EmbeddedRabbitMqConfig build() {
-      if (downloadSource == null) {
-        if (version == null) {
-          version = PredefinedVersion.LATEST;
-        }
-        downloadSource = version.getPathsProvider().getDownloadUrl(OperatingSystem.detect());
-        appFolder = version.getPathsProvider().getExtractionSubFolder();
+      if (artifactRepository == null) {
+        artifactRepository = OfficialArtifactRepository.RABBITMQ;
       }
+
+      OperatingSystem os = OperatingSystem.detect();
+
+      if (version == null) {
+        version = PredefinedVersion.LATEST;
+      }
+
+      URL downloadSource = artifactRepository.getUrl(version, os);
 
       if (downloadTarget == null) {
         String filename = downloadSource.getPath().substring(downloadSource.getPath().lastIndexOf("/"));
@@ -303,7 +340,7 @@ public class EmbeddedRabbitMqConfig {
         this.extractionFolder = new File(SystemUtils.JAVA_IO_TMPDIR);
       }
 
-      File appAbsPath = new File(extractionFolder.toString(), appFolder);
+      File appAbsPath = new File(extractionFolder.toString(), version.getExtractionFolder());
 
       return new EmbeddedRabbitMqConfig(
           downloadSource, downloadTarget, extractionFolder, appAbsPath,

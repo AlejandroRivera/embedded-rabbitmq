@@ -1,5 +1,10 @@
-package io.arivera.oss.embedded.rabbitmq;
+package com.sample.project;
 
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMq;
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
+import io.arivera.oss.embedded.rabbitmq.OfficialArtifactRepository;
+import io.arivera.oss.embedded.rabbitmq.PredefinedVersion;
+import io.arivera.oss.embedded.rabbitmq.RabbitMqEnvVar;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
 
 import com.rabbitmq.client.Channel;
@@ -29,11 +34,9 @@ public class EmbeddedRabbitMqTest {
   @Test
   public void start() throws Exception {
     EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
-//        .downloadFolder(new File(System.getProperty("user.home"), ".embeddedrabbitmq"))
-//        .downloadTarget(new File("/tmp/rabbitmq.tar.xz"))
-//        .downloadSource(
-//            new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz"), "3.6.5")
         .version(PredefinedVersion.V3_5_7)
+        .downloadFrom(OfficialArtifactRepository.RABBITMQ)
+//        .downloadFrom(new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_6_milestone1/rabbitmq-server-mac-standalone-3.6.5.901.tar.xz"), "rabbitmq_server-3.6.5.901")
         .envVar(RabbitMqEnvVar.NODE_PORT, String.valueOf(PORT))
         .extractionFolder(temporaryFolder.newFolder("extracted"))
         .rabbitMqServerInitializationTimeoutInMillis(TimeUnit.SECONDS.toMillis(5))
