@@ -1,4 +1,11 @@
-package io.arivera.oss.embedded.rabbitmq;
+package com.sample.project;
+
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMq;
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
+import io.arivera.oss.embedded.rabbitmq.OfficialArtifactRepository;
+import io.arivera.oss.embedded.rabbitmq.PredefinedVersion;
+import io.arivera.oss.embedded.rabbitmq.RabbitMqEnvVar;
+import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -7,13 +14,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.ProcessResult;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class EmbeddedRabbitMqTest {
 
@@ -31,11 +41,9 @@ public class EmbeddedRabbitMqTest {
     fileOutputStream.close();
 
     EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
-//        .downloadFolder(new File(System.getProperty("user.home"), ".embeddedrabbitmq"))
-//        .downloadTarget(new File("/tmp/rabbitmq.tar.xz"))
-//        .downloadSource(
-//            new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz"), "3.6.5")
         .version(PredefinedVersion.V3_5_7)
+        .downloadFrom(OfficialArtifactRepository.RABBITMQ)
+//        .downloadFrom(new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_6_milestone1/rabbitmq-server-mac-standalone-3.6.5.901.tar.xz"), "rabbitmq_server-3.6.5.901")
 //        .envVar(RabbitMqEnvVar.NODE_PORT, String.valueOf(PORT))
         .envVar(RabbitMqEnvVar.CONFIG_FILE, configFile.toString().replace(".config", ""))
         .extractionFolder(temporaryFolder.newFolder("extracted"))
@@ -58,6 +66,14 @@ public class EmbeddedRabbitMqTest {
     assertThat(connection.isOpen(), equalTo(true));
     Channel channel = connection.createChannel();
     assertThat(channel.isOpen(), equalTo(true));
+
+    ProcessResult listUsersResult = new RabbitMqCtl(config)
+        .execute("list_users")
+        .get();
+
+    assertThat(listUsersResult.getExitValue(), is(0));
+    assertThat(listUsersResult.getOutput().getString(), containsString("guest"));
+
 
     Thread.sleep(1000);
 

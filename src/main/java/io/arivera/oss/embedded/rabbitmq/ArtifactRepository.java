@@ -4,9 +4,8 @@ import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 
 import java.net.URL;
 
-public interface PathsProvider {
+public interface ArtifactRepository {
 
-  URL getDownloadUrl(OperatingSystem operatingSystem);
+  URL getUrl(Version version, OperatingSystem operatingSystem);
 
-  String getExtractionSubFolder();
 }

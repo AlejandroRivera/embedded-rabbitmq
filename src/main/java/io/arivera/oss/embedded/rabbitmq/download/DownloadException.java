@@ -1,4 +1,4 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.download;
 
 public class DownloadException extends RuntimeException {
 

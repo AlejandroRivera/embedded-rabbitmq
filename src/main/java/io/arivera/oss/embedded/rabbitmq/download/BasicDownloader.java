@@ -1,5 +1,6 @@
-package io.arivera.oss.embedded.rabbitmq;
+package io.arivera.oss.embedded.rabbitmq.download;
 
+import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.util.FileUtils;
 import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
 
@@ -11,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-class Downloader implements Runnable {
+class BasicDownloader implements Runnable, Downloader {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Downloader.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BasicDownloader.class);
   
   private final EmbeddedRabbitMqConfig config;
 
-  Downloader(EmbeddedRabbitMqConfig config) {
+  BasicDownloader(EmbeddedRabbitMqConfig config) {
     this.config = config;
   }
 

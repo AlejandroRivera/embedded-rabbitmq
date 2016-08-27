@@ -1,54 +1,66 @@
 package io.arivera.oss.embedded.rabbitmq;
 
 import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
+import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 
 public enum PredefinedVersion implements Version {
 
-  LATEST("3.6.5", ArchiveType.TAR_XZ),
+  V3_6_5(ArchiveType.TAR_XZ, ArchiveType.ZIP),
+  V3_6_4(ArchiveType.TAR_XZ, ArchiveType.ZIP),
+  V3_6_3(ArchiveType.TAR_XZ, ArchiveType.ZIP),
+  V3_6_2(ArchiveType.TAR_XZ, ArchiveType.ZIP),
+  V3_6_1(ArchiveType.TAR_XZ, ArchiveType.ZIP),
+  V3_6_0(ArchiveType.TAR_XZ, ArchiveType.ZIP),
 
-  V3_6_5(ArchiveType.TAR_XZ),
-  V3_6_4(ArchiveType.TAR_XZ),
-  V3_6_3(ArchiveType.TAR_XZ),
-  V3_6_2(ArchiveType.TAR_XZ),
-  V3_6_1(ArchiveType.TAR_XZ),
-  V3_6_0(ArchiveType.TAR_XZ),
+  V3_5_7(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_5_6(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_5_5(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_5_4(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_5_3(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_5_2(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_5_1(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_5_0(ArchiveType.TAR_GZ, ArchiveType.ZIP),
 
-  V3_5_7(ArchiveType.TAR_GZ),
-  V3_5_6(ArchiveType.TAR_GZ),
-  V3_5_5(ArchiveType.TAR_GZ),
-  V3_5_4(ArchiveType.TAR_GZ),
-  V3_5_3(ArchiveType.TAR_GZ),
-  V3_5_2(ArchiveType.TAR_GZ),
-  V3_5_1(ArchiveType.TAR_GZ),
-  V3_5_0(ArchiveType.TAR_GZ),
+  V3_4_4(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_4_3(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_4_2(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_4_1(ArchiveType.TAR_GZ, ArchiveType.ZIP),
+  V3_4_0(ArchiveType.TAR_GZ, ArchiveType.ZIP),
 
-  V3_4_4(ArchiveType.TAR_GZ),
-  V3_4_3(ArchiveType.TAR_GZ),
-  V3_4_2(ArchiveType.TAR_GZ),
-  V3_4_1(ArchiveType.TAR_GZ),
-  V3_4_0(ArchiveType.TAR_GZ),
-
+  LATEST(V3_6_5, ArchiveType.TAR_XZ, ArchiveType.ZIP),
   ;
 
-  private final String version;
-  private final ArchiveType unixArchiveType;
-  private final ArchiveType windowsArchiveType;
+  private static final String EXTRACTION_FOLDER = "rabbitmq_server-%s";
 
-  PredefinedVersion(ArchiveType unixArchiveType) {
+  final String version;
+  final ArchiveType unixArchiveType;
+  final ArchiveType windowsArchiveType;
+
+  PredefinedVersion(ArchiveType unixArchiveType, ArchiveType windowsArchiveType) {
     this.version = name().replaceAll("V", "").replaceAll("_", ".");
     this.unixArchiveType = unixArchiveType;
-    this.windowsArchiveType = ArchiveType.ZIP;
+    this.windowsArchiveType = windowsArchiveType;
   }
 
-  PredefinedVersion(String version, ArchiveType unixArchiveType) {
-    this.version = version;
+  PredefinedVersion(PredefinedVersion version, ArchiveType unixArchiveType, ArchiveType windowsArchiveType) {
+    this.version = version.getVersionAsString();
     this.unixArchiveType = unixArchiveType;
-    this.windowsArchiveType = ArchiveType.ZIP;
+    this.windowsArchiveType = windowsArchiveType;
   }
 
   @Override
-  public DefaultPathProvider getPathsProvider() {
-    return new DefaultPathProvider(version, unixArchiveType, windowsArchiveType);
+  public String getVersionAsString() {
+    return version;
+  }
+
+  @Override
+  public ArchiveType getArchiveType(OperatingSystem operatingSystem) {
+    return operatingSystem == OperatingSystem.WINDOWS ? windowsArchiveType : unixArchiveType;
+  }
+
+  @Override
+  public String getExtractionFolder() {
+    return String.format(EXTRACTION_FOLDER, this.getVersionAsString());
   }
 
 }

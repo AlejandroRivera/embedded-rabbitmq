@@ -1,48 +1,71 @@
 package io.arivera.oss.embedded.rabbitmq;
 
-import org.zeroturnaround.exec.StartedProcess;
+import io.arivera.oss.embedded.rabbitmq.download.DownloadException;
+import io.arivera.oss.embedded.rabbitmq.download.Downloader;
+import io.arivera.oss.embedded.rabbitmq.download.DownloaderFactory;
+import io.arivera.oss.embedded.rabbitmq.extract.ExtractionException;
+import io.arivera.oss.embedded.rabbitmq.extract.Extractor;
+import io.arivera.oss.embedded.rabbitmq.extract.ExtractorFactory;
+import io.arivera.oss.embedded.rabbitmq.helpers.ShutDownException;
+import io.arivera.oss.embedded.rabbitmq.helpers.ShutdownHelper;
+import io.arivera.oss.embedded.rabbitmq.helpers.StartupException;
+import io.arivera.oss.embedded.rabbitmq.helpers.StartupHelper;
+
+import org.zeroturnaround.exec.ProcessResult;
+
+import java.util.concurrent.Future;
 
 
 public class EmbeddedRabbitMq {
 
   private EmbeddedRabbitMqConfig config;
-  private StartedProcess rabbitMqProcess;
+  private Future<ProcessResult> rabbitMqProcess;
 
   public EmbeddedRabbitMq(EmbeddedRabbitMqConfig config) {
     this.config = config;
   }
 
-  public void start() throws DownloadException, ProcessException {
+  /**
+   * Starts the RabbitMQ server process and blocks the current thread until the initialization is completed.
+   *
+   * @throws DownloadException when there's an issue downloading the appropriate artifact
+   * @throws ExtractionException when there's an issue extracting the files from the downloaded artifact
+   * @throws StartupException when there's an issue starting the RabbitMQ server
+   */
+  public void start() throws DownloadException, ExtractionException, StartupException {
+    if (rabbitMqProcess != null) {
+      throw new IllegalStateException("Start shouldn't be called more than once unless stop() has been called before.");
+    }
     download();
     extract();
     run();
   }
 
   private void download() throws DownloadException {
-    Runnable downloader = new Downloader(config);
-    if (config.shouldCachedDownload()) {
-      downloader = new CachedDownloader(downloader, config);
-    }
+    Downloader downloader = new DownloaderFactory(config).getNewInstance();
     downloader.run();
   }
 
-  private void extract() throws DownloadException {
-    Runnable extractor = new Extractor(config);
-    if (config.shouldCachedDownload()) {
-      extractor = new CachedExtractor(extractor, config);
-    }
+  private void extract() throws ExtractionException {
+    Extractor extractor = new ExtractorFactory(config).getNewInstance();
     extractor.run();
   }
 
-  private void run() throws ProcessException {
-    rabbitMqProcess = new Starter(config).call();
+  private void run() throws StartupException {
+    rabbitMqProcess = new StartupHelper(config).call();
   }
 
+  /**
+   * Submits the command to stop RabbitMQ and blocks the current thread until the shutdown is completed.
+   *
+   * @throws ShutDownException if there's an issue shutting down the RabbitMQ server
+   */
   public void stop() throws ShutDownException {
     if (rabbitMqProcess == null) {
       throw new IllegalStateException("Stop shouldn't be called unless 'start()' was successful.");
     }
-    new Stopper(config, rabbitMqProcess).run();
+    new ShutdownHelper(config, rabbitMqProcess).run();
+    rabbitMqProcess = null;
   }
 
 }

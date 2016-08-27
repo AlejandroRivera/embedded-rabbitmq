@@ -54,7 +54,7 @@ EmbeddedRabbitMq rabbitMq = new EmbeddedRabbitMq(config);
 rabbitMq.start();
 ```
 
-When `start()` is invoked, the Embedded-RabbitMQ library will download the official artifact from RabbitMQ.com that best matches 
+When `start()` is invoked, the Embedded-RabbitMQ library will download the latest release from RabbitMQ.com that best matches 
 your Operating System. The artifact will be decompressed into a temporary folder, and a new OS process will launch the RabbitMQ broker.
 
 Read more about [how to customize](#Customization) your RabbitMQ broker.
@@ -103,11 +103,16 @@ configBuilder.version(PredefinedVersion.V3_6_5)
 ```
 
 By using the `version()` method, the download URL, executable paths, etc. will be pre-set for Unix/Mac/Windows Operating Systems.
+You can change the download source from the official `rabbitmq.com` servers and Github by using the `downloadFrom()` method:
 
-If you wish to use your own:
 ```java
-String url = "https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz"
-configBuilder.downloadSource(new URL(url), "3.6.5")
+configBuilder.downloadFrom(OfficialArtifactRepository.GITHUB)
+```
+
+Similarly, if you wish to download another version and/or use another server:
+```java
+String url = "https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_6_milestone1/rabbitmq-server-mac-standalone-3.6.5.901.tar.xz";
+configBuilder.downloadFrom(new URL(url), "rabbitmq_server-3.6.5.901")
 ```
 
 ### Downloaded files:

@@ -96,20 +96,25 @@ public class EmbeddedRabbitMqConfig {
 
   public static class Builder {
 
+    public static final String DOWNLOAD_FOLDER = ".embeddedrabbitmq";
     private long downloadReadTimeoutInMillis;
     private long downloadConnectionTimeoutInMillis;
     private long defaultRabbitMqCtlTimeoutInMillis;
     private long rabbitMqServerInitializationTimeoutInMillis;
-    private URL downloadSource;
     private File downloadFolder;
     private File downloadTarget;
     private File extractionFolder;
     private boolean cacheDownload;
     private boolean deleteCachedFile;
-    private PredefinedVersion version;
-    private String appFolder;
+    private Version version;
     private Map<String, String> envVars;
+    private ArtifactRepository artifactRepository;
 
+    /**
+     * Creates a new instance of the Configuration Builder.
+     * <p>
+     * This class uses the Builder pattern where you can chain several methods and invoke {@link #build()} at the end.
+     */
     public Builder() {
       this.downloadConnectionTimeoutInMillis = TimeUnit.SECONDS.toMillis(2);
       this.downloadReadTimeoutInMillis = TimeUnit.SECONDS.toMillis(3);
@@ -117,7 +122,8 @@ public class EmbeddedRabbitMqConfig {
       this.rabbitMqServerInitializationTimeoutInMillis = TimeUnit.SECONDS.toMillis(3);
       this.cacheDownload = true;
       this.deleteCachedFile = true;
-      this.downloadFolder = new File(System.getProperty("user.home"), ".embeddedrabbitmq");
+      this.downloadFolder = new File(System.getProperty("user.home"), DOWNLOAD_FOLDER);
+      this.artifactRepository = OfficialArtifactRepository.RABBITMQ;
       this.envVars = new HashMap<>();
     }
 
@@ -141,23 +147,62 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
-    public Builder downloadSource(URL downloadSource, String version) {
-      if (this.version != null) {
-        throw new IllegalStateException("Pre-defined Version has already been set.");
-      }
-      this.downloadSource = downloadSource;
-      this.appFolder = "rabbitmq_server-" + version;
+    /**
+     * Defines where the artifact should be downloaded from and characteristics of the downloaded artifact.
+     * <p>
+     * Default is {@link OfficialArtifactRepository#RABBITMQ}
+     *
+     * @see OfficialArtifactRepository
+     */
+    public Builder downloadFrom(ArtifactRepository repository) {
+      this.artifactRepository = repository;
       return this;
     }
 
-    public Builder version(PredefinedVersion version) {
-      if (this.downloadSource != null || this.appFolder != null) {
-        throw new IllegalStateException("Download source has been set manually.");
-      }
+    /**
+     * @param downloadSource the URL from which to download the OS-specific artifact.
+     *                       For example: {@code https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz}
+     *
+     * @param appFolderName  this is the name of the folder under which all application files are found.
+     *                       For example, {@code rabbitmq-server-generic-unix-3.6.5.tar.xz} extracts everything into
+     *                       to {@code rabbitmq_server-3.6.5/*}. Therefore, the value here should be
+     *                       {@code "rabbitmq_server-3.6.5"}
+     *
+     * @see #version(Version)
+     */
+    public Builder downloadFrom(final URL downloadSource, final String appFolderName) {
+      this.artifactRepository = new CustomArtifactRepository(downloadSource);
+
+      this.version = new CustomVersion(appFolderName);
+      return this;
+    }
+
+    /**
+     * Use a predefined version of RabbitMQ.
+     * <p>
+     * {@link PredefinedVersion} establishes the download URL using the official RabbitMQ artifact repository,
+     * the appropriate artifact type depending on the current Operating System, and information about the extraction
+     * folder.
+     * <p>
+     * Default value if none is specified: {@link PredefinedVersion#LATEST}
+     *
+     * @see #downloadFrom(URL, String)
+     */
+    public Builder version(Version version) {
       this.version = version;
       return this;
     }
 
+    /**
+     * Use this method to define a location where the compressed artifact will be downloaded to.
+     * <p>
+     * If the folder doesn't already exist, it will be created.
+     * <p>
+     * By default, the download folder will be: ~/{@value DOWNLOAD_FOLDER}, while the file name will match the
+     * remote artifact's name (as defined by the download URL).
+     * <p>
+     * Use the {@link #downloadTarget(File)} method to specify a file as destination instead of a folder, but not both.
+     */
     public Builder downloadFolder(File downloadFolder) {
       if (this.downloadTarget != null) {
         throw new IllegalStateException("Download Target has already been set.");
@@ -166,6 +211,16 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
+    /**
+     * Use this method to specify a file which should be used to store the downloaded artifact.
+     * <p>
+     * If the file already exists, it will be overwritten.
+     * <p>
+     * Use {@link #downloadFolder(File)} to define a folder instead of a file if necessary, but not both.
+     * <p>
+     * By default, the download folder will be: ~/{@value DOWNLOAD_FOLDER}, while the file name will match the
+     * remote artifact's name (as defined by the download URL).
+     */
     public Builder downloadTarget(File downloadTarget) {
       if (this.downloadFolder != null) {
         throw new IllegalStateException("Download Folder has already been set.");
@@ -174,44 +229,86 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
+    /**
+     * Define a folder where the artifact should be extracted to.
+     * <p>
+     * By default, the artifact will be extracted to Java's Temp folder.
+     *
+     * @see SystemUtils#JAVA_IO_TMPDIR
+     */
     public Builder extractionFolder(File extractionFolder) {
       this.extractionFolder = extractionFolder;
       return this;
     }
 
+    /**
+     * If the artifact is already present in the filesystem, setting this as {code true} will prevent re-downloading it.
+     * <p>
+     * Default value is {@code true}
+     */
     public Builder useCachedDownload(boolean cacheDownload) {
       this.cacheDownload = cacheDownload;
       return this;
     }
 
+    /**
+     * If there's an issue downloading or extracting the artifact, automatically delete from downloaded file to prevent
+     * future re-use.
+     * <p>
+     * Default value is {@code true}
+     */
     public Builder deleteDownloadedFileOnErrors(boolean deleteCachedFile) {
       this.deleteCachedFile = deleteCachedFile;
       return this;
     }
 
+    /**
+     * Defines an environment variable value to use for the execution of all RabbitMQ commands.
+     *
+     * @see <a href="https://www.rabbitmq.com/configure.html#define-environment-variables">RabbitMQ Environment Variables</a>
+     * @see #envVar(RabbitMqEnvVar, String)
+     */
     public Builder envVar(String key, String value) {
       this.envVars.put(key, value);
       return this;
     }
 
+    /**
+     * Defines an environment variable value to use for the execution of all RabbitMQ commands.
+     *
+     * Use {@link #envVar(String, String)} to define a variable that's not predefined in the {@link RabbitMqEnvVar} enum
+     */
     public Builder envVar(RabbitMqEnvVar key, String value) {
       this.envVar(key.getEnvVarName(), value);
       return this;
     }
 
+    /**
+     * A helper method to define several variables at once.
+     *
+     * @see #envVar(String, String)
+     * @see #envVar(RabbitMqEnvVar, String)
+     */
     public Builder envVars(Map<String, String> map) {
       this.envVars.putAll(map);
       return this;
     }
 
+    /**
+     * Builds an immutable instance of {@link EmbeddedRabbitMqConfig} using smart defaults.
+     */
     public EmbeddedRabbitMqConfig build() {
-      if (downloadSource == null) {
-        if (version == null) {
-          version = PredefinedVersion.LATEST;
-        }
-        downloadSource = version.getPathsProvider().getDownloadUrl(OperatingSystem.detect());
-        appFolder = version.getPathsProvider().getExtractionSubFolder();
+      if (artifactRepository == null) {
+        artifactRepository = OfficialArtifactRepository.RABBITMQ;
       }
+
+      OperatingSystem os = OperatingSystem.detect();
+
+      if (version == null) {
+        version = PredefinedVersion.LATEST;
+      }
+
+      URL downloadSource = artifactRepository.getUrl(version, os);
 
       if (downloadTarget == null) {
         String filename = downloadSource.getPath().substring(downloadSource.getPath().lastIndexOf("/"));
@@ -222,7 +319,7 @@ public class EmbeddedRabbitMqConfig {
         this.extractionFolder = new File(SystemUtils.JAVA_IO_TMPDIR);
       }
 
-      File appAbsPath = new File(extractionFolder.toString(), appFolder);
+      File appAbsPath = new File(extractionFolder.toString(), version.getExtractionFolder());
 
       return new EmbeddedRabbitMqConfig(
           downloadSource, downloadTarget, extractionFolder, appAbsPath,
@@ -232,5 +329,7 @@ public class EmbeddedRabbitMqConfig {
           cacheDownload, deleteCachedFile,
           envVars);
     }
+
   }
+
 }

@@ -89,6 +89,18 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -139,12 +151,15 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <excludes>
+                        <exclude>io/arivera/oss/embedded/rabbitmq/util/*</exclude>
+                    </excludes>
                     <rules>
                         <rule>
                             <element>BUNDLE</element>
                             <limits>
                                 <limit><counter>INSTRUCTION</counter><value>COVEREDRATIO</value><minimum>0.50</minimum></limit>
-                                <limit><counter>CLASS</counter><value>MISSEDCOUNT</value><maximum>10</maximum></limit>
+                                <limit><counter>CLASS</counter><value>MISSEDCOUNT</value><maximum>15</maximum></limit>
                                 <limit><counter>BRANCH</counter><value>COVEREDRATIO</value><minimum>0.20</minimum></limit>
                             </limits>
                         </rule>
