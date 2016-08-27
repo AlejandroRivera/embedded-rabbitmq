@@ -20,6 +20,7 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
     downloadPlatformName.put(OperatingSystem.UNIX, "generic-unix");
     downloadPlatformName.put(OperatingSystem.WINDOWS, "windows");
   }
+
   private final String urlPattern;
 
   OfficialArtifactRepository(String urlPattern) {
@@ -33,8 +34,8 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
     ArchiveType archiveType = version.getArchiveType(operatingSystem);
 
     String versionAsString = version.getVersionAsString();
-    String v[] = versionAsString.split("\\.");
-    String url = String.format(urlPattern, v[0], v[1], v[2], artifactPlatform,
+    String[] versionParts = versionAsString.split("\\.");
+    String url = String.format(urlPattern, versionParts[0], versionParts[1], versionParts[2], artifactPlatform,
         versionAsString, archiveType.getExtension());
     try {
       return new URL(url);

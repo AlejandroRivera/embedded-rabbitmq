@@ -11,12 +11,12 @@ public interface Version {
   String getVersionAsString();
 
   /**
-   * @return the correct Archive Type for the given OS
+   * @return correct Archive Type for the given OS.
    */
   ArchiveType getArchiveType(OperatingSystem operatingSystem);
 
   /**
-   * @return the folder name under which the compressed application is extracted to.
+   * @return folder name under which the compressed application is extracted to.
    */
   String getExtractionFolder();
 

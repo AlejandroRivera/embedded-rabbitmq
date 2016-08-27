@@ -48,25 +48,16 @@ public enum PredefinedVersion implements Version {
     this.windowsArchiveType = windowsArchiveType;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public String getVersionAsString(){
+  public String getVersionAsString() {
     return version;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public ArchiveType getArchiveType(OperatingSystem operatingSystem) {
     return operatingSystem == OperatingSystem.WINDOWS ? windowsArchiveType : unixArchiveType;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public String getExtractionFolder() {
     return String.format(EXTRACTION_FOLDER, this.getVersionAsString());
