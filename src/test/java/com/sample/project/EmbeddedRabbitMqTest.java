@@ -85,7 +85,7 @@ public class EmbeddedRabbitMqTest {
     assertThat(pluginsList.get(1, TimeUnit.SECONDS).getExitValue(), equalTo(0));
 
     Future<ProcessResult> pluginEnable = rabbitMqPlugins.enable("rabbitmq_management");
-    assertThat(pluginEnable.get(1, TimeUnit.SECONDS).getExitValue(), equalTo(0));
+    assertThat(pluginEnable.get(3, TimeUnit.SECONDS).getExitValue(), equalTo(0));
 
     HttpURLConnection urlConnection = (HttpURLConnection) new URL("http://localhost:15672").openConnection();
     urlConnection.setRequestMethod("GET");
@@ -93,11 +93,6 @@ public class EmbeddedRabbitMqTest {
 
     assertThat(urlConnection.getResponseCode(), equalTo(200));
     urlConnection.disconnect();
-
-    Future<ProcessResult> pluginDisable = rabbitMqPlugins.disable("rabbitmq_management");
-    assertThat(pluginDisable.get(1, TimeUnit.SECONDS).getExitValue(), equalTo(0));
-
-    Thread.sleep(1000);
 
     channel.close();
     connection.close();
