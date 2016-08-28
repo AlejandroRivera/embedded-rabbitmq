@@ -6,10 +6,12 @@ import io.arivera.oss.embedded.rabbitmq.OfficialArtifactRepository;
 import io.arivera.oss.embedded.rabbitmq.PredefinedVersion;
 import io.arivera.oss.embedded.rabbitmq.RabbitMqEnvVar;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
+import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqPlugins;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -18,6 +20,9 @@ import org.zeroturnaround.exec.ProcessResult;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -32,6 +37,7 @@ public class EmbeddedRabbitMqTest {
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  private EmbeddedRabbitMq rabbitMq;
 
   @Test
   public void start() throws Exception {
@@ -51,7 +57,7 @@ public class EmbeddedRabbitMqTest {
 //        .useCachedDownload(false)
         .build();
 
-    EmbeddedRabbitMq rabbitMq = new EmbeddedRabbitMq(config);
+    rabbitMq = new EmbeddedRabbitMq(config);
     rabbitMq.start();
     LOGGER.info("Back in the test!");
 
@@ -74,13 +80,31 @@ public class EmbeddedRabbitMqTest {
     assertThat(listUsersResult.getExitValue(), is(0));
     assertThat(listUsersResult.getOutput().getString(), containsString("guest"));
 
+    RabbitMqPlugins rabbitMqPlugins = new RabbitMqPlugins(config);
+    Future<ProcessResult> pluginsList = rabbitMqPlugins.list();
+    assertThat(pluginsList.get(1, TimeUnit.SECONDS).getExitValue(), equalTo(0));
+
+    Future<ProcessResult> pluginEnable = rabbitMqPlugins.enable("rabbitmq_management");
+    assertThat(pluginEnable.get(1, TimeUnit.SECONDS).getExitValue(), equalTo(0));
+
+    HttpURLConnection urlConnection = (HttpURLConnection) new URL("http://localhost:15672").openConnection();
+    urlConnection.setRequestMethod("GET");
+    urlConnection.connect();
+
+    assertThat(urlConnection.getResponseCode(), equalTo(200));
+    urlConnection.disconnect();
+
+    Future<ProcessResult> pluginDisable = rabbitMqPlugins.disable("rabbitmq_management");
+    assertThat(pluginDisable.get(1, TimeUnit.SECONDS).getExitValue(), equalTo(0));
 
     Thread.sleep(1000);
 
     channel.close();
     connection.close();
-
-    rabbitMq.stop();
   }
 
+  @After
+  public void tearDown() throws Exception {
+    rabbitMq.stop();
+  }
 }
