@@ -82,7 +82,7 @@ public class EmbeddedRabbitMqTest {
 
     RabbitMqPlugins rabbitMqPlugins = new RabbitMqPlugins(config);
     Future<ProcessResult> pluginsList = rabbitMqPlugins.list();
-    assertThat(pluginsList.get(1, TimeUnit.SECONDS).getExitValue(), equalTo(0));
+    assertThat(pluginsList.get(3, TimeUnit.SECONDS).getExitValue(), equalTo(0));
 
     Future<ProcessResult> pluginEnable = rabbitMqPlugins.enable("rabbitmq_management");
     assertThat(pluginEnable.get(3, TimeUnit.SECONDS).getExitValue(), equalTo(0));
