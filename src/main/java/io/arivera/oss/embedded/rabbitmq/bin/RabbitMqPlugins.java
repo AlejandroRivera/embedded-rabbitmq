@@ -52,7 +52,8 @@ public class RabbitMqPlugins {
   /**
    * Executes the {@code rabbitmq-plugins list} command and returns a grouped representation of the parsed output.
    *
-   * @throws RabbitMqCommandException if the command cannot be executed, it doesn't {@link EmbeddedRabbitMqConfig.Builder#defaultRabbitMqCtlTimeoutInMillis(long)
+   * @throws RabbitMqCommandException if the command cannot be executed, it doesn't
+   *                                  {@link EmbeddedRabbitMqConfig.Builder#defaultRabbitMqCtlTimeoutInMillis(long)
    *                                  finish in time} or exits unexpectedly
    */
   public Map<PluginDetails.PluginState, Set<PluginDetails>> list() throws RabbitMqCommandException {
@@ -71,7 +72,8 @@ public class RabbitMqPlugins {
    *
    * @param plugin the name of the plugin to enable.
    *
-   * @throws RabbitMqCommandException if the command cannot be executed, it doesn't {@link EmbeddedRabbitMqConfig.Builder#defaultRabbitMqCtlTimeoutInMillis(long)
+   * @throws RabbitMqCommandException if the command cannot be executed, it doesn't
+   *                                  {@link EmbeddedRabbitMqConfig.Builder#defaultRabbitMqCtlTimeoutInMillis(long)
    *                                  finish in time} or exits unexpectedly
    */
   public void enable(String plugin) throws RabbitMqCommandException {
@@ -88,7 +90,8 @@ public class RabbitMqPlugins {
    *
    * @param plugin the name of the plugin to disable.
    *
-   * @throws RabbitMqCommandException if the command cannot be executed, it doesn't {@link EmbeddedRabbitMqConfig.Builder#defaultRabbitMqCtlTimeoutInMillis(long)
+   * @throws RabbitMqCommandException if the command cannot be executed, it doesn't
+   *                                  {@link EmbeddedRabbitMqConfig.Builder#defaultRabbitMqCtlTimeoutInMillis(long)
    *                                  finish in time} or exits unexpectedly
    */
   public void disable(String plugin) throws RabbitMqCommandException {
