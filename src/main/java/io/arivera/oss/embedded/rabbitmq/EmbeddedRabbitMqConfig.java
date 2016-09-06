@@ -1,5 +1,6 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCommand;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 
@@ -26,6 +27,7 @@ public class EmbeddedRabbitMqConfig {
   private final boolean deleteCachedFileOnErrors;
 
   private final Map<String, String> envVars;
+  private final RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
 
   protected EmbeddedRabbitMqConfig(URL downloadSource,
                                    File downloadTarget,
@@ -36,7 +38,8 @@ public class EmbeddedRabbitMqConfig {
                                    long defaultRabbitMqCtlTimeoutInMillis,
                                    long rabbitMqServerInitializationTimeoutInMillis,
                                    boolean cacheDownload, boolean deleteCachedFile,
-                                   Map<String, String> envVars) {
+                                   Map<String, String> envVars,
+                                   RabbitMqCommand.ProcessExecutorFactory processExecutorFactory) {
     this.downloadSource = downloadSource;
     this.downloadTarget = downloadTarget;
     this.extractionFolder = extractionFolder;
@@ -48,6 +51,7 @@ public class EmbeddedRabbitMqConfig {
     this.shouldCacheDownload = cacheDownload;
     this.deleteCachedFileOnErrors = deleteCachedFile;
     this.envVars = envVars;
+    this.processExecutorFactory = processExecutorFactory;
   }
 
   public long getDownloadReadTimeoutInMillis() {
@@ -94,6 +98,10 @@ public class EmbeddedRabbitMqConfig {
     return envVars;
   }
 
+  public RabbitMqCommand.ProcessExecutorFactory getProcessExecutorFactory() {
+    return processExecutorFactory;
+  }
+
   public static class Builder {
 
     public static final String DOWNLOAD_FOLDER = ".embeddedrabbitmq";
@@ -109,6 +117,7 @@ public class EmbeddedRabbitMqConfig {
     private Version version;
     private Map<String, String> envVars;
     private ArtifactRepository artifactRepository;
+    private RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
 
     /**
      * Creates a new instance of the Configuration Builder.
@@ -125,6 +134,7 @@ public class EmbeddedRabbitMqConfig {
       this.downloadFolder = new File(System.getProperty("user.home"), DOWNLOAD_FOLDER);
       this.artifactRepository = OfficialArtifactRepository.RABBITMQ;
       this.envVars = new HashMap<>();
+      this.processExecutorFactory = new RabbitMqCommand.ProcessExecutorFactory();
     }
 
     public Builder downloadReadTimeoutInMillis(long downloadReadTimeoutInMillis) {
@@ -294,6 +304,11 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
+    public Builder processExecutorFactory(RabbitMqCommand.ProcessExecutorFactory factory) {
+      this.processExecutorFactory = factory;
+      return this;
+    }
+
     /**
      * Builds an immutable instance of {@link EmbeddedRabbitMqConfig} using smart defaults.
      */
@@ -327,7 +342,8 @@ public class EmbeddedRabbitMqConfig {
           defaultRabbitMqCtlTimeoutInMillis,
           rabbitMqServerInitializationTimeoutInMillis,
           cacheDownload, deleteCachedFile,
-          envVars);
+          envVars,
+          processExecutorFactory);
     }
 
   }

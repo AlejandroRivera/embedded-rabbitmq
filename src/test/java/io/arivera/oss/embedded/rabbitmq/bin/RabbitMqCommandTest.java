@@ -79,7 +79,8 @@ public class RabbitMqCommandTest {
     version = PredefinedVersion.LATEST;
     configBuilder = new EmbeddedRabbitMqConfig.Builder()
         .extractionFolder(tempFolder.getRoot())
-        .version(this.version);
+        .version(this.version)
+        .processExecutorFactory(this.factory);
     command = RandomStringUtils.randomAlphabetic(10);
 
     this.processExecutor = Mockito.mock(ProcessExecutor.class, new Answer() {
@@ -95,7 +96,7 @@ public class RabbitMqCommandTest {
     when(factory.createInstance()).thenReturn(processExecutor);
 
     String appFolder = version.getExtractionFolder();
-    File executableFilesFolder = tempFolder.newFolder(appFolder, RabbitMqCommand.EXECUTABLE_FOLDER);
+    File executableFilesFolder = tempFolder.newFolder(appFolder, RabbitMqCommand.BINARIES_FOLDER);
     executableFile = new File(executableFilesFolder, command + RabbitMqCommand.getCommandExtension());
     assertTrue("Fake executable file couldn't be created!", executableFile.createNewFile());
   }
@@ -107,7 +108,7 @@ public class RabbitMqCommandTest {
     expectedException.expectMessage(containsString("could not be found"));
     expectedException.expectMessage(containsString(command));
 
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
   }
 
   @Test
@@ -117,7 +118,7 @@ public class RabbitMqCommandTest {
       args[i] = RandomStringUtils.randomAlphanumeric(5);
     }
 
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command, args);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command, args);
     rabbitMqCommand.call();
 
     String[] commandAndArgs = ArrayUtils.add(args, 0, executableFile.toString());
@@ -132,7 +133,7 @@ public class RabbitMqCommandTest {
 
     configBuilder.envVars(envVars);
 
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.call();
 
     verify(processExecutor).environment(envVars);
@@ -140,7 +141,7 @@ public class RabbitMqCommandTest {
 
   @Test
   public void processIsLaunchedFromAppDirectory() throws Exception {
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.call();
 
     File binariesFolder = executableFile.getParentFile();
@@ -150,7 +151,7 @@ public class RabbitMqCommandTest {
 
   @Test
   public void processEventsAreLogged() throws Exception {
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.call();
 
     ArgumentCaptor<ProcessListener> listenerCaptor = ArgumentCaptor.forClass(ProcessListener.class);
@@ -171,7 +172,7 @@ public class RabbitMqCommandTest {
   public void processEventsCanBeListenedTo() throws Exception {
     ProcessListener fakeListener = Mockito.mock(ProcessListener.class);
 
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.listenToEvents(fakeListener);
     rabbitMqCommand.call();
 
@@ -186,7 +187,7 @@ public class RabbitMqCommandTest {
   public void outputCanBeStreamed() throws Exception {
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.writeOutputTo(byteArrayOutputStream);
     rabbitMqCommand.call();
 
@@ -197,7 +198,7 @@ public class RabbitMqCommandTest {
   public void errorOutputCanBeStreamed() throws Exception {
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.writeErrorOutputTo(byteArrayOutputStream);
     rabbitMqCommand.call();
 
@@ -206,7 +207,7 @@ public class RabbitMqCommandTest {
 
   @Test
   public void outputStorageCanBeDisabled() throws Exception {
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.storeOutput(false);
     rabbitMqCommand.call();
 
@@ -215,7 +216,7 @@ public class RabbitMqCommandTest {
 
   @Test
   public void outputLoggingLevelsDefaultsToInfo() throws Exception {
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.call();
 
     ArgumentCaptor<OutputStream> osCaptor = ArgumentCaptor.forClass(OutputStream.class);
@@ -227,7 +228,7 @@ public class RabbitMqCommandTest {
 
   @Test
   public void errorLoggingLevelDefaultsToWarn() throws Exception {
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.call();
 
     ArgumentCaptor<OutputStream> osCaptor = ArgumentCaptor.forClass(OutputStream.class);
@@ -239,7 +240,7 @@ public class RabbitMqCommandTest {
 
   @Test
   public void errorLoggingLevelsCanBeChanged() throws Exception {
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.logStandardErrorOutputAs(Level.ERROR);
     rabbitMqCommand.call();
 
@@ -252,7 +253,7 @@ public class RabbitMqCommandTest {
 
   @Test
   public void outputLoggingLevelsCanBeChanged() throws Exception {
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.logStandardOutputAs(Level.ERROR);
     rabbitMqCommand.call();
 
@@ -268,7 +269,7 @@ public class RabbitMqCommandTest {
   public void loggerCanBeChanged() throws Exception {
     Logger logger = Mockito.mock(Logger.class);
 
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.logWith(logger);
     rabbitMqCommand.call();
 
@@ -284,7 +285,7 @@ public class RabbitMqCommandTest {
 
   @Test
   public void logNameMatchesCommandByDefault() throws Exception {
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.call();
 
     ArgumentCaptor<OutputStream> osCaptor = ArgumentCaptor.forClass(OutputStream.class);
@@ -307,7 +308,7 @@ public class RabbitMqCommandTest {
     expectedException.expectMessage(containsString(command));
     expectedException.expectCause(equalTo(fakeException));
 
-    rabbitMqCommand = new RabbitMqCommand(factory, configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
     rabbitMqCommand.call();
   }
 
