@@ -93,7 +93,7 @@ EmbeddedRabbitMq rabbitMq = new EmbeddedRabbitMq(config);
 rabbitMq.start();
 ```
 
-### Define a version to use:
+### Define a RabbitMQ version to use:
 ```java
 configBuilder.version(PredefinedVersion.LATEST)
 ```
@@ -143,6 +143,27 @@ configBuilder.extractionFolder(new File("/rabbits/"))
 ```
 _Warning:_ The content of this folder will be overwritten every time by the newly extracted files/folders.
 
+## Advanced RabbitMQ management
+
+If you wish to control your RabbitMQ broker further, you can execute any of the commands available to you in the `/bin` 
+directory, like so:
+
+```
+RabbitMqCommand command = new RabbitMqCommand(config, "command", "arg1", "arg2", ...);
+StartedProcess process = command.call();
+ProcessResult result = process.getFuture().get();
+boolean success = result.getExitValue() == 0;
+if (success) {
+  doSomething(result.getOutput());
+}
+```
+where:
+* `command` is something like `"rabbitmq-ctl"` (no need for `.bat` extension in Windows since it will be automatically appended).
+* `args` is a variable-length array list, where each element is a word (eg. `"-n", "nodeName", "list_users"`)
+
+See the JavaDocs for more information on `RabbitMqCommand` and other helper classes like `RabbitMqCtl`, 
+`RabbitMqPlugins` and `RabbitMqServer` which aim at making it easier to execute common commands.
+
 ## Troubleshooting:
 
 ##### Q: RabbitMQ fails to start due to `ERROR: node with name "rabbit" already running on "localhost"`. Why is this and what can I do?
@@ -184,6 +205,8 @@ Big thanks to the following OSS projects that made this project possible:
     for execution of native OS processes.
  * [SLF4J API](http://www.slf4j.org/) 
     as a logging facade.
+
+And of course, the biggest thanks to [Pivotal](https://pivotal.io/) and the [RabbitMQ](http://www.rabbitmq.com/) team for their hard work. 
 
 ## License
 
