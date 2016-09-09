@@ -3,6 +3,7 @@ package io.arivera.oss.embedded.rabbitmq.bin.plugins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -100,7 +101,7 @@ public class PluginDetails implements Comparable<PluginDetails> {
 
       if (chars.length != 2) {
         LOGGER.warn("Parsing of Plugin State might not be accurate since we expect 2 symbols representing: {}",
-            PluginState.values());
+            Arrays.asList(PluginState.values()));
       }
 
       if (chars.length <= 0) {
