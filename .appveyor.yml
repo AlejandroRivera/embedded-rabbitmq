@@ -42,7 +42,7 @@ environment:
 
 install:
 #  - cmd: erl -noshell -eval 'io:fwrite("~s\n", [erlang:system_info(otp_release)]).' -s erlang halt
-  - cmd: choco install maven -version 3.3.3 -y -f
+  - cmd: choco install maven -version 3.3.9 -y -f
 #  RefreshEnv is necessary to pick up new env. vars in the same shell session
   - cmd: refreshenv
 
