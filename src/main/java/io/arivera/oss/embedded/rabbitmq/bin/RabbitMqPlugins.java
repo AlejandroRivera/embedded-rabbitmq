@@ -101,7 +101,7 @@ public class RabbitMqPlugins {
 
   private Map<String, Plugin> mapPluginsByName(List<Plugin> plugins) {
     Map<String, Plugin> result = new HashMap<>(plugins.size());
-    for (Plugin plugin : plugins){
+    for (Plugin plugin : plugins) {
       result.put(plugin.getName(), plugin);
     }
     return result;
