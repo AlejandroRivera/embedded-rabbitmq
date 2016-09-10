@@ -2,7 +2,7 @@ package io.arivera.oss.embedded.rabbitmq.bin;
 
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.PredefinedVersion;
-import io.arivera.oss.embedded.rabbitmq.bin.plugins.PluginDetails;
+import io.arivera.oss.embedded.rabbitmq.bin.plugins.Plugin;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -118,14 +118,14 @@ public class RabbitMqPluginsTest {
     when(processOutput.getLinesAsUTF8())
         .thenReturn(output);
 
-    Map<PluginDetails.PluginState, Set<PluginDetails>> groupedPlugins =
-        rabbitMqPlugins.list();
+    Map<Plugin.State, Set<Plugin>> groupedPlugins =
+        rabbitMqPlugins.groupedList();
 
-    assertThat(groupedPlugins.get(PluginDetails.PluginState.RUNNING).size(), equalTo(4));
-    assertThat(groupedPlugins.get(PluginDetails.PluginState.ENABLED_EXPLICITLY).size(), equalTo(1));
-    assertThat(groupedPlugins.get(PluginDetails.PluginState.ENABLED_IMPLICITLY).size(), equalTo(3));
-    assertThat(groupedPlugins.get(PluginDetails.PluginState.NOT_ENABLED).size(), equalTo(2));
-    assertThat(groupedPlugins.get(PluginDetails.PluginState.NOT_RUNNING).size(), equalTo(2));
+    assertThat(groupedPlugins.get(Plugin.State.RUNNING).size(), equalTo(4));
+    assertThat(groupedPlugins.get(Plugin.State.ENABLED_EXPLICITLY).size(), equalTo(1));
+    assertThat(groupedPlugins.get(Plugin.State.ENABLED_IMPLICITLY).size(), equalTo(3));
+    assertThat(groupedPlugins.get(Plugin.State.NOT_ENABLED).size(), equalTo(2));
+    assertThat(groupedPlugins.get(Plugin.State.NOT_RUNNING).size(), equalTo(2));
   }
 
   @Test
@@ -143,7 +143,7 @@ public class RabbitMqPluginsTest {
     expectedException.expect(instanceOf(RabbitMqCommandException.class));
     expectedException.expectMessage("exit code: " + exitCode);
 
-    rabbitMqPlugins.list();
+    rabbitMqPlugins.groupedList();
   }
 
   @Test
@@ -160,6 +160,6 @@ public class RabbitMqPluginsTest {
     expectedException.expectMessage("rabbitmq-plugins list");
     expectedException.expectCause(sameInstance(timeoutException));
 
-    rabbitMqPlugins.list();
+    rabbitMqPlugins.groupedList();
   }
 }

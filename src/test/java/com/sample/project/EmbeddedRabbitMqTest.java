@@ -7,7 +7,7 @@ import io.arivera.oss.embedded.rabbitmq.PredefinedVersion;
 import io.arivera.oss.embedded.rabbitmq.RabbitMqEnvVar;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqPlugins;
-import io.arivera.oss.embedded.rabbitmq.bin.plugins.PluginDetails;
+import io.arivera.oss.embedded.rabbitmq.bin.plugins.Plugin;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -84,15 +86,15 @@ public class EmbeddedRabbitMqTest {
     assertThat(listUsersResult.getOutput().getString(), containsString("guest"));
 
     RabbitMqPlugins rabbitMqPlugins = new RabbitMqPlugins(config);
-    Map<PluginDetails.PluginState, Set<PluginDetails>> groupedPlugins = rabbitMqPlugins.list();
-    assertThat(groupedPlugins.get(PluginDetails.PluginState.ENABLED_EXPLICITLY).size(), equalTo(0));
+    Map<Plugin.State, Set<Plugin>> groupedPlugins = rabbitMqPlugins.groupedList();
+    assertThat(groupedPlugins.get(Plugin.State.ENABLED_EXPLICITLY).size(), equalTo(0));
 
     rabbitMqPlugins.enable("rabbitmq_management");
 
-    groupedPlugins = rabbitMqPlugins.list();
-    Set<PluginDetails> enabledPlugins = groupedPlugins.get(PluginDetails.PluginState.ENABLED_EXPLICITLY);
-    assertThat(enabledPlugins.size(), equalTo(1));
-    assertThat(enabledPlugins.iterator().next().getName(), equalTo("rabbitmq_management"));
+    Plugin plugin = rabbitMqPlugins.list().get("rabbitmq_management");
+    assertThat(plugin, is(notNullValue()));
+    assertThat(plugin.getState(),
+        hasItems(Plugin.State.ENABLED_EXPLICITLY, Plugin.State.RUNNING));
 
     HttpURLConnection urlConnection = (HttpURLConnection) new URL("http://localhost:15672").openConnection();
     urlConnection.setRequestMethod("GET");

@@ -1,10 +1,11 @@
 package io.arivera.oss.embedded.rabbitmq.bin;
 
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
-import io.arivera.oss.embedded.rabbitmq.bin.plugins.PluginDetails;
+import io.arivera.oss.embedded.rabbitmq.bin.plugins.Plugin;
 
 import org.zeroturnaround.exec.ProcessResult;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,14 +17,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A wrapper around the RabbitMqCommand to execute '{@value #COMMAND}' commands.
+ * A wrapper around the RabbitMqCommand to execute '{@value #EXECUTABLE}' commands.
  *
  * @see <a href="https://www.rabbitmq.com/man/rabbitmq-plugins.1.man.html">rabbitmq-plugins(1) manual page</a>
  */
 public class RabbitMqPlugins {
 
-  private static final String LIST = "list";
-  private static final String COMMAND = "rabbitmq-plugins";
+  private static final String LIST_COMMAND = "list";
+  private static final String EXECUTABLE = "rabbitmq-plugins";
 
   private final EmbeddedRabbitMqConfig config;
 
@@ -32,7 +33,7 @@ public class RabbitMqPlugins {
   }
 
   /**
-   * This method exposes a way to invoke '{@value COMMAND}' command with any arguments.
+   * This method exposes a way to invoke '{@value EXECUTABLE}' command with any arguments.
    * This is useful when the class methods don't expose the desired functionality.
    * <p>
    * For example:
@@ -44,27 +45,66 @@ public class RabbitMqPlugins {
    * @throws RabbitMqCommandException if the command cannot be executed
    */
   public Future<ProcessResult> execute(String... arguments) throws RabbitMqCommandException {
-    return new RabbitMqCommand(config, COMMAND, arguments)
+    return new RabbitMqCommand(config, EXECUTABLE, arguments)
         .call()
         .getFuture();
   }
 
   /**
-   * Executes the {@code rabbitmq-plugins list} command and returns a grouped representation of the parsed output.
+   * Same as {@link #list()} but it returns the plugins grouped by state.
+   */
+  public Map<Plugin.State, Set<Plugin>> groupedList() throws RabbitMqCommandException {
+    Collection<Plugin> plugins = list().values();
+    return groupPluginsByState(plugins);
+  }
+
+  private Map<Plugin.State, Set<Plugin>> groupPluginsByState(Collection<Plugin> plugins) {
+    Map<Plugin.State, Set<Plugin>> groupedPlugins = new HashMap<>();
+    for (Plugin.State state : Plugin.State.values()) {
+      groupedPlugins.put(state, new TreeSet<Plugin>());
+    }
+
+    for (Plugin plugin : plugins) {
+      for (Plugin.State state : plugin.getState()) {
+        groupedPlugins.get(state).add(plugin);
+      }
+    }
+    return groupedPlugins;
+  }
+
+  /**
+   * Executes the {@code rabbitmq-plugins list} command
+   *
+   * @return a Map where the key is the plugin name and the value is the full plugin details parsed from the output.
    *
    * @throws RabbitMqCommandException if the command cannot be executed, it doesn't
    *                                  {@link EmbeddedRabbitMqConfig.Builder#defaultRabbitMqCtlTimeoutInMillis(long)
    *                                  finish in time} or exits unexpectedly
+   * @see #groupedList()
    */
-  public Map<PluginDetails.PluginState, Set<PluginDetails>> list() throws RabbitMqCommandException {
-    String[] args = {LIST};
-    String executionErrorMessage = String.format("Error executing: %s %s", COMMAND, LIST);
+  public Map<String, Plugin> list() {
+    String[] args = {LIST_COMMAND};
+    String executionErrorMessage = String.format("Error executing: %s %s", EXECUTABLE, LIST_COMMAND);
     String unexpectedExitCodeMessage = "Listing of plugins failed with exit code: ";
 
     ProcessResult processResult = getProcessResult(args, executionErrorMessage, unexpectedExitCodeMessage);
 
+    List<Plugin> plugins = parseListOutput(processResult);
+    Map<String, Plugin> result = mapPluginsByName(plugins);
+    return result;
+  }
+
+  private List<Plugin> parseListOutput(ProcessResult processResult) {
     List<String> lines = processResult.getOutput().getLinesAsUTF8();
-    return parseListOutput(lines);
+    return Plugin.fromStrings(lines);
+  }
+
+  private Map<String, Plugin> mapPluginsByName(List<Plugin> plugins) {
+    Map<String, Plugin> result = new HashMap<>(plugins.size());
+    for (Plugin plugin : plugins){
+      result.put(plugin.getName(), plugin);
+    }
+    return result;
   }
 
   /**
@@ -116,23 +156,6 @@ public class RabbitMqPlugins {
       throw new RabbitMqCommandException(unexpectedExitCodeMessage + exitValue);
     }
     return processResult;
-  }
-
-  Map<PluginDetails.PluginState, Set<PluginDetails>> parseListOutput(List<String> lines) {
-    Map<PluginDetails.PluginState, Set<PluginDetails>> groupedPlugins = new HashMap<>();
-    for (PluginDetails.PluginState state : PluginDetails.PluginState.values()) {
-      groupedPlugins.put(state, new TreeSet<PluginDetails>());
-    }
-
-    for (String line : lines) {
-      PluginDetails pluginDetails = PluginDetails.fromString(line);
-      if (pluginDetails != null) {
-        for (PluginDetails.PluginState pluginState : pluginDetails.getState()) {
-          groupedPlugins.get(pluginState).add(pluginDetails);
-        }
-      }
-    }
-    return groupedPlugins;
   }
 
 }
