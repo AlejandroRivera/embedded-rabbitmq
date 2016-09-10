@@ -42,7 +42,7 @@ import java.util.concurrent.Callable;
  */
 public class RabbitMqCommand implements Callable<StartedProcess> {
 
-  static final String EXECUTABLE_FOLDER = "sbin";
+  static final String BINARIES_FOLDER = "sbin";
 
   private static final String LOGGER_TEMPLATE = "%s.Process.%s";
 
@@ -102,20 +102,10 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
    *                  "{@code ./rabbitmq-plugins enable foo}", utilize {@code ["enable", "foo"]} as value
    */
   public RabbitMqCommand(EmbeddedRabbitMqConfig config, String command, String... arguments) {
-    this(new ProcessExecutorFactory(), config, command, arguments);
-  }
-
-  /**
-   * @param factory the class from which new {@link ProcessExecutor}'s will be obtained.
-   *
-   * @see #RabbitMqCommand(EmbeddedRabbitMqConfig, String, String...)
-   */
-  public RabbitMqCommand(ProcessExecutorFactory factory, EmbeddedRabbitMqConfig config,
-                  String command, String... arguments) {
-    this.processExecutorFactory = factory;
+    this.processExecutorFactory = config.getProcessExecutorFactory();
     this.config = config;
     this.command = command + getCommandExtension();
-    this.executableFile = new File(new File(config.getAppFolder(), EXECUTABLE_FOLDER), this.command);
+    this.executableFile = new File(new File(config.getAppFolder(), BINARIES_FOLDER), this.command);
     if (!(executableFile.exists())) {
       throw new IllegalArgumentException("The given command could not be found using the path: " + executableFile);
     }

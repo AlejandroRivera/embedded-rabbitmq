@@ -26,21 +26,11 @@ For Maven:
       <version>X.Y.Z</version>
   </dependency>
 ```
+For Ivy: ```<dependency org="io.arivera.oss" name="embedded-rabbitmq" rev="X.Y.Z" />```
 
-For Ivy:
-```xml
-<dependency org="io.arivera.oss" name="embedded-rabbitmq" rev="X.Y.Z" />
-```
+For Gradle: ``` compile 'io.arivera.oss:embedded-rabbitmq:X.Y.Z' ```
 
-For Gradle:
-```
-compile 'io.arivera.oss:embedded-rabbitmq:X.Y.Z'
-```
-
-For SBT:
-```
-libraryDependencies += "io.arivera.oss" % "embedded-rabbitmq" % "X.Y.Z"
-```
+For SBT: ``` libraryDependencies += "io.arivera.oss" % "embedded-rabbitmq" % "X.Y.Z" ```
 
 `X.Y.Z` is the latest released version of this project. 
 For more info visit [Maven Central repo](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.arivera.oss%22%20AND%20a%3A%22embedded-rabbitmq%22) 
@@ -148,7 +138,7 @@ _Warning:_ The content of this folder will be overwritten every time by the newl
 If you wish to control your RabbitMQ broker further, you can execute any of the commands available to you in the `/bin` 
 directory, like so:
 
-```
+```java
 RabbitMqCommand command = new RabbitMqCommand(config, "command", "arg1", "arg2", ...);
 StartedProcess process = command.call();
 ProcessResult result = process.getFuture().get();
@@ -163,6 +153,31 @@ where:
 
 See the JavaDocs for more information on `RabbitMqCommand` and other helper classes like `RabbitMqCtl`, 
 `RabbitMqPlugins` and `RabbitMqServer` which aim at making it easier to execute common commands.
+
+### Enabling RabbitMQ Plugins:
+
+To enable a plugin like `rabbitmq_management`, you can use the `RabbitMqPlugins` class like so:
+```java
+    RabbitMqPlugins rabbitMqPlugins = new RabbitMqPlugins(config);
+    rabbitMqPlugins.enable("rabbitmq_management");
+```
+This call will block until the command is completed.
+
+You can verify by executing the `list()` method:
+```java
+    Map<String, Plugin> plugins = rabbitMqPlugins.list();
+    Plugin plugin = plugins.get("rabbitmq_management");
+    assertThat(plugin, is(notNullValue()));
+    assertThat(plugin.getState(), hasItem(Plugin.State.ENABLED_EXPLICITLY));
+    assertThat(plugin.getState(), hasItem(Plugin.State.RUNNING));
+```
+
+You can also see which other plugins where enabled implicitly, by calling the `groupedList()`:
+```java
+    Map<Plugin.State, Set<Plugin>> groupedPlugins = rabbitMqPlugins.groupedList();
+    Set<Plugin> plugins = groupedPlugins.get(Plugin.State.ENABLED_IMPLICITLY);
+    assertThat(plugins.size(), is(not(equalTo(0))));
+```
 
 ## Troubleshooting:
 

@@ -7,6 +7,7 @@ import io.arivera.oss.embedded.rabbitmq.PredefinedVersion;
 import io.arivera.oss.embedded.rabbitmq.RabbitMqEnvVar;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqPlugins;
+import io.arivera.oss.embedded.rabbitmq.bin.plugins.Plugin;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -22,11 +23,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.Future;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -54,6 +58,7 @@ public class EmbeddedRabbitMqTest {
         .envVar(RabbitMqEnvVar.CONFIG_FILE, configFile.toString().replace(".config", ""))
         .extractionFolder(temporaryFolder.newFolder("extracted"))
         .rabbitMqServerInitializationTimeoutInMillis(TimeUnit.SECONDS.toMillis(5))
+        .defaultRabbitMqCtlTimeoutInMillis(TimeUnit.SECONDS.toMillis(3))
 //        .useCachedDownload(false)
         .build();
 
@@ -81,11 +86,15 @@ public class EmbeddedRabbitMqTest {
     assertThat(listUsersResult.getOutput().getString(), containsString("guest"));
 
     RabbitMqPlugins rabbitMqPlugins = new RabbitMqPlugins(config);
-    Future<ProcessResult> pluginsList = rabbitMqPlugins.list();
-    assertThat(pluginsList.get(3, TimeUnit.SECONDS).getExitValue(), equalTo(0));
+    Map<Plugin.State, Set<Plugin>> groupedPlugins = rabbitMqPlugins.groupedList();
+    assertThat(groupedPlugins.get(Plugin.State.ENABLED_EXPLICITLY).size(), equalTo(0));
 
-    Future<ProcessResult> pluginEnable = rabbitMqPlugins.enable("rabbitmq_management");
-    assertThat(pluginEnable.get(3, TimeUnit.SECONDS).getExitValue(), equalTo(0));
+    rabbitMqPlugins.enable("rabbitmq_management");
+
+    Plugin plugin = rabbitMqPlugins.list().get("rabbitmq_management");
+    assertThat(plugin, is(notNullValue()));
+    assertThat(plugin.getState(),
+        hasItems(Plugin.State.ENABLED_EXPLICITLY, Plugin.State.RUNNING));
 
     HttpURLConnection urlConnection = (HttpURLConnection) new URL("http://localhost:15672").openConnection();
     urlConnection.setRequestMethod("GET");
@@ -93,6 +102,8 @@ public class EmbeddedRabbitMqTest {
 
     assertThat(urlConnection.getResponseCode(), equalTo(200));
     urlConnection.disconnect();
+
+    rabbitMqPlugins.disable("rabbitmq_management");
 
     channel.close();
     connection.close();
