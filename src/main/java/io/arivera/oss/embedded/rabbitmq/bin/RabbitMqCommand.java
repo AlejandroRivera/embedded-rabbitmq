@@ -2,8 +2,8 @@ package io.arivera.oss.embedded.rabbitmq.bin;
 
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMq;
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
+import io.arivera.oss.embedded.rabbitmq.apache.commons.lang3.SystemUtils;
 import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
-import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.slf4j.Logger;

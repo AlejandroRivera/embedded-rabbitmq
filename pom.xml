@@ -152,6 +152,7 @@
                 </executions>
                 <configuration>
                     <excludes>
+                        <exclude>io/arivera/oss/embedded/rabbitmq/apache/**</exclude>
                         <exclude>io/arivera/oss/embedded/rabbitmq/util/*</exclude>
                     </excludes>
                     <rules>
@@ -195,6 +196,7 @@
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
+                    <excludes>io/arivera/oss/embedded/rabbitmq/apache/commons/**</excludes>
                 </configuration>
                 <dependencies>
                     <dependency>

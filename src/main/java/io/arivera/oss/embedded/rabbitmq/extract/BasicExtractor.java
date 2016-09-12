@@ -1,8 +1,8 @@
 package io.arivera.oss.embedded.rabbitmq.extract;
 
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
+import io.arivera.oss.embedded.rabbitmq.apache.commons.lang3.StopWatch;
 import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
-import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;

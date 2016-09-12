@@ -1,8 +1,8 @@
 package io.arivera.oss.embedded.rabbitmq.download;
 
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
-import io.arivera.oss.embedded.rabbitmq.util.FileUtils;
-import io.arivera.oss.embedded.rabbitmq.util.StopWatch;
+import io.arivera.oss.embedded.rabbitmq.apache.commons.io.FileUtils;
+import io.arivera.oss.embedded.rabbitmq.apache.commons.lang3.StopWatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

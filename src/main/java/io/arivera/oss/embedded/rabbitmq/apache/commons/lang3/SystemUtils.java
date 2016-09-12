@@ -1,5 +1,3 @@
-package io.arivera.oss.embedded.rabbitmq.util;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -16,11 +14,23 @@ package io.arivera.oss.embedded.rabbitmq.util;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.arivera.oss.embedded.rabbitmq.apache.commons.lang3;
 
 import java.io.File;
 
 /**
- * Copied from Apache Commons Lang3 v3.4
+ * <p>
+ * Helpers for {@code java.lang.System}.
+ * </p>
+ * <p>
+ * If a system property cannot be read due to security restrictions, the corresponding field in this class will be set
+ * to {@code null} and a message will be written to {@code System.err}.
+ * </p>
+ * <p>
+ * #ThreadSafe#
+ * </p>
+ *
+ * @since 1.0
  */
 @SuppressWarnings("all")
 public class SystemUtils {
@@ -120,8 +130,11 @@ public class SystemUtils {
      * sync with that System property.
      * </p>
      *
+     * @deprecated Use {@link File#separator}, since it is guaranteed to be a
+     *             string containing a single character and it does not require a privilege check.
      * @since Java 1.1
      */
+    @Deprecated
     public static final String FILE_SEPARATOR = getSystemProperty("file.separator");
 
     /**
@@ -724,8 +737,11 @@ public class SystemUtils {
      * sync with that System property.
      * </p>
      *
+     * @deprecated Use {@link File#pathSeparator}, since it is guaranteed to be a
+     *             string containing a single character and it does not require a privilege check.
      * @since Java 1.1
      */
+    @Deprecated
     public static final String PATH_SEPARATOR = getSystemProperty("path.separator");
 
     /**
@@ -747,7 +763,7 @@ public class SystemUtils {
      * @since Java 1.2
      */
     public static final String USER_COUNTRY = getSystemProperty("user.country") == null ?
-            getSystemProperty("user.region") : getSystemProperty("user.country");
+        getSystemProperty("user.region") : getSystemProperty("user.country");
 
     /**
      * <p>
@@ -1167,6 +1183,18 @@ public class SystemUtils {
 
     /**
      * <p>
+     * Is {@code true} if this is Mac OS X El Capitan.
+     * </p>
+     * <p>
+     * The field will return {@code false} if {@code OS_NAME} is {@code null}.
+     * </p>
+     *
+     * @since 3.5
+     */
+    public static final boolean IS_OS_MAC_OSX_EL_CAPITAN = getOSMatches("Mac OS X", "10.11");
+
+    /**
+     * <p>
      * Is {@code true} if this is FreeBSD.
      * </p>
      * <p>
@@ -1248,7 +1276,7 @@ public class SystemUtils {
      * @since 2.1
      */
     public static final boolean IS_OS_UNIX = IS_OS_AIX || IS_OS_HP_UX || IS_OS_IRIX || IS_OS_LINUX || IS_OS_MAC_OSX
-            || IS_OS_SOLARIS || IS_OS_SUN_OS || IS_OS_FREE_BSD || IS_OS_OPEN_BSD || IS_OS_NET_BSD;
+        || IS_OS_SOLARIS || IS_OS_SUN_OS || IS_OS_FREE_BSD || IS_OS_OPEN_BSD || IS_OS_NET_BSD;
 
     /**
      * <p>
@@ -1409,6 +1437,35 @@ public class SystemUtils {
 
     /**
      * <p>
+     * Is {@code true} if this is Windows 10.
+     * </p>
+     * <p>
+     * The field will return {@code false} if {@code OS_NAME} is {@code null}.
+     * </p>
+     *
+     * @since 3.5
+     */
+    public static final boolean IS_OS_WINDOWS_10 = getOSMatchesName(OS_NAME_WINDOWS_PREFIX + " 10");
+
+    /**
+     * <p>
+     * Is {@code true} if this is z/OS.
+     * </p>
+     * <p>
+     * The field will return {@code false} if {@code OS_NAME} is {@code null}.
+     * </p>
+     *
+     * @since 3.5
+     */
+    // Values on a z/OS system I tested (Gary Gregory - 2016-03-12)
+    // os.arch = s390x
+    // os.encoding = ISO8859_1
+    // os.name = z/OS
+    // os.version = 02.02.00
+    public static final boolean IS_OS_ZOS = getOSMatchesName("z/OS");
+
+    /**
+     * <p>
      * Gets the Java home directory as a {@code File}.
      * </p>
      *
@@ -1489,7 +1546,7 @@ public class SystemUtils {
         } catch (final SecurityException ex) {
             // we are not allowed to look at this property
             System.err.println("Caught a SecurityException reading the system property '" + property
-                    + "'; the SystemUtils property value will default to null.");
+                + "'; the SystemUtils property value will default to null.");
             return null;
         }
     }
@@ -1621,7 +1678,7 @@ public class SystemUtils {
      * @return true if matches, or false if not or can't determine
      */
     static boolean isOSVersionMatch(final String osVersion, final String osVersionPrefix) {
-        if (osVersion == null || osVersion.isEmpty()) {
+        if (osVersion == null || osVersion.trim().isEmpty()) {
             return false;
         }
         // Compare parts of the version string instead of using String.startsWith(String) because otherwise

@@ -1,11 +1,11 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.apache.commons.lang3.SystemUtils;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCommand;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqPlugins;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqServer;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
-import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 
 import java.io.File;
 import java.net.URL;

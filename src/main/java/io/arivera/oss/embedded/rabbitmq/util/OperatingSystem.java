@@ -1,5 +1,7 @@
 package io.arivera.oss.embedded.rabbitmq.util;
 
+import io.arivera.oss.embedded.rabbitmq.apache.commons.lang3.SystemUtils;
+
 public enum OperatingSystem {
 
   WINDOWS, MAC_OS, UNIX;
