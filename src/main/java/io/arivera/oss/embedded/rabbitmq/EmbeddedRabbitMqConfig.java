@@ -170,21 +170,25 @@ public class EmbeddedRabbitMqConfig {
       this.processExecutorFactory = new RabbitMqCommand.ProcessExecutorFactory();
     }
 
+    @Beta
     public Builder downloadReadTimeoutInMillis(long downloadReadTimeoutInMillis) {
       this.downloadReadTimeoutInMillis = downloadReadTimeoutInMillis;
       return this;
     }
 
+    @Beta
     public Builder downloadConnectionTimeoutInMillis(long downloadConnectionTimeoutInMillis) {
       this.downloadConnectionTimeoutInMillis = downloadConnectionTimeoutInMillis;
       return this;
     }
 
+    @Beta
     public Builder defaultRabbitMqCtlTimeoutInMillis(long defaultRabbitMqCtlTimeoutInMillis) {
       this.defaultRabbitMqCtlTimeoutInMillis = defaultRabbitMqCtlTimeoutInMillis;
       return this;
     }
 
+    @Beta
     public Builder rabbitMqServerInitializationTimeoutInMillis(long rabbitMqServerInitializationTimeoutInMillis) {
       this.rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
       return this;
