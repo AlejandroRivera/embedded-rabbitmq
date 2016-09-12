@@ -41,6 +41,16 @@
         <developerConnection>scm:git:ssh://github.com/AlejandroRivera/embedded-rabbitmq.git</developerConnection>
     </scm>
 
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/AlejandroRivera/embedded-rabbitmq</url>
+    </ciManagement>
+
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/AlejandroRivera/embedded-rabbitmq/issues</url>
+    </issueManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
