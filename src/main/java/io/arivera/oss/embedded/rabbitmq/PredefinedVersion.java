@@ -3,6 +3,14 @@ package io.arivera.oss.embedded.rabbitmq;
 import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 
+/**
+ * A list of RabbitMQ versions pre-configured to match the binaries distributed officially by RabbitMQ.
+ * <p>
+ * Use this enum while building the {@link EmbeddedRabbitMqConfig} instance to specify a version to
+ * {@link EmbeddedRabbitMq#start() start}
+ *
+ * @see io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig.Builder#version(Version)
+ */
 public enum PredefinedVersion implements Version {
 
   V3_6_5(ArchiveType.TAR_XZ, ArchiveType.ZIP),
@@ -27,8 +35,7 @@ public enum PredefinedVersion implements Version {
   V3_4_1(ArchiveType.TAR_GZ, ArchiveType.ZIP),
   V3_4_0(ArchiveType.TAR_GZ, ArchiveType.ZIP),
 
-  LATEST(V3_6_5, ArchiveType.TAR_XZ, ArchiveType.ZIP),
-  ;
+  LATEST(V3_6_5, ArchiveType.TAR_XZ, ArchiveType.ZIP),;
 
   private static final String EXTRACTION_FOLDER = "rabbitmq_server-%s";
 

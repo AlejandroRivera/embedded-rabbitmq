@@ -3,6 +3,9 @@ package io.arivera.oss.embedded.rabbitmq;
 import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 
+/**
+ * A class that provides information about a specific distribution artifact version of RabbitMQ.
+ */
 public interface Version {
 
   /**

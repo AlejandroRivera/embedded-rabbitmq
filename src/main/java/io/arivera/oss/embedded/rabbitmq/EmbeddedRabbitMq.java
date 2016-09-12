@@ -15,7 +15,22 @@ import org.zeroturnaround.exec.ProcessResult;
 
 import java.util.concurrent.Future;
 
-
+/**
+ * This is the main class to interact with RabbitMQ.
+ * <p>
+ * Example use:
+ * <pre>
+ * {@code
+ *   EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder().build();
+ *   EmbeddedRabbitMq rabbitMq = new EmbeddedRabbitMq(config);
+ *   rabbitMq.start();
+ *   // ...
+ *   rabbitMq.stop();
+ * }
+ * </pre>
+ *
+ * @see EmbeddedRabbitMqConfig
+ */
 public class EmbeddedRabbitMq {
 
   private EmbeddedRabbitMqConfig config;
@@ -28,9 +43,9 @@ public class EmbeddedRabbitMq {
   /**
    * Starts the RabbitMQ server process and blocks the current thread until the initialization is completed.
    *
-   * @throws DownloadException when there's an issue downloading the appropriate artifact
+   * @throws DownloadException   when there's an issue downloading the appropriate artifact
    * @throws ExtractionException when there's an issue extracting the files from the downloaded artifact
-   * @throws StartupException when there's an issue starting the RabbitMQ server
+   * @throws StartupException    when there's an issue starting the RabbitMQ server
    */
   public void start() throws DownloadException, ExtractionException, StartupException {
     if (rabbitMqProcess != null) {

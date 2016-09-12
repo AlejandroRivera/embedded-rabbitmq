@@ -3,8 +3,13 @@ package io.arivera.oss.embedded.rabbitmq;
 import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 
+import java.net.URL;
+
 /**
  * Class used when user wants to define a custom RabbitMQ version and/or download source.
+ *
+ * @see EmbeddedRabbitMqConfig.Builder#version(Version)
+ * @see EmbeddedRabbitMqConfig.Builder#downloadFrom(URL, String)
  */
 class CustomVersion implements Version {
 

@@ -1,6 +1,9 @@
 package io.arivera.oss.embedded.rabbitmq;
 
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCommand;
+import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
+import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqPlugins;
+import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqServer;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 import io.arivera.oss.embedded.rabbitmq.util.SystemUtils;
 
@@ -10,8 +13,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Immutable configuration used to control all interactions with RabbitMQ broker and respective commands.
+ * <p>
+ * Use {@link EmbeddedRabbitMqConfig.Builder} to construct a new instance.
+ *
+ * Once you have created an instance, you can use it to create a new instance of {@link EmbeddedRabbitMq}
+ * or {@link RabbitMqCommand} or any of the helpers, like {@link RabbitMqPlugins}.
+ *
+ * @see EmbeddedRabbitMqConfig.Builder
+ * @see EmbeddedRabbitMq
+ * @see RabbitMqCommand
+ * @see RabbitMqCtl
+ * @see RabbitMqPlugins
+ * @see RabbitMqServer
+ */
 public class EmbeddedRabbitMqConfig {
-
 
   private final URL downloadSource;
   private final File downloadTarget;
@@ -102,6 +119,22 @@ public class EmbeddedRabbitMqConfig {
     return processExecutorFactory;
   }
 
+  /**
+   * A user-friendly way to create a new {@link EmbeddedRabbitMqConfig} instance.
+   * <p>
+   * Example use:
+   * <pre>
+   * {@code
+   * EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
+   *      .version(...);
+   *      .downloadFrom(...)
+   *      ...
+   *      .build();
+   * }
+   * </pre>
+   *
+   * @see EmbeddedRabbitMqConfig
+   */
   public static class Builder {
 
     public static final String DOWNLOAD_FOLDER = ".embeddedrabbitmq";
@@ -170,13 +203,12 @@ public class EmbeddedRabbitMqConfig {
     }
 
     /**
-     * @param downloadSource the URL from which to download the OS-specific artifact.
-     *                       For example: {@code https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz}
-     *
-     * @param appFolderName  this is the name of the folder under which all application files are found.
-     *                       For example, {@code rabbitmq-server-generic-unix-3.6.5.tar.xz} extracts everything into
-     *                       to {@code rabbitmq_server-3.6.5/*}. Therefore, the value here should be
-     *                       {@code "rabbitmq_server-3.6.5"}
+     * @param downloadSource the URL from which to download the OS-specific artifact. For example: {@code
+     *                       https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_5/rabbitmq-server-generic-unix-3.6.5.tar.xz}
+     * @param appFolderName  this is the name of the folder under which all application files are found. For example,
+     *                       {@code rabbitmq-server-generic-unix-3.6.5.tar.xz} extracts everything into to {@code
+     *                       rabbitmq_server-3.6.5/*}. Therefore, the value here should be {@code
+     *                       "rabbitmq_server-3.6.5"}
      *
      * @see #version(Version)
      */
@@ -275,7 +307,8 @@ public class EmbeddedRabbitMqConfig {
     /**
      * Defines an environment variable value to use for the execution of all RabbitMQ commands.
      *
-     * @see <a href="https://www.rabbitmq.com/configure.html#define-environment-variables">RabbitMQ Environment Variables</a>
+     * @see <a href="https://www.rabbitmq.com/configure.html#define-environment-variables">RabbitMQ Environment
+     * Variables</a>
      * @see #envVar(RabbitMqEnvVar, String)
      */
     public Builder envVar(String key, String value) {
@@ -285,7 +318,7 @@ public class EmbeddedRabbitMqConfig {
 
     /**
      * Defines an environment variable value to use for the execution of all RabbitMQ commands.
-     *
+     * <p>
      * Use {@link #envVar(String, String)} to define a variable that's not predefined in the {@link RabbitMqEnvVar} enum
      */
     public Builder envVar(RabbitMqEnvVar key, String value) {

@@ -8,6 +8,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A list of the official repositories where RabbitMQ publishes their artifacts.
+ *
+ * @see EmbeddedRabbitMqConfig.Builder#downloadFrom(ArtifactRepository)
+ */
 public enum OfficialArtifactRepository implements ArtifactRepository {
 
   RABBITMQ("http://www.rabbitmq.com/releases/rabbitmq-server/v%s.%s.%s/rabbitmq-server-%s-%s.%s"),
