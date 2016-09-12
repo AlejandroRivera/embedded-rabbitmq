@@ -2,7 +2,7 @@
 
 <sup>**Compatibility**:</sup>
 [![Unix](https://img.shields.io/badge/platform-unix-brightgreen.svg)]()
-[![Linux](https://img.shields.io/badge/platform-unix-brightgreen.svg)]()
+[![Linux](https://img.shields.io/badge/platform-linux-brightgreen.svg)]()
 [![OS X](https://img.shields.io/badge/platform-os%20x-brightgreen.svg)]()
 [![Windows](https://img.shields.io/badge/platform-windows-brightgreen.svg)]()
 <br/>
