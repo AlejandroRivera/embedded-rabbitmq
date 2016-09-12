@@ -38,7 +38,7 @@
     <scm>
         <url>http://github.com/AlejandroRivera/embedded-rabbitmq/tree/master</url>
         <connection>scm:git:https://github.com/AlejandroRivera/embedded-rabbitmq.git</connection>
-        <developerConnection>scm:git:ssh://github.com/AlejandroRivera/embedded-rabbitmq.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:AlejandroRivera/embedded-rabbitmq.git</developerConnection>
     </scm>
 
     <ciManagement>
