@@ -24,9 +24,9 @@ before_install:
 
 script:
   - mvn clean install
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then mvn deploy -DskipTests -P release -s maven-settings.xml; fi
 
 after_success:
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then mvn deploy -DskipTests -s maven-settings.xml; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then mvn jacoco:report coveralls:report; fi
 
 notifications:
