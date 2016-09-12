@@ -36,6 +36,9 @@ For SBT: ``` libraryDependencies += "io.arivera.oss" % "embedded-rabbitmq" % "X.
 For more info visit [Maven Central repo](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.arivera.oss%22%20AND%20a%3A%22embedded-rabbitmq%22) 
 or visit the [releases](https://github.com/AlejandroRivera/embedded-rabbitmq/releases) page.
 
+For `SNAPSHOT` releases, add the SonaType repository to your build system: 
+https://oss.sonatype.org/content/repositories/snapshots/
+
 ### 2. Start the RabbitMQ broker
 
 ```java
