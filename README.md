@@ -29,6 +29,10 @@
 This library allows for the use of various RabbitMQ versions as if it was an embedded service that can be controlled 
 from within the JVM.
 
+The way it works is by downloading, from official repositories, the correct artifact for the given version and 
+operating system, extracting it and starting the RabbitMQ Server with the specified configuration. 
+The broker can then be administered from within the JVM by using equivalent commands to `rabbitmqctl` or `rabbitmq-plugins`.
+
 ## Pre-requisites:
 
  * This project requires Java 7+
@@ -201,6 +205,8 @@ You can also see which other plugins where enabled implicitly, by calling the `g
     Set<Plugin> plugins = groupedPlugins.get(Plugin.State.ENABLED_IMPLICITLY);
     assertThat(plugins.size(), is(not(equalTo(0))));
 ```
+
+## FAQ:
 
 ## Troubleshooting:
 
