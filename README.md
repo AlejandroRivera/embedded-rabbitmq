@@ -1,10 +1,31 @@
 # Embedded RabbitMQ
 
+<sup>**Compatibility**:</sup>
+[![Unix](https://img.shields.io/badge/platform-unix-brightgreen.svg)]()
+[![Linux](https://img.shields.io/badge/platform-unix-brightgreen.svg)]()
+[![OS X](https://img.shields.io/badge/platform-os%20x-brightgreen.svg)]()
+[![Windows](https://img.shields.io/badge/platform-windows-brightgreen.svg)]()
+<br/>
+<sup>**Builds**: Linux/OS X</sup> 
 [![Build Status](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq.svg?branch=master)](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq)
+<sup>Windows</sup> 
 [![Build status](https://ci.appveyor.com/api/projects/status/r46o01l4ora7ppkf?svg=true)](https://ci.appveyor.com/project/AlejandroRivera/embedded-rabbitmq)
+<br/>
+<sup>**Quality**:</sup>
 [![Coverage Status](https://coveralls.io/repos/github/AlejandroRivera/embedded-rabbitmq/badge.svg)](https://coveralls.io/github/AlejandroRivera/embedded-rabbitmq)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/io-arivera-oss/embedded-rabbitmq)
+<br/>
+<sup>**Dist**:</sup>
+[![Snapshots](https://img.shields.io/badge/sonatype-SNAPSHOTS-blue.svg)](https://oss.sonatype.org/content/repositories/snapshots/io/arivera/oss/embedded-rabbitmq/)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.arivera.oss/embedded-rabbitmq/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.arivera.oss/embedded-rabbitmq)
+[![License](https://img.shields.io/github/license/AlejandroRivera/embedded-rabbitmq.svg)](./blob/master/LICENSE)
+<br/>
+<sup>**Stats**:</sup>
+[![Github Releases](https://img.shields.io/github/downloads/AlejandroRivera/embedded-rabbitmq/total.svg)](./releases)
+<br/>
+<sup>**Social**:</sup>
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/io-arivera-oss/embedded-rabbitmq)
+[![PayPal donation](https://img.shields.io/badge/donate-PayPal-blue.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=alejandro%2erivera%2elopez%40gmail%2ecom&lc=US&item_name=io%2earivera%2eoss&item_number=embedded%2drabbitmq&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
+[![Flattr donation](https://img.shields.io/badge/donate-Flattr-yellow.svg)](https://flattr.com/submit/auto?fid=lgx6kv&url=https%3A%2F%2Fgithub.com%2FAlejandroRivera%2Fembedded-rabbitmq)
 
 This library allows for the use of various RabbitMQ versions as if it was an embedded service that can be controlled 
 from within the JVM.
@@ -233,3 +254,12 @@ This project is released under [Apache License Version 2.0](http://www.apache.or
 > This permissive license contains a patent license from the contributors of the code.
   
 _Summary courtesy of: <https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)>_ 
+
+## Say thanks
+
+If you want to say thanks, you can:
+ * Star this project
+ * Donate: 
+   * [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=alejandro%2erivera%2elopez%40gmail%2ecom&lc=US&item_name=io%2earivera%2eoss&item_number=embedded%2drabbitmq&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
+ * Contribute improvements
+ 
