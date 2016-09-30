@@ -43,18 +43,18 @@ public class ErlangShell {
    * Fire up the Erlang shell to get the version information; if the process fails to run, no Erlang is installed,
    * or available on the path.
    */
-  public boolean checkErlangExistence() {
+  public void checkErlangExistence() throws ErlangShellException {
     try {
       final ErlangShell shell = new ErlangShell(config);
       final Future<ProcessResult> future = shell.execute();
       future.wait();
       final ProcessResult result = future.get();
-      return result.getExitValue() == 0;
+      if (result.getExitValue() != 0) {
+        throw new ErlangShellException("Could not retrieve Erlang version.");
+      }
     } catch (final Exception ex) {
-      processOutputLogger.error("Could not create/execute Erlang shell.", ex);
+      throw new ErlangShellException("Could not start/execute Erlang shell.", ex);
     }
-
-    return false;
   }
 
   private Future<ProcessResult> execute() throws RuntimeException{
