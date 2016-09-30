@@ -2,7 +2,6 @@ package io.arivera.oss.embedded.rabbitmq.bin;
 
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
-
 import org.apache.commons.io.output.NullOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -45,16 +45,19 @@ public class ErlangShell {
    * or available on the path.
    */
   public void checkErlangExistence() throws ErlangShellException {
+    int exitVal;
+
     try {
       final ErlangShell shell = new ErlangShell(config);
       final Future<ProcessResult> future = shell.execute();
-      future.wait();
       final ProcessResult result = future.get();
-      if (result.getExitValue() != 0) {
-        throw new ErlangShellException("Could not retrieve Erlang version.");
-      }
-    } catch (final Exception ex) {
+      exitVal = result.getExitValue();
+    } catch (final InterruptedException | ExecutionException ex) {
       throw new ErlangShellException("Could not start/execute Erlang shell.", ex);
+    }
+
+    if (exitVal != 0) {
+      throw new ErlangShellException("Could not retrieve Erlang version.");
     }
   }
 
