@@ -2,6 +2,7 @@ package io.arivera.oss.embedded.rabbitmq.bin;
 
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
+
 import org.apache.commons.io.output.NullOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class ErlangShell {
   private final Logger processOutputLogger;
 
   /**
-   * Generic Constructor
+   * Generic Constructor.
    */
   public ErlangShell(final EmbeddedRabbitMqConfig config) {
     this.config = config;
@@ -57,21 +58,24 @@ public class ErlangShell {
     }
   }
 
-  private Future<ProcessResult> execute() throws RuntimeException{
-    final List<String> fullCommand = Arrays.asList("erl", "-eval", "'{ok, Version} = file:read_file(filename:join([code:root_dir(), \"releases\", erlang:system_info(otp_release), \"OTP_VERSION\"])), erlang:display(erlang:binary_to_list(Version)), halt().'", "-noshell");
+  private Future<ProcessResult> execute() throws RuntimeException {
+    final List<String> fullCommand = Arrays.asList("erl", "-eval", "'{ok, Version} = "
+        + "file:read_file(filename:join([code:root_dir(), \"releases\", "
+        + "erlang:system_info(otp_release), \"OTP_VERSION\"])), "
+        + "erlang:display(erlang:binary_to_list(Version)), halt().'", "-noshell");
 
     final Slf4jStream loggingStream = Slf4jStream.of(processOutputLogger);
 
     final ProcessExecutor processExecutor = processExecutorFactory.createInstance()
-      .environment(config.getEnvVars())
-      .directory(config.getAppFolder())
-      .command(fullCommand)
-      .destroyOnExit()
-      .redirectError(loggingStream.as(Level.WARN))     // Logging for output made to STDERR
-      .redirectOutput(loggingStream.as(Level.INFO))     // Logging for output made to STDOUT
-      .redirectOutputAlsoTo(new NullOutputStream())         // Pipe stdout to this stream for the application to process
-      .redirectErrorAlsoTo(new NullOutputStream())     // Pipe stderr to this stream for the application to process
-      .readOutput(true);                   // Store the output in the ProcessResult as well.
+        .environment(config.getEnvVars())
+        .directory(config.getAppFolder())
+        .command(fullCommand)
+        .destroyOnExit()
+        .redirectError(loggingStream.as(Level.WARN))     // Logging for output made to STDERR
+        .redirectOutput(loggingStream.as(Level.INFO))     // Logging for output made to STDOUT
+        .redirectOutputAlsoTo(new NullOutputStream())         // Pipe stdout to this stream for the application to process
+        .redirectErrorAlsoTo(new NullOutputStream())     // Pipe stderr to this stream for the application to process
+        .readOutput(true);                   // Store the output in the ProcessResult as well.
 
     try {
       final StartedProcess startedProcess = processExecutor.start();
