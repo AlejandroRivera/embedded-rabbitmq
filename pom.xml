@@ -118,6 +118,14 @@
         </dependency>
 
         <dependency>
+            <!-- For logging on Windows -->
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.13</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <!-- Test framework -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

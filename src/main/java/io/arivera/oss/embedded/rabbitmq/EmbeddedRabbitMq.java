@@ -1,5 +1,7 @@
 package io.arivera.oss.embedded.rabbitmq;
 
+import io.arivera.oss.embedded.rabbitmq.bin.ErlangShell;
+import io.arivera.oss.embedded.rabbitmq.bin.ErlangShellException;
 import io.arivera.oss.embedded.rabbitmq.download.DownloadException;
 import io.arivera.oss.embedded.rabbitmq.download.Downloader;
 import io.arivera.oss.embedded.rabbitmq.download.DownloaderFactory;
@@ -43,17 +45,25 @@ public class EmbeddedRabbitMq {
   /**
    * Starts the RabbitMQ server process and blocks the current thread until the initialization is completed.
    *
-   * @throws DownloadException   when there's an issue downloading the appropriate artifact
-   * @throws ExtractionException when there's an issue extracting the files from the downloaded artifact
-   * @throws StartupException    when there's an issue starting the RabbitMQ server
+   * @throws ErlangShellException when there's an issue running Erlang
+   * @throws DownloadException    when there's an issue downloading the appropriate artifact
+   * @throws ExtractionException  when there's an issue extracting the files from the downloaded artifact
+   * @throws StartupException     when there's an issue starting the RabbitMQ server
    */
-  public void start() throws DownloadException, ExtractionException, StartupException {
+  public void start() throws ErlangShellException, DownloadException, ExtractionException, StartupException {
     if (rabbitMqProcess != null) {
       throw new IllegalStateException("Start shouldn't be called more than once unless stop() has been called before.");
     }
+
+    check();
     download();
     extract();
     run();
+  }
+
+  private void check() throws ErlangShellException {
+    final ErlangShell shell = new ErlangShell(config);
+    shell.checkErlangExistence();
   }
 
   private void download() throws DownloadException {
