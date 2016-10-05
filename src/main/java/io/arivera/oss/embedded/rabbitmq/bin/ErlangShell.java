@@ -1,19 +1,9 @@
 package io.arivera.oss.embedded.rabbitmq.bin;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.apache.commons.io.FileUtils;
 import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
-import org.apache.commons.io.IOUtils;
+
 import org.apache.commons.io.output.NullOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +12,17 @@ import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Level;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 /**
  * A wrapper for the command "<code>{@value ErlangShell#COMMAND}</code>", used for checking/testing the Erlang version.
  */
-public class ErlangShell {
+public final class ErlangShell {
   private static final String COMMAND = "erl";
   private static final String LOGGER_TEMPLATE = "%s.Process.%s";
 
@@ -54,7 +51,7 @@ public class ErlangShell {
     final int exitVal = result.getExitValue();
     final String results = result.outputUTF8();
 
-    if (exitVal != 0 || results.toLowerCase().contains("not found")) {
+    if (exitVal != 0 || results.toLowerCase(Locale.getDefault()).contains("not found")) {
       throw new ErlangShellException("Erlang not found");
     }
   }
@@ -75,16 +72,16 @@ public class ErlangShell {
 
     final Slf4jStream loggingStream = Slf4jStream.of(processOutputLogger);
 
-    final ProcessExecutor processExecutor = new ProcessExecutor()
-      .directory(config.getAppFolder())
-      .command("erlc", "test.erl")
-      .timeout(10L, TimeUnit.SECONDS)
-      .redirectError(loggingStream.as(Level.WARN))     // Logging for output made to STDERR
-      .redirectOutput(loggingStream.as(Level.INFO))     // Logging for output made to STDOUT
-      .redirectOutputAlsoTo(new NullOutputStream())         // Pipe stdout to this stream for the application to process
-      .redirectErrorAlsoTo(new NullOutputStream())     // Pipe stderr to this stream for the application to process
-      .destroyOnExit()
-      .readOutput(true);
+    final ProcessExecutor processExecutor = processExecutorFactory.createInstance()
+        .directory(config.getAppFolder())
+        .command("erlc", "test.erl")
+        .timeout(10L, TimeUnit.SECONDS)
+        .redirectError(loggingStream.as(Level.WARN))     // Logging for output made to STDERR
+        .redirectOutput(loggingStream.as(Level.INFO))     // Logging for output made to STDOUT
+        .redirectOutputAlsoTo(new NullOutputStream())         // Pipe stdout to this stream for the application to process
+        .redirectErrorAlsoTo(new NullOutputStream())     // Pipe stderr to this stream for the application to process
+        .destroyOnExit()
+        .readOutput(true);
 
     try {
       return processExecutor.execute();
