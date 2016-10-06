@@ -1,7 +1,6 @@
 package io.arivera.oss.embedded.rabbitmq.bin;
 
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
-import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,7 @@ import java.util.concurrent.TimeoutException;
 public final class ErlangShell {
   private static final String LOGGER_TEMPLATE = "%s.Process.%s";
 
-  private static final String WINDOWS_ERL_COMMAND = "werl";
+//  private static final String WINDOWS_ERL_COMMAND = "werl";
   private static final String UNIX_ERL_COMMAND = "erl";
 
   private final RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
@@ -37,7 +36,8 @@ public final class ErlangShell {
    * @throws ErlangShellException if the Erlang command can't be executed or if it exits unexpectedly.
    */
   public String getErlangVersion() throws ErlangShellException {
-    String erlangShell = OperatingSystem.detect() == OperatingSystem.WINDOWS ? WINDOWS_ERL_COMMAND : UNIX_ERL_COMMAND;
+    String erlangShell = UNIX_ERL_COMMAND;
+//        OperatingSystem.detect() == OperatingSystem.WINDOWS ? WINDOWS_ERL_COMMAND : UNIX_ERL_COMMAND;
 
     Logger processOutputLogger = LoggerFactory.getLogger(
         String.format(LOGGER_TEMPLATE, this.getClass().getName(), erlangShell));
@@ -46,7 +46,7 @@ public final class ErlangShell {
 
     final ProcessExecutor processExecutor = processExecutorFactory.createInstance()
         .command(erlangShell,
-            "-eval", "erlang:display(erlang:system_info(otp_release)), halt().", "-noshell")
+            "-noshell", "-eval", "erlang:display(erlang:system_info(otp_release)), halt().")
         .timeout(1L, TimeUnit.SECONDS)
         .redirectError(stream.as(Level.WARN))
         .redirectOutput(stream.as(Level.INFO))
