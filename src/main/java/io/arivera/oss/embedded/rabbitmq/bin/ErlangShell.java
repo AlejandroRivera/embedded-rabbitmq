@@ -49,6 +49,7 @@ public final class ErlangShell {
             "-eval", "erlang:display(erlang:system_info(otp_release)), halt().", "-noshell")
         .timeout(1L, TimeUnit.SECONDS)
         .redirectError(stream.as(Level.WARN))
+        .redirectOutput(stream.as(Level.INFO))
         .destroyOnExit()
         .readOutput(true);
 
