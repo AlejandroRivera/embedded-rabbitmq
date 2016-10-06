@@ -37,7 +37,6 @@ public final class ErlangShell {
    */
   public String getErlangVersion() throws ErlangShellException {
     String erlangShell = UNIX_ERL_COMMAND;
-//        OperatingSystem.detect() == OperatingSystem.WINDOWS ? WINDOWS_ERL_COMMAND : UNIX_ERL_COMMAND;
 
     Logger processOutputLogger = LoggerFactory.getLogger(
         String.format(LOGGER_TEMPLATE, this.getClass().getName(), erlangShell));
