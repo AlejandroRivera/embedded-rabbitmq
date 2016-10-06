@@ -1,13 +1,13 @@
 package io.arivera.oss.embedded.rabbitmq;
 
-import io.arivera.oss.embedded.rabbitmq.bin.ErlangShell;
-import io.arivera.oss.embedded.rabbitmq.bin.ErlangShellException;
 import io.arivera.oss.embedded.rabbitmq.download.DownloadException;
 import io.arivera.oss.embedded.rabbitmq.download.Downloader;
 import io.arivera.oss.embedded.rabbitmq.download.DownloaderFactory;
 import io.arivera.oss.embedded.rabbitmq.extract.ExtractionException;
 import io.arivera.oss.embedded.rabbitmq.extract.Extractor;
 import io.arivera.oss.embedded.rabbitmq.extract.ExtractorFactory;
+import io.arivera.oss.embedded.rabbitmq.helpers.ErlangVersionChecker;
+import io.arivera.oss.embedded.rabbitmq.helpers.ErlangVersionException;
 import io.arivera.oss.embedded.rabbitmq.helpers.ShutDownException;
 import io.arivera.oss.embedded.rabbitmq.helpers.ShutdownHelper;
 import io.arivera.oss.embedded.rabbitmq.helpers.StartupException;
@@ -45,12 +45,12 @@ public class EmbeddedRabbitMq {
   /**
    * Starts the RabbitMQ server process and blocks the current thread until the initialization is completed.
    *
-   * @throws ErlangShellException when there's an issue running Erlang
+   * @throws ErlangVersionException when there's an issue with the system's Erlang version
    * @throws DownloadException    when there's an issue downloading the appropriate artifact
    * @throws ExtractionException  when there's an issue extracting the files from the downloaded artifact
    * @throws StartupException     when there's an issue starting the RabbitMQ server
    */
-  public void start() throws ErlangShellException, DownloadException, ExtractionException, StartupException {
+  public void start() throws ErlangVersionException, DownloadException, ExtractionException, StartupException {
     if (rabbitMqProcess != null) {
       throw new IllegalStateException("Start shouldn't be called more than once unless stop() has been called before.");
     }
@@ -61,9 +61,8 @@ public class EmbeddedRabbitMq {
     run();
   }
 
-  private void check() throws ErlangShellException {
-    final ErlangShell shell = new ErlangShell(config);
-    shell.checkErlangExistence();
+  private void check() throws ErlangVersionException {
+    new ErlangVersionChecker(config).check();
   }
 
   private void download() throws DownloadException {

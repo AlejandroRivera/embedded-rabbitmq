@@ -1,6 +1,6 @@
 package io.arivera.oss.embedded.rabbitmq.bin;
 
-public class ErlangShellException extends RuntimeException {
+public class ErlangShellException extends Exception {
   public ErlangShellException(String message) {
     super(message);
   }

@@ -2,6 +2,7 @@ package io.arivera.oss.embedded.rabbitmq.bin;
 
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.PredefinedVersion;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,6 +11,9 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashMap;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ErlangShellTest {
@@ -37,6 +41,9 @@ public class ErlangShellTest {
   @Test
   public void checkForErlang() throws Exception {
     final ErlangShell shell = new ErlangShell(configBuilder.build());
-    shell.checkErlangExistence();
+    String erlangVersion = shell.getErlangVersion();
+    assertThat(erlangVersion.isEmpty(), is(false));
+    System.out.println(erlangVersion);
   }
+
 }

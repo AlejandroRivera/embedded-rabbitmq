@@ -20,7 +20,7 @@ cache:
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install erlang; fi      # Erlang 17 will be installed without even updating brew!
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export JAVA_HOME="$(/usr/libexec/java_home -v 1.7)"; fi    # Required by Maven
-  - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
+  - erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "releases", "erlang:system_info(otp_release), "OTP_VERSION"])), erlang:display(erlang:binary_to_list(Version)), halt().' -noshell
 
 script:
   - mvn clean install
