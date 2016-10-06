@@ -46,10 +46,7 @@ public final class ErlangShell {
 
     final ProcessExecutor processExecutor = processExecutorFactory.createInstance()
         .command(erlangShell,
-            "-eval", "{ok, Version} = file:read_file(filename:join([code:root_dir(), \"releases\", "
-                + "erlang:system_info(otp_release), \"OTP_VERSION\"])), "
-                + "erlang:display(erlang:binary_to_list(Version)), halt().",
-            "-noshell")
+            "-eval", "erlang:display(erlang:system_info(otp_release)), halt().", "-noshell")
         .timeout(1L, TimeUnit.SECONDS)
         .redirectError(stream.as(Level.WARN))
         .destroyOnExit()
