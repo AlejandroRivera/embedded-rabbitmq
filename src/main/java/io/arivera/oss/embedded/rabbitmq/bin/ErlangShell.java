@@ -19,7 +19,6 @@ import java.util.concurrent.TimeoutException;
 public final class ErlangShell {
   private static final String LOGGER_TEMPLATE = "%s.Process.%s";
 
-//  private static final String WINDOWS_ERL_COMMAND = "werl";
   private static final String UNIX_ERL_COMMAND = "erl";
 
   private final RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
