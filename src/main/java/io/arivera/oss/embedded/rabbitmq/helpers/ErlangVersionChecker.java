@@ -58,10 +58,10 @@ public class ErlangVersionChecker {
     }
 
     if (actual < expected) {
-        throw new ErlangVersionException(
-            String.format("Minimum required Erlang version not found. Expected '%s' or higher. Actual is: '%s'",
-                minErlangVersion, erlangVersion));
-      }
+      throw new ErlangVersionException(
+          String.format("Minimum required Erlang version not found. Expected '%s' or higher. Actual is: '%s'",
+              minErlangVersion, erlangVersion));
+    }
   }
 
   /**
