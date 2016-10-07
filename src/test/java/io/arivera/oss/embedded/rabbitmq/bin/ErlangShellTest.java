@@ -43,7 +43,6 @@ public class ErlangShellTest {
     final ErlangShell shell = new ErlangShell(configBuilder.build());
     String erlangVersion = shell.getErlangVersion();
     assertThat(erlangVersion.isEmpty(), is(false));
-    System.out.println(erlangVersion);
   }
 
 }

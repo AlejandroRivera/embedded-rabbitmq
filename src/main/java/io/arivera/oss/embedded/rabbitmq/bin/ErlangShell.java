@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * A wrapper for the command "<code>{@value ErlangShell#UNIX_ERL_COMMAND}</code>", used for checking/testing the Erlang version.
  */
-public final class ErlangShell {
+public class ErlangShell {
   private static final String LOGGER_TEMPLATE = "%s.Process.%s";
 
   private static final String UNIX_ERL_COMMAND = "erl";
@@ -47,7 +47,6 @@ public final class ErlangShell {
             "-noshell", "-eval", "erlang:display(erlang:system_info(otp_release)), halt().")
         .timeout(1L, TimeUnit.SECONDS)
         .redirectError(stream.as(Level.WARN))
-        .redirectOutput(stream.as(Level.INFO))
         .destroyOnExit()
         .readOutput(true);
 
@@ -55,7 +54,7 @@ public final class ErlangShell {
       ProcessResult processResult = processExecutor.execute();
       int exitValue = processResult.getExitValue();
       if (exitValue == 0) {
-        return processResult.outputUTF8().trim().replaceAll("[\"\\\\n]", ""); // "18.2.1\n" -> 18.2.1
+        return processResult.outputUTF8().trim().replaceAll("[\"\\\\n]", ""); // "18.2.1\n" -> "18.2.1"
       } else {
         throw new ErlangShellException("Erlang exited with status " + exitValue);
       }
