@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class EmbeddedRabbitMqConfig {
 
+  private final Version version;
+
   private final URL downloadSource;
   private final File downloadTarget;
   private final File extractionFolder;
@@ -46,7 +48,8 @@ public class EmbeddedRabbitMqConfig {
   private final Map<String, String> envVars;
   private final RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
 
-  protected EmbeddedRabbitMqConfig(URL downloadSource,
+  protected EmbeddedRabbitMqConfig(Version version,
+                                   URL downloadSource,
                                    File downloadTarget,
                                    File extractionFolder,
                                    File appFolder,
@@ -57,6 +60,7 @@ public class EmbeddedRabbitMqConfig {
                                    boolean cacheDownload, boolean deleteCachedFile,
                                    Map<String, String> envVars,
                                    RabbitMqCommand.ProcessExecutorFactory processExecutorFactory) {
+    this.version = version;
     this.downloadSource = downloadSource;
     this.downloadTarget = downloadTarget;
     this.extractionFolder = extractionFolder;
@@ -117,6 +121,10 @@ public class EmbeddedRabbitMqConfig {
 
   public RabbitMqCommand.ProcessExecutorFactory getProcessExecutorFactory() {
     return processExecutorFactory;
+  }
+
+  public Version getVersion() {
+    return version;
   }
 
   /**
@@ -374,6 +382,7 @@ public class EmbeddedRabbitMqConfig {
       File appAbsPath = new File(extractionFolder.toString(), version.getExtractionFolder());
 
       return new EmbeddedRabbitMqConfig(
+          version,
           downloadSource, downloadTarget, extractionFolder, appAbsPath,
           downloadConnectionTimeoutInMillis, downloadReadTimeoutInMillis,
           defaultRabbitMqCtlTimeoutInMillis,

@@ -23,4 +23,9 @@ public interface Version {
    */
   String getExtractionFolder();
 
+  /**
+   * @return minimum version required to run this RabbitMQ version. Example: {@code "R16B3"} or {code null}
+   */
+  String getMinimumErlangVersion();
+
 }

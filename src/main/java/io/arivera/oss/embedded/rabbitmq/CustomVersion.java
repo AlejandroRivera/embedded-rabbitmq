@@ -33,4 +33,12 @@ class CustomVersion implements Version {
   public String getExtractionFolder() {
     return appFolderName;
   }
+
+  /**
+   * @return {@code null} since it's unknown.
+   */
+  @Override
+  public String getMinimumErlangVersion() {
+    return null;
+  }
 }
