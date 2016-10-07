@@ -38,6 +38,7 @@ public class ErlangVersionChecker {
     String erlangVersion;
     try {
       erlangVersion = erlangShell.getErlangVersion();
+      LOGGER.debug("Erlang version installed in this system: {}", erlangVersion);
     } catch (ErlangShellException e) {
       throw new ErlangVersionException("Could not determine Erlang version. Ensure Erlang is correctly installed.", e);
     }
@@ -45,6 +46,8 @@ public class ErlangVersionChecker {
     if (minErlangVersion == null) {
       LOGGER.debug("RabbitMQ version to execute doesn't specify a minimum Erlang version. Will skip this check.");
       return;
+    } else {
+      LOGGER.debug("RabbitMQ version to execute requires Erlang version {} or above.", minErlangVersion);
     }
 
     double expected;
