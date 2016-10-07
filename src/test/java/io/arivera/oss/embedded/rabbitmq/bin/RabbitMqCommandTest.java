@@ -63,6 +63,7 @@ public class RabbitMqCommandTest {
 
   @Mock
   private RabbitMqCommand.ProcessExecutorFactory factory;
+
   @Mock
   private StartedProcess startedProcess;
 

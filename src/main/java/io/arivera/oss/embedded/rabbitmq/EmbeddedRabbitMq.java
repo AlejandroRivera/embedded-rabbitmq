@@ -6,6 +6,8 @@ import io.arivera.oss.embedded.rabbitmq.download.DownloaderFactory;
 import io.arivera.oss.embedded.rabbitmq.extract.ExtractionException;
 import io.arivera.oss.embedded.rabbitmq.extract.Extractor;
 import io.arivera.oss.embedded.rabbitmq.extract.ExtractorFactory;
+import io.arivera.oss.embedded.rabbitmq.helpers.ErlangVersionChecker;
+import io.arivera.oss.embedded.rabbitmq.helpers.ErlangVersionException;
 import io.arivera.oss.embedded.rabbitmq.helpers.ShutDownException;
 import io.arivera.oss.embedded.rabbitmq.helpers.ShutdownHelper;
 import io.arivera.oss.embedded.rabbitmq.helpers.StartupException;
@@ -43,17 +45,24 @@ public class EmbeddedRabbitMq {
   /**
    * Starts the RabbitMQ server process and blocks the current thread until the initialization is completed.
    *
-   * @throws DownloadException   when there's an issue downloading the appropriate artifact
-   * @throws ExtractionException when there's an issue extracting the files from the downloaded artifact
-   * @throws StartupException    when there's an issue starting the RabbitMQ server
+   * @throws ErlangVersionException when there's an issue with the system's Erlang version
+   * @throws DownloadException    when there's an issue downloading the appropriate artifact
+   * @throws ExtractionException  when there's an issue extracting the files from the downloaded artifact
+   * @throws StartupException     when there's an issue starting the RabbitMQ server
    */
-  public void start() throws DownloadException, ExtractionException, StartupException {
+  public void start() throws ErlangVersionException, DownloadException, ExtractionException, StartupException {
     if (rabbitMqProcess != null) {
       throw new IllegalStateException("Start shouldn't be called more than once unless stop() has been called before.");
     }
+
+    check();
     download();
     extract();
     run();
+  }
+
+  private void check() throws ErlangVersionException {
+    new ErlangVersionChecker(config).check();
   }
 
   private void download() throws DownloadException {
