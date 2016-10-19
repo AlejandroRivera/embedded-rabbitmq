@@ -9,7 +9,7 @@
 <sup>**Builds**: Linux/OS X</sup> 
 [![Build Status](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq.svg?branch=master)](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq)
 <sup>Windows</sup> 
-[![Build status](https://ci.appveyor.com/api/projects/status/r46o01l4ora7ppkf?svg=true)](https://ci.appveyor.com/project/AlejandroRivera/embedded-rabbitmq)
+[![Build status](https://ci.appveyor.com/api/projects/status/r46o01l4ora7ppkf/branch/master?svg=true)](https://ci.appveyor.com/project/AlejandroRivera/embedded-rabbitmq)
 <br/>
 <sup>**Reports**:</sup>
 [![Coverage Status](https://coveralls.io/repos/github/AlejandroRivera/embedded-rabbitmq/badge.svg)](https://coveralls.io/github/AlejandroRivera/embedded-rabbitmq)
