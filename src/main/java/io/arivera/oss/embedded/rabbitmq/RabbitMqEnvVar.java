@@ -18,7 +18,7 @@ public enum RabbitMqEnvVar {
   /**
    * The port to bind this RabbitMQ broker node.
    *
-   * <p>Default value: {@code 5672}</p>
+   * <p>Default value: {@value DEFAULT_NODE_PORT}</p>
    */
   NODE_PORT,
 
@@ -132,6 +132,8 @@ public enum RabbitMqEnvVar {
   CONFIG_FILE;
 
   private static final String ENV_VAR_PREFIX = "RABBITMQ_";
+
+  public static final int DEFAULT_NODE_PORT = 5672;
 
   RabbitMqEnvVar() {
   }

@@ -6,6 +6,7 @@ import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqPlugins;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqServer;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
+import io.arivera.oss.embedded.rabbitmq.util.RandomPortSupplier;
 
 import java.io.File;
 import java.net.URL;
@@ -125,6 +126,20 @@ public class EmbeddedRabbitMqConfig {
 
   public Version getVersion() {
     return version;
+  }
+
+  /**
+   * Returns the RabbitMQ node port as defined by the {@link #envVars} or the default port if not defined.
+   * <p>
+   * This method will return the correct port even if the {@link Builder#randomPort()} method was used.
+   */
+  public int getRabbitMqPort() {
+    String portValue = this.envVars.get(RabbitMqEnvVar.NODE_PORT.getEnvVarName());
+    if (portValue == null) {
+      return RabbitMqEnvVar.DEFAULT_NODE_PORT;
+    } else {
+      return Integer.parseInt(portValue);
+    }
   }
 
   /**
@@ -336,6 +351,32 @@ public class EmbeddedRabbitMqConfig {
     public Builder envVar(RabbitMqEnvVar key, String value) {
       this.envVar(key.getEnvVarName(), value);
       return this;
+    }
+
+    /**
+     * Defines the port that this RabbitMQ broker node will run on.
+     * <p>
+     * The port is defined by setting the environment variable {@link RabbitMqEnvVar#NODE_PORT}
+     *
+     * @param port any valid port number or {@code -1} to use any random available port (same as {@link #randomPort()})
+     */
+    public Builder port(int port) {
+      if (port == -1) {
+        return this.randomPort();
+      } else {
+        this.envVar(RabbitMqEnvVar.NODE_PORT, String.valueOf(port));
+        return this;
+      }
+    }
+
+    /**
+     * Defines the port that this RabbitMQ broker node will run on.
+     * <p>
+     * The port is defined by setting the environment variable {@link RabbitMqEnvVar#NODE_PORT}
+     */
+    public Builder randomPort() {
+      int randomPort = new RandomPortSupplier().get();
+      return port(randomPort);
     }
 
     /**
