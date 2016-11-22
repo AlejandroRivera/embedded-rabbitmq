@@ -42,6 +42,7 @@ public class EmbeddedRabbitMqConfig {
   private final long downloadConnectionTimeoutInMillis;
   private final long defaultRabbitMqCtlTimeoutInMillis;
   private final long rabbitMqServerInitializationTimeoutInMillis;
+  private final long erlangCheckTimeoutInMillis;
 
   private final boolean shouldCacheDownload;
   private final boolean deleteCachedFileOnErrors;
@@ -58,6 +59,7 @@ public class EmbeddedRabbitMqConfig {
                                    long downloadConnectionTimeoutInMillis,
                                    long defaultRabbitMqCtlTimeoutInMillis,
                                    long rabbitMqServerInitializationTimeoutInMillis,
+                                   long erlangCheckTimeoutInMillis,
                                    boolean cacheDownload, boolean deleteCachedFile,
                                    Map<String, String> envVars,
                                    RabbitMqCommand.ProcessExecutorFactory processExecutorFactory) {
@@ -70,6 +72,7 @@ public class EmbeddedRabbitMqConfig {
     this.downloadConnectionTimeoutInMillis = downloadConnectionTimeoutInMillis;
     this.defaultRabbitMqCtlTimeoutInMillis = defaultRabbitMqCtlTimeoutInMillis;
     this.rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
+    this.erlangCheckTimeoutInMillis = erlangCheckTimeoutInMillis;
     this.shouldCacheDownload = cacheDownload;
     this.deleteCachedFileOnErrors = deleteCachedFile;
     this.envVars = envVars;
@@ -90,6 +93,10 @@ public class EmbeddedRabbitMqConfig {
 
   public long getRabbitMqServerInitializationTimeoutInMillis() {
     return rabbitMqServerInitializationTimeoutInMillis;
+  }
+
+  public long getErlangCheckTimeoutInMillis() {
+    return erlangCheckTimeoutInMillis;
   }
 
   public URL getDownloadSource() {
@@ -165,6 +172,7 @@ public class EmbeddedRabbitMqConfig {
     private long downloadConnectionTimeoutInMillis;
     private long defaultRabbitMqCtlTimeoutInMillis;
     private long rabbitMqServerInitializationTimeoutInMillis;
+    private long erlangCheckTimeoutInMillis;
     private File downloadFolder;
     private File downloadTarget;
     private File extractionFolder;
@@ -185,6 +193,7 @@ public class EmbeddedRabbitMqConfig {
       this.downloadReadTimeoutInMillis = TimeUnit.SECONDS.toMillis(3);
       this.defaultRabbitMqCtlTimeoutInMillis = TimeUnit.SECONDS.toMillis(2);
       this.rabbitMqServerInitializationTimeoutInMillis = TimeUnit.SECONDS.toMillis(3);
+      this.erlangCheckTimeoutInMillis = TimeUnit.SECONDS.toMillis(1);
       this.cacheDownload = true;
       this.deleteCachedFile = true;
       this.downloadFolder = new File(System.getProperty("user.home"), DOWNLOAD_FOLDER);
@@ -214,6 +223,12 @@ public class EmbeddedRabbitMqConfig {
     @Beta
     public Builder rabbitMqServerInitializationTimeoutInMillis(long rabbitMqServerInitializationTimeoutInMillis) {
       this.rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
+      return this;
+    }
+
+    @Beta
+    public Builder erlangCheckTimeoutInMillis(long erlangCheckTimeoutInMillis) {
+      this.erlangCheckTimeoutInMillis = erlangCheckTimeoutInMillis;
       return this;
     }
 
@@ -428,6 +443,7 @@ public class EmbeddedRabbitMqConfig {
           downloadConnectionTimeoutInMillis, downloadReadTimeoutInMillis,
           defaultRabbitMqCtlTimeoutInMillis,
           rabbitMqServerInitializationTimeoutInMillis,
+          erlangCheckTimeoutInMillis,
           cacheDownload, deleteCachedFile,
           envVars,
           processExecutorFactory);

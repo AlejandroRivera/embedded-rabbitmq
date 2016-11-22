@@ -59,6 +59,7 @@ public class EmbeddedRabbitMqTest {
         .extractionFolder(temporaryFolder.newFolder("extracted"))
         .rabbitMqServerInitializationTimeoutInMillis(TimeUnit.SECONDS.toMillis(10))
         .defaultRabbitMqCtlTimeoutInMillis(TimeUnit.SECONDS.toMillis(10))
+        .erlangCheckTimeoutInMillis(TimeUnit.SECONDS.toMillis(3))
 //        .useCachedDownload(false)
         .build();
 
