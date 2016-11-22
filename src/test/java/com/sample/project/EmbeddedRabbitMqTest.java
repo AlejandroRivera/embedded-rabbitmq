@@ -57,9 +57,9 @@ public class EmbeddedRabbitMqTest {
 //        .envVar(RabbitMqEnvVar.NODE_PORT, String.valueOf(PORT))
         .envVar(RabbitMqEnvVar.CONFIG_FILE, configFile.toString().replace(".config", ""))
         .extractionFolder(temporaryFolder.newFolder("extracted"))
-        .rabbitMqServerInitializationTimeoutInMillis(TimeUnit.SECONDS.toMillis(10))
-        .defaultRabbitMqCtlTimeoutInMillis(TimeUnit.SECONDS.toMillis(10))
-        .erlangCheckTimeoutInMillis(TimeUnit.SECONDS.toMillis(4))
+        .rabbitMqServerInitializationTimeoutInMillis(TimeUnit.SECONDS.toMillis(20))
+        .defaultRabbitMqCtlTimeoutInMillis(TimeUnit.SECONDS.toMillis(20))
+        .erlangCheckTimeoutInMillis(TimeUnit.SECONDS.toMillis(10))
 //        .useCachedDownload(false)
         .build();
 
