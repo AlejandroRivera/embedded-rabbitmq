@@ -30,7 +30,7 @@ public class ErlangShellTest {
   public void setUp() throws Exception {
     configBuilder = new EmbeddedRabbitMqConfig.Builder()
       .envVars(new HashMap<String, String>())
-      .erlangCheckTimeoutInMillis(TimeUnit.SECONDS.toMillis(3))
+      .erlangCheckTimeoutInMillis(TimeUnit.SECONDS.toMillis(4))
       .extractionFolder(tempFolder.getRoot())
       .version(this.version)
       .processExecutorFactory(this.factory);
