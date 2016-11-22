@@ -1,8 +1,8 @@
 package io.arivera.oss.embedded.rabbitmq.util;
 
-import javax.net.ServerSocketFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
+import javax.net.ServerSocketFactory;
 
 public class RandomPortSupplier {
 
@@ -19,7 +19,7 @@ public class RandomPortSupplier {
   /**
    * @return an available port assigned at random by the OS.
    *
-   * @throws IllegalStateException
+   * @throws IllegalStateException if the port cannot be determined.
    */
   public int get() throws IllegalStateException {
     ServerSocket socket = null;

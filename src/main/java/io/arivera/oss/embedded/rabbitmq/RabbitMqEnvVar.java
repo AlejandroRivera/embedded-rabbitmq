@@ -131,9 +131,9 @@ public enum RabbitMqEnvVar {
    */
   CONFIG_FILE;
 
-  private static final String ENV_VAR_PREFIX = "RABBITMQ_";
-
   public static final int DEFAULT_NODE_PORT = 5672;
+
+  private static final String ENV_VAR_PREFIX = "RABBITMQ_";
 
   RabbitMqEnvVar() {
   }
