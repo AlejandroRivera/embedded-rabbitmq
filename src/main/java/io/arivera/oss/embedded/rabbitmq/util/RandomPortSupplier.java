@@ -1,10 +1,15 @@
 package io.arivera.oss.embedded.rabbitmq.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import javax.net.ServerSocketFactory;
 
 public class RandomPortSupplier {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(RandomPortSupplier.class);
 
   private final ServerSocketFactory severSocketFactory;
 
@@ -34,7 +39,7 @@ public class RandomPortSupplier {
         try {
           socket.close();
         } catch (IOException e) {
-          // swallow exception
+          LOGGER.debug("Couldn't close socket that was temporarily opened to determine random port.", e);
         }
       }
     }
