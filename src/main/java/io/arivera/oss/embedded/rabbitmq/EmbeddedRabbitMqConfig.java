@@ -6,6 +6,7 @@ import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqPlugins;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqServer;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
+import io.arivera.oss.embedded.rabbitmq.util.RandomPortSupplier;
 
 import java.io.File;
 import java.net.URL;
@@ -41,6 +42,7 @@ public class EmbeddedRabbitMqConfig {
   private final long downloadConnectionTimeoutInMillis;
   private final long defaultRabbitMqCtlTimeoutInMillis;
   private final long rabbitMqServerInitializationTimeoutInMillis;
+  private final long erlangCheckTimeoutInMillis;
 
   private final boolean shouldCacheDownload;
   private final boolean deleteCachedFileOnErrors;
@@ -57,6 +59,7 @@ public class EmbeddedRabbitMqConfig {
                                    long downloadConnectionTimeoutInMillis,
                                    long defaultRabbitMqCtlTimeoutInMillis,
                                    long rabbitMqServerInitializationTimeoutInMillis,
+                                   long erlangCheckTimeoutInMillis,
                                    boolean cacheDownload, boolean deleteCachedFile,
                                    Map<String, String> envVars,
                                    RabbitMqCommand.ProcessExecutorFactory processExecutorFactory) {
@@ -69,6 +72,7 @@ public class EmbeddedRabbitMqConfig {
     this.downloadConnectionTimeoutInMillis = downloadConnectionTimeoutInMillis;
     this.defaultRabbitMqCtlTimeoutInMillis = defaultRabbitMqCtlTimeoutInMillis;
     this.rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
+    this.erlangCheckTimeoutInMillis = erlangCheckTimeoutInMillis;
     this.shouldCacheDownload = cacheDownload;
     this.deleteCachedFileOnErrors = deleteCachedFile;
     this.envVars = envVars;
@@ -89,6 +93,10 @@ public class EmbeddedRabbitMqConfig {
 
   public long getRabbitMqServerInitializationTimeoutInMillis() {
     return rabbitMqServerInitializationTimeoutInMillis;
+  }
+
+  public long getErlangCheckTimeoutInMillis() {
+    return erlangCheckTimeoutInMillis;
   }
 
   public URL getDownloadSource() {
@@ -128,6 +136,20 @@ public class EmbeddedRabbitMqConfig {
   }
 
   /**
+   * Returns the RabbitMQ node port as defined by the {@link #envVars} or the default port if not defined.
+   * <p>
+   * This method will return the correct port even if the {@link Builder#randomPort()} method was used.
+   */
+  public int getRabbitMqPort() {
+    String portValue = this.envVars.get(RabbitMqEnvVar.NODE_PORT.getEnvVarName());
+    if (portValue == null) {
+      return RabbitMqEnvVar.DEFAULT_NODE_PORT;
+    } else {
+      return Integer.parseInt(portValue);
+    }
+  }
+
+  /**
    * A user-friendly way to create a new {@link EmbeddedRabbitMqConfig} instance.
    * <p>
    * Example use:
@@ -150,6 +172,7 @@ public class EmbeddedRabbitMqConfig {
     private long downloadConnectionTimeoutInMillis;
     private long defaultRabbitMqCtlTimeoutInMillis;
     private long rabbitMqServerInitializationTimeoutInMillis;
+    private long erlangCheckTimeoutInMillis;
     private File downloadFolder;
     private File downloadTarget;
     private File extractionFolder;
@@ -170,6 +193,7 @@ public class EmbeddedRabbitMqConfig {
       this.downloadReadTimeoutInMillis = TimeUnit.SECONDS.toMillis(3);
       this.defaultRabbitMqCtlTimeoutInMillis = TimeUnit.SECONDS.toMillis(2);
       this.rabbitMqServerInitializationTimeoutInMillis = TimeUnit.SECONDS.toMillis(3);
+      this.erlangCheckTimeoutInMillis = TimeUnit.SECONDS.toMillis(1);
       this.cacheDownload = true;
       this.deleteCachedFile = true;
       this.downloadFolder = new File(System.getProperty("user.home"), DOWNLOAD_FOLDER);
@@ -199,6 +223,12 @@ public class EmbeddedRabbitMqConfig {
     @Beta
     public Builder rabbitMqServerInitializationTimeoutInMillis(long rabbitMqServerInitializationTimeoutInMillis) {
       this.rabbitMqServerInitializationTimeoutInMillis = rabbitMqServerInitializationTimeoutInMillis;
+      return this;
+    }
+
+    @Beta
+    public Builder erlangCheckTimeoutInMillis(long erlangCheckTimeoutInMillis) {
+      this.erlangCheckTimeoutInMillis = erlangCheckTimeoutInMillis;
       return this;
     }
 
@@ -339,6 +369,32 @@ public class EmbeddedRabbitMqConfig {
     }
 
     /**
+     * Defines the port that this RabbitMQ broker node will run on.
+     * <p>
+     * The port is defined by setting the environment variable {@link RabbitMqEnvVar#NODE_PORT}
+     *
+     * @param port any valid port number or {@code -1} to use any random available port (same as {@link #randomPort()})
+     */
+    public Builder port(int port) {
+      if (port == -1) {
+        return this.randomPort();
+      } else {
+        this.envVar(RabbitMqEnvVar.NODE_PORT, String.valueOf(port));
+        return this;
+      }
+    }
+
+    /**
+     * Defines the port that this RabbitMQ broker node will run on.
+     * <p>
+     * The port is defined by setting the environment variable {@link RabbitMqEnvVar#NODE_PORT}
+     */
+    public Builder randomPort() {
+      int randomPort = new RandomPortSupplier().get();
+      return port(randomPort);
+    }
+
+    /**
      * A helper method to define several variables at once.
      *
      * @see #envVar(String, String)
@@ -387,6 +443,7 @@ public class EmbeddedRabbitMqConfig {
           downloadConnectionTimeoutInMillis, downloadReadTimeoutInMillis,
           defaultRabbitMqCtlTimeoutInMillis,
           rabbitMqServerInitializationTimeoutInMillis,
+          erlangCheckTimeoutInMillis,
           cacheDownload, deleteCachedFile,
           envVars,
           processExecutorFactory);

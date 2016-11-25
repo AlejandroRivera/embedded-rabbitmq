@@ -18,7 +18,7 @@ public enum RabbitMqEnvVar {
   /**
    * The port to bind this RabbitMQ broker node.
    *
-   * <p>Default value: {@code 5672}</p>
+   * <p>Default value: {@value DEFAULT_NODE_PORT}</p>
    */
   NODE_PORT,
 
@@ -130,6 +130,8 @@ public enum RabbitMqEnvVar {
    * <p>The value should not contain the suffix {@code .config} since Erlang will append it automatically.</p>
    */
   CONFIG_FILE;
+
+  public static final int DEFAULT_NODE_PORT = 5672;
 
   private static final String ENV_VAR_PREFIX = "RABBITMQ_";
 

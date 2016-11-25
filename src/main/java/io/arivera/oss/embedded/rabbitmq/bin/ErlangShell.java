@@ -21,13 +21,14 @@ public class ErlangShell {
 
   private static final String UNIX_ERL_COMMAND = "erl";
 
-  private final RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
+  private final EmbeddedRabbitMqConfig config;
 
   /**
    * Generic Constructor.
    */
   public ErlangShell(final EmbeddedRabbitMqConfig config) {
-    this.processExecutorFactory = config.getProcessExecutorFactory();
+    this.config = config;
+
   }
 
   /**
@@ -42,10 +43,9 @@ public class ErlangShell {
 
     Slf4jStream stream = Slf4jStream.of(processOutputLogger);
 
-    final ProcessExecutor processExecutor = processExecutorFactory.createInstance()
-        .command(erlangShell,
-            "-noshell", "-eval", "erlang:display(erlang:system_info(otp_release)), halt().")
-        .timeout(1L, TimeUnit.SECONDS)
+    final ProcessExecutor processExecutor = config.getProcessExecutorFactory().createInstance()
+        .command(erlangShell, "-noshell", "-eval", "erlang:display(erlang:system_info(otp_release)), halt().")
+        .timeout(config.getErlangCheckTimeoutInMillis(), TimeUnit.MILLISECONDS)
         .redirectError(stream.as(Level.WARN))
         .destroyOnExit()
         .readOutput(true);

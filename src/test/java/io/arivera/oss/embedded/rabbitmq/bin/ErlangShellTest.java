@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -29,6 +30,7 @@ public class ErlangShellTest {
   public void setUp() throws Exception {
     configBuilder = new EmbeddedRabbitMqConfig.Builder()
       .envVars(new HashMap<String, String>())
+      .erlangCheckTimeoutInMillis(TimeUnit.SECONDS.toMillis(4))
       .extractionFolder(tempFolder.getRoot())
       .version(this.version)
       .processExecutorFactory(this.factory);
