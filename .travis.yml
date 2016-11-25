@@ -2,8 +2,6 @@ language: java
 
 matrix:
   include:
-  - os: linux         # Ubuntu 12.04 Precise
-    jdk: oraclejdk7   # Java 1.7.0_76
   - os: osx           # OS X (10.9) which comes with Oracle's Java 1.7.0_45
 
 env:
@@ -18,16 +16,16 @@ cache:
     - $HOME/.embeddedrabbitmq
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install erlang; fi      # Erlang 17 will be installed without even updating brew!
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export JAVA_HOME="$(/usr/libexec/java_home -v 1.7)"; fi    # Required by Maven
+  - brew install erlang      # Erlang 17 will be installed without even updating brew!
+  - export JAVA_HOME="$(/usr/libexec/java_home -v 1.7)"    # Required by Maven
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
 
 script:
   - mvn clean install
 
 after_success:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then mvn deploy -DskipTests -s maven-settings.xml; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then mvn jacoco:report coveralls:report; fi
+  - mvn deploy -DskipTests -s maven-settings.xml
+  - mvn jacoco:report coveralls:report
 
 notifications:
   email:
