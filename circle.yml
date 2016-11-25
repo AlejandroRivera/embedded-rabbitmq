@@ -1,5 +1,5 @@
 ## Customize the test machine
-machine:
+dependencies:
   cache_directories:
     - "~/.m2/repository"
     - "~/.embeddedrabbitmq"
