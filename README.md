@@ -7,7 +7,7 @@
 [![Windows](https://img.shields.io/badge/platform-windows-brightgreen.svg)]()
 <br/>
 <sup>**Builds**: Linux</sup>
-[![CircleCI](https://circleci.com/gh/AlejandroRivera/embedded-rabbitmq/tree/master.svg?style=svg)](https://circleci.com/gh/AlejandroRivera/embedded-rabbitmq/tree/master)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/AlejandroRivera/embedded-rabbitmq/master.svg)](https://circleci.com/gh/AlejandroRivera/embedded-rabbitmq/tree/master)
 <sup>OS X</sup> 
 [![Build Status](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq.svg?branch=master)](https://travis-ci.org/AlejandroRivera/embedded-rabbitmq)
 <sup>Windows</sup> 
