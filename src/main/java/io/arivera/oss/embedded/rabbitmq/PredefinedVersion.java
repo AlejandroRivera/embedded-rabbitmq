@@ -13,6 +13,9 @@ import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
  */
 public enum PredefinedVersion implements Version {
 
+  V3_6_9(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
+  V3_6_8(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
+  V3_6_7(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
   V3_6_6(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
   V3_6_5(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
   V3_6_4(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
@@ -36,7 +39,7 @@ public enum PredefinedVersion implements Version {
   V3_4_1(ArchiveType.TAR_GZ, ArchiveType.ZIP, Constants.V3_4_X_MIN_ERLANG_VERSION),
   V3_4_0(ArchiveType.TAR_GZ, ArchiveType.ZIP, Constants.V3_4_X_MIN_ERLANG_VERSION),
 
-  LATEST(V3_6_6);
+  LATEST(V3_6_9);
 
   private static class Constants {
     static final String V3_6_X_MIN_ERLANG_VERSION = "R16B03";
