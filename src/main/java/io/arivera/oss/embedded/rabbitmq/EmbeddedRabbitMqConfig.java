@@ -51,7 +51,7 @@ public class EmbeddedRabbitMqConfig {
 
   private final Map<String, String> envVars;
   private final RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
-  private Proxy downloadProxy;
+  private final Proxy downloadProxy;
 
   protected EmbeddedRabbitMqConfig(Version version,
                                    URL downloadSource,
@@ -420,6 +420,15 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
+    public Builder downloadProxy(String hostname, int port) {
+      return downloadProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostname, port)));
+    }
+
+    public Builder downloadProxy(Proxy downloadProxy) {
+      this.downloadProxy = downloadProxy;
+      return this;
+    }
+
     /**
      * Builds an immutable instance of {@link EmbeddedRabbitMqConfig} using smart defaults.
      */
@@ -460,10 +469,6 @@ public class EmbeddedRabbitMqConfig {
           downloadProxy);
     }
 
-    public Builder downloadProxy( String hostname, int port ) {
-      this.downloadProxy = new Proxy( Proxy.Type.HTTP, new InetSocketAddress( hostname, port ) );
-      return this;
-    }
   }
 
 }
