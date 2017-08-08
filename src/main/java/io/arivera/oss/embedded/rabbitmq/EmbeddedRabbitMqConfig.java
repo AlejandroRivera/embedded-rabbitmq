@@ -9,6 +9,8 @@ import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 import io.arivera.oss.embedded.rabbitmq.util.RandomPortSupplier;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +51,7 @@ public class EmbeddedRabbitMqConfig {
 
   private final Map<String, String> envVars;
   private final RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
+  private final Proxy downloadProxy;
 
   protected EmbeddedRabbitMqConfig(Version version,
                                    URL downloadSource,
@@ -62,7 +65,8 @@ public class EmbeddedRabbitMqConfig {
                                    long erlangCheckTimeoutInMillis,
                                    boolean cacheDownload, boolean deleteCachedFile,
                                    Map<String, String> envVars,
-                                   RabbitMqCommand.ProcessExecutorFactory processExecutorFactory) {
+                                   RabbitMqCommand.ProcessExecutorFactory processExecutorFactory,
+                                   Proxy downloadProxy ) {
     this.version = version;
     this.downloadSource = downloadSource;
     this.downloadTarget = downloadTarget;
@@ -77,6 +81,7 @@ public class EmbeddedRabbitMqConfig {
     this.deleteCachedFileOnErrors = deleteCachedFile;
     this.envVars = envVars;
     this.processExecutorFactory = processExecutorFactory;
+    this.downloadProxy = downloadProxy;
   }
 
   public long getDownloadReadTimeoutInMillis() {
@@ -149,6 +154,10 @@ public class EmbeddedRabbitMqConfig {
     }
   }
 
+  public Proxy getDownloadProxy() {
+    return downloadProxy;
+  }
+
   /**
    * A user-friendly way to create a new {@link EmbeddedRabbitMqConfig} instance.
    * <p>
@@ -182,6 +191,7 @@ public class EmbeddedRabbitMqConfig {
     private Map<String, String> envVars;
     private ArtifactRepository artifactRepository;
     private RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
+    private Proxy downloadProxy = Proxy.NO_PROXY;
 
     /**
      * Creates a new instance of the Configuration Builder.
@@ -410,6 +420,15 @@ public class EmbeddedRabbitMqConfig {
       return this;
     }
 
+    public Builder downloadProxy(String hostname, int port) {
+      return downloadProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostname, port)));
+    }
+
+    public Builder downloadProxy(Proxy downloadProxy) {
+      this.downloadProxy = downloadProxy;
+      return this;
+    }
+
     /**
      * Builds an immutable instance of {@link EmbeddedRabbitMqConfig} using smart defaults.
      */
@@ -446,7 +465,8 @@ public class EmbeddedRabbitMqConfig {
           erlangCheckTimeoutInMillis,
           cacheDownload, deleteCachedFile,
           envVars,
-          processExecutorFactory);
+          processExecutorFactory,
+          downloadProxy);
     }
 
   }

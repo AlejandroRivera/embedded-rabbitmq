@@ -57,11 +57,12 @@ class BasicDownloader implements Runnable, Downloader {
 
       try {
         stopWatch.start();
-        FileUtils.copyURLToFile(
+        FileUtils.copyUrlToFile(
             config.getDownloadSource(),
             config.getDownloadTarget(),
             (int) config.getDownloadConnectionTimeoutInMillis(),
-            (int) config.getDownloadReadTimeoutInMillis());
+            (int) config.getDownloadReadTimeoutInMillis(),
+            config.getDownloadProxy());
         stopWatch.stop();
         LOGGER.info("Download finished in {}ms", stopWatch.getTime());
       } catch (IOException e) {
