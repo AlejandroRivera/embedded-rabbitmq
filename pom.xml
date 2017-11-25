@@ -78,7 +78,7 @@
             <!-- Used to decompress XZ files -->
             <groupId>org.tukaani</groupId>
             <artifactId>xz</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <!-- Used to manage OS process execution -->
