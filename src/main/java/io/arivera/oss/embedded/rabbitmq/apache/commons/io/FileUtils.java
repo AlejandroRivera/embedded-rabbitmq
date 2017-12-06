@@ -75,7 +75,7 @@ public class FileUtils {
    */
   public static void copyURLToFile(URL source, File destination,
                                    int connectionTimeout, int readTimeout) throws IOException {
-    copyUrlToFile(source, destination, connectionTimeout, readTimeout, Proxy.NO_PROXY);
+    copyUrlToFile(source, destination, connectionTimeout, readTimeout, null);
   }
 
   /**
