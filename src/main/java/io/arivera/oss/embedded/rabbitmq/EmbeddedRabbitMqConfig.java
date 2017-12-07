@@ -191,7 +191,7 @@ public class EmbeddedRabbitMqConfig {
     private Map<String, String> envVars;
     private ArtifactRepository artifactRepository;
     private RabbitMqCommand.ProcessExecutorFactory processExecutorFactory;
-    private Proxy downloadProxy = Proxy.NO_PROXY;
+    private Proxy downloadProxy = null;
 
     /**
      * Creates a new instance of the Configuration Builder.

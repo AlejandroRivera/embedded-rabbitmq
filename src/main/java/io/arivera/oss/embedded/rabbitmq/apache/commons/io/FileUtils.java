@@ -75,7 +75,7 @@ public class FileUtils {
    */
   public static void copyURLToFile(URL source, File destination,
                                    int connectionTimeout, int readTimeout) throws IOException {
-    copyUrlToFile(source, destination, connectionTimeout, readTimeout, Proxy.NO_PROXY);
+    copyUrlToFile(source, destination, connectionTimeout, readTimeout, null);
   }
 
   /**
@@ -100,7 +100,12 @@ public class FileUtils {
    */
   public static void copyUrlToFile(URL source, File destination,
                                   int connectionTimeout, int readTimeout, Proxy proxy) throws IOException {
-    URLConnection connection = source.openConnection(proxy);
+    URLConnection connection;
+    if (proxy == null) {
+      connection = source.openConnection();
+    } else {
+      connection = source.openConnection(proxy);
+    }
     connection.setConnectTimeout(connectionTimeout);
     connection.setReadTimeout(readTimeout);
     InputStream input = connection.getInputStream();
