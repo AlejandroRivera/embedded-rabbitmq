@@ -75,7 +75,7 @@ public class ShutdownHelper implements Runnable {
           + "RabbitMQ Server to shut down", e);
     }
 
-    if (exitValue == 0 || exitValue == 143) {
+    if (exitValue == 0) {
       LOGGER.debug("RabbitMQ Server stopped successfully.");
     } else {
       LOGGER.warn("RabbitMQ Server stopped with exit value: " + exitValue);
