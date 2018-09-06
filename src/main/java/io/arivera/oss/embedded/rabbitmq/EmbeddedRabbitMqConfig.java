@@ -207,7 +207,7 @@ public class EmbeddedRabbitMqConfig {
       this.cacheDownload = true;
       this.deleteCachedFile = true;
       this.downloadFolder = new File(System.getProperty("user.home"), DOWNLOAD_FOLDER);
-      this.artifactRepository = OfficialArtifactRepository.RABBITMQ;
+			this.artifactRepository = OfficialArtifactRepository.GITHUB;
       this.envVars = new HashMap<>();
       this.processExecutorFactory = new RabbitMqCommand.ProcessExecutorFactory();
     }
@@ -434,7 +434,7 @@ public class EmbeddedRabbitMqConfig {
      */
     public EmbeddedRabbitMqConfig build() {
       if (artifactRepository == null) {
-        artifactRepository = OfficialArtifactRepository.RABBITMQ;
+        artifactRepository = OfficialArtifactRepository.GITHUB;
       }
 
       OperatingSystem os = OperatingSystem.detect();

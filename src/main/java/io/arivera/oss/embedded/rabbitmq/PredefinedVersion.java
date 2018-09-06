@@ -13,6 +13,22 @@ import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
  */
 public enum PredefinedVersion implements Version {
 
+  V3_7_7(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_7_MIN_ERLANG_VERSION),
+  V3_7_6(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_X_MIN_ERLANG_VERSION),
+  V3_7_5(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_X_MIN_ERLANG_VERSION),
+  V3_7_4(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_X_MIN_ERLANG_VERSION),
+  V3_7_3(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_X_MIN_ERLANG_VERSION),
+  V3_7_2(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_X_MIN_ERLANG_VERSION),
+  V3_7_1(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_X_MIN_ERLANG_VERSION),
+  V3_7_0(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_X_MIN_ERLANG_VERSION),
+
+  V3_6_16(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_15_MIN_ERLANG_VERSION),
+  V3_6_15(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_15_MIN_ERLANG_VERSION),
+  V3_6_14(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
+  V3_6_13(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
+  V3_6_12(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
+  V3_6_11(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
+  V3_6_10(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
   V3_6_9(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
   V3_6_8(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
   V3_6_7(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_6_X_MIN_ERLANG_VERSION),
@@ -39,9 +55,12 @@ public enum PredefinedVersion implements Version {
   V3_4_1(ArchiveType.TAR_GZ, ArchiveType.ZIP, Constants.V3_4_X_MIN_ERLANG_VERSION),
   V3_4_0(ArchiveType.TAR_GZ, ArchiveType.ZIP, Constants.V3_4_X_MIN_ERLANG_VERSION),
 
-  LATEST(V3_6_9);
+  LATEST(V3_7_7);
 
   private static class Constants {
+    static final String V3_7_7_MIN_ERLANG_VERSION = "19.3.6.4";
+    static final String V3_7_X_MIN_ERLANG_VERSION = "19.3";
+    static final String V3_6_15_MIN_ERLANG_VERSION = "19.3";
     static final String V3_6_X_MIN_ERLANG_VERSION = "R16B03";
     static final String V3_5_X_MIN_ERLANG_VERSION = "R13B03";
     static final String V3_4_X_MIN_ERLANG_VERSION = null;

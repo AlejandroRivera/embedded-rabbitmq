@@ -15,9 +15,16 @@ import java.util.Map;
  */
 public enum OfficialArtifactRepository implements ArtifactRepository {
 
-  RABBITMQ("http://www.rabbitmq.com/releases/rabbitmq-server/v%s.%s.%s/rabbitmq-server-%s-%s.%s"),
-  GITHUB("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v%s_%s_%s/rabbitmq-server-%s-%s.%s"),
+  GITHUB("https://github.com/rabbitmq/rabbitmq-server/releases/download/%sv%s/rabbitmq-server-%s-%s.%s", VersionSupport.ANY),
+  RABBITMQ("http://www.rabbitmq.com/releases/rabbitmq-server/%sv%s/rabbitmq-server-%s-%s.%s", VersionSupport.BELOW),
+  BINTRAY("https://dl.bintray.com/rabbitmq/all/rabbitmq-server/%s%s/rabbitmq-server-%s-%s.%s", VersionSupport.ANY),
   ;
+
+  private static enum VersionSupport {
+    BELOW,
+    ANY,
+    ;
+  }
 
   private static Map<OperatingSystem, String> downloadPlatformName = new HashMap<>(3);
   static {
@@ -28,8 +35,11 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
 
   private final String urlPattern;
 
-  OfficialArtifactRepository(String urlPattern) {
+  private VersionSupport versionSupport;
+
+  OfficialArtifactRepository(String urlPattern, VersionSupport versionSupport) {
     this.urlPattern = urlPattern;
+    this.versionSupport = versionSupport;
   }
 
   @Override
@@ -40,7 +50,22 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
 
     String versionAsString = version.getVersionAsString();
     String[] versionParts = versionAsString.split("\\.");
-    String url = String.format(urlPattern, versionParts[0], versionParts[1], versionParts[2], artifactPlatform,
+
+    String prefix = "";
+    String stringVersion = versionAsString;
+    
+    if (Integer.parseInt(versionParts[0]) <= 3 && Integer.parseInt(versionParts[1]) < 7) {
+      if (this == GITHUB) {
+        stringVersion = String.format("%s_%s_%s", versionParts[0], versionParts[1], versionParts[2]);
+        prefix = "rabbitmq_";
+      }
+    } else {
+      if (versionSupport == VersionSupport.BELOW) {
+        throw new IllegalStateException(String.format("Repository %s doesn't support versions above 3.7", name()));
+      }
+    }
+
+    String url = String.format(urlPattern, prefix, stringVersion, artifactPlatform,
         versionAsString, archiveType.getExtension());
     try {
       return new URL(url);

@@ -27,16 +27,17 @@ public class ErlangVersionCheckerTest {
 
   @Test
   public void parseR() {
-    assertThat(ErlangVersionChecker.parse("R15B03-1"), equalTo(15.0660003d));
-    assertThat(ErlangVersionChecker.parse("R15B"), equalTo(15.066d));
-    assertThat(ErlangVersionChecker.parse("R11B-5"), equalTo(11.066d));
+    assertThat(ErlangVersionChecker.parse("R15B03-1"), equalTo(new int[] {15, 66, 3, 0, 0}));
+    assertThat(ErlangVersionChecker.parse("R15B"), equalTo(new int[] {15, 66, 0, 0, 0}));
+    assertThat(ErlangVersionChecker.parse("R11B-5"), equalTo(new int[] {11, 66, 0, 0, 0}));
   }
 
   @Test
   public void parseOtp() {
-    assertThat(ErlangVersionChecker.parse("18.0"), equalTo(18.0d));
-    assertThat(ErlangVersionChecker.parse("18.2.1"), equalTo(18.0020001d));
-    assertThat(ErlangVersionChecker.parse("18.3"), equalTo(18.003d));
+    assertThat(ErlangVersionChecker.parse("18.0"), equalTo(new int[] {18, 0, 0, 0, 0}));
+    assertThat(ErlangVersionChecker.parse("18.2.1"), equalTo(new int[] {18, 2, 1, 0, 0}));
+    assertThat(ErlangVersionChecker.parse("18.3"), equalTo(new int[] {18, 3, 0, 0, 0}));
+    assertThat(ErlangVersionChecker.parse("19.3.6.4"), equalTo(new int[] {19, 3, 6, 4, 0}));
   }
 
   @Test
@@ -80,6 +81,18 @@ public class ErlangVersionCheckerTest {
     String minErlangVersion = "R14B01-3";
     ErlangVersionChecker checker = new ErlangVersionChecker(minErlangVersion, shell);
     checker.check();
+  }
+
+  @Test
+  public void versionCheckPasses2() throws ErlangShellException {
+    when(shell.getErlangVersion()).thenReturn("18.1.0");
+    new ErlangVersionChecker("18.0.1", shell).check();
+  }
+
+  @Test(expected = ErlangVersionException.class)
+  public void versionCheckFails() throws ErlangShellException {
+      when(shell.getErlangVersion()).thenReturn("21.0.1");
+      new ErlangVersionChecker("21.1.0", shell).check();
   }
 
   @Test

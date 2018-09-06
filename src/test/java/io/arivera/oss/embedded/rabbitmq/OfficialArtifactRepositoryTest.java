@@ -38,14 +38,54 @@ public class OfficialArtifactRepositoryTest {
         equalTo("http://www.rabbitmq.com/releases/rabbitmq-server/v3.6.5/rabbitmq-server-generic-unix-3.6.5.tar.xz"));
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void downloadTooNew() throws Exception {
+      URL url = OfficialArtifactRepository.RABBITMQ
+           .getUrl(PredefinedVersion.V3_7_0, OperatingSystem.UNIX);
+
+      assertThat(url.toString(),
+          equalTo("http://www.rabbitmq.com/releases/rabbitmq-server/"
+              + "v3.6.5/rabbitmq-server-generic-unix-3.6.5.tar.xz"));
+  }
+
   @Test
-  public void githubRepo() throws Exception {
+  public void githubRepoOldForMac() throws Exception {
     URL url = OfficialArtifactRepository.GITHUB
         .getUrl(PredefinedVersion.V3_6_5, OperatingSystem.MAC_OS);
 
     assertThat(url.toString(),
         equalTo("https://github.com/rabbitmq/rabbitmq-server/releases/"
             + "download/rabbitmq_v3_6_5/rabbitmq-server-mac-standalone-3.6.5.tar.xz"));
+  }
+
+  @Test
+  public void githubRepoNewForMac() throws Exception {
+      URL url = OfficialArtifactRepository.GITHUB
+          .getUrl(PredefinedVersion.V3_7_7, OperatingSystem.MAC_OS);
+
+      assertThat(url.toString(),
+          equalTo("https://github.com/rabbitmq/rabbitmq-server/releases/"
+              + "download/v3.7.7/rabbitmq-server-mac-standalone-3.7.7.tar.xz"));
+  }
+
+  @Test
+  public void githubRepoNewForUnix() throws Exception {
+      URL url = OfficialArtifactRepository.GITHUB
+          .getUrl(PredefinedVersion.V3_7_3, OperatingSystem.UNIX);
+
+      assertThat(url.toString(),
+          equalTo("https://github.com/rabbitmq/rabbitmq-server/releases/"
+              + "download/v3.7.3/rabbitmq-server-generic-unix-3.7.3.tar.xz"));
+  }
+
+  @Test
+  public void bintrayRepoNewForMac() throws Exception {
+      URL url = OfficialArtifactRepository.BINTRAY
+          .getUrl(PredefinedVersion.V3_7_7, OperatingSystem.MAC_OS);
+
+      assertThat(url.toString(),
+          equalTo("https://dl.bintray.com/rabbitmq/all/rabbitmq-server/"
+              + "3.7.7/rabbitmq-server-mac-standalone-3.7.7.tar.xz"));
   }
 
 }

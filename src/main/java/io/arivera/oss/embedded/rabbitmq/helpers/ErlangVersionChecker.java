@@ -50,8 +50,8 @@ public class ErlangVersionChecker {
       LOGGER.debug("RabbitMQ version to execute requires Erlang version {} or above.", minErlangVersion);
     }
 
-    double expected;
-    double actual;
+    int[] expected;
+    int[] actual;
     try {
       expected = parse(minErlangVersion);
       actual = parse(erlangVersion);
@@ -60,38 +60,39 @@ public class ErlangVersionChecker {
       return;
     }
 
-    if (actual < expected) {
-      throw new ErlangVersionException(
-          String.format("Minimum required Erlang version not found. Expected '%s' or higher. Actual is: '%s'",
-              minErlangVersion, erlangVersion));
+    for (int i = 0; i < actual.length; i++) {
+      if (actual[i] > expected[i]) {
+        break;
+      }
+      if (actual[i] < expected[i]) {
+        throw new ErlangVersionException(
+            String.format("Minimum required Erlang version not found. Expected '%s' or higher. Actual is: '%s'",
+                minErlangVersion, erlangVersion));
+      }
     }
   }
 
   /**
    * @return a numeric value useful for comparing versions.
    */
-  static double parse(String erlangVersion) {
-    int major;
-    int minor;
-    int patch;
+  static int[] parse(String erlangVersion) {
+    int[] version = {0, 0, 0, 0, 0};
     if (erlangVersion.startsWith("R")) {
       erlangVersion = erlangVersion.substring(1);                     // "R15B03-1" -> "15B03-1"
       String[] components = erlangVersion.split("\\D", 2);            // "15B03-1" -> ["15", "03-1"]
-      major = Integer.parseInt(components[0]);                        // "15" -> 15
-      minor = erlangVersion.replaceAll("[^A-Z]", "").charAt(0);       // "15B03-1-" -> "B" -> 66
+      version[0] = Integer.parseInt(components[0]);                        // "15" -> 15
+      version[1] = erlangVersion.replaceAll("[^A-Z]", "").charAt(0);       // "15B03-1-" -> "B" -> 66
       if (components.length >= 2
           && !components[1].isEmpty()
           && components[1].indexOf("-") != 0) {
-        patch = Integer.parseInt(components[1].split("-", 2)[0]);     // "03-1" -> "03" -> 3
-      } else {
-        patch = 0;
+        version[2] = Integer.parseInt(components[1].split("-", 2)[0]);     // "03-1" -> "03" -> 3
       }
     } else {
-      String[] components = erlangVersion.split("\\.", 3);
-      major = Integer.parseInt(components[0]);
-      minor = components.length > 1 ? Integer.parseInt(components[1]) : 0;
-      patch = components.length > 2 ? Integer.parseInt(components[2]) : 0;
+      String[] components = erlangVersion.split("\\.", 5);
+      for (int i = 0; i < components.length; i++) {
+        version[i] = Integer.parseInt(components[i]);
+      }
     }
-    return Double.valueOf(String.format("%d.%03d0%03d", major, minor, patch));
+    return version;
   }
 }
