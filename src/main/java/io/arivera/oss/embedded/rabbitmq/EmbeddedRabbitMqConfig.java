@@ -207,7 +207,7 @@ public class EmbeddedRabbitMqConfig {
       this.cacheDownload = true;
       this.deleteCachedFile = true;
       this.downloadFolder = new File(System.getProperty("user.home"), DOWNLOAD_FOLDER);
-			this.artifactRepository = OfficialArtifactRepository.GITHUB;
+      this.artifactRepository = OfficialArtifactRepository.GITHUB;
       this.envVars = new HashMap<>();
       this.processExecutorFactory = new RabbitMqCommand.ProcessExecutorFactory();
     }
