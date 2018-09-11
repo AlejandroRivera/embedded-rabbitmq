@@ -20,7 +20,7 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
   BINTRAY("https://dl.bintray.com/rabbitmq/all/rabbitmq-server/%s%s/rabbitmq-server-%s-%s.%s", VersionSupport.ANY),
   ;
 
-  private static enum VersionSupport {
+  private enum VersionSupport {
     BELOW,
     ANY,
     ;
