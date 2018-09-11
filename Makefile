@@ -18,12 +18,14 @@ build:
 			mvn install
 
 deploy:
-	docker run $(DOCKER_OPTS) $(DOCKER_IMAGE) \
+	docker run $(DOCKER_OPTS)\
 		-e SONATYPE_NEXUS_USERNAME \
 		-e SONATYPE_NEXUS_PASSWORD \
+		$(DOCKER_IMAGE) \
 			mvn deploy -DskipTests -s maven-settings.xml
 
 report:
-	docker run $(DOCKER_OPTS) $(DOCKER_IMAGE) \
+	docker run $(DOCKER_OPTS) \
 		-e COVERALLS_TOKEN \
+		$(DOCKER_IMAGE) \
 			mvn jacoco:report coveralls:report
