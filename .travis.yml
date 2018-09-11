@@ -6,6 +6,8 @@ rvm:
 matrix:
   include:
   - os: osx           # OS X (10.13.3) which comes with Oracle's Java 10.0.1
+    jdk: oraclejdk8   # ... but we want JDK 8 (since JDK 7 is no longer supported by Travis)
+    osx_image: xcode8 # ... and JDK 8 comes with the XCode 8 image
 
 env:
   global:
@@ -17,13 +19,12 @@ cache:
   directories:
     - $HOME/.m2/repository
     - $HOME/.embeddedrabbitmq
+    - $HOME/Library/Caches/Homebrew
 
 before_install:
   - brew update
-  - brew install erlang      # Erlang 17 will be installed without even updating brew!
+  - brew install erlang      # Erlang 21 will be installed
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
-  - export JAVA_HOME=$HOME/oraclejdk8
-  - $TRAVIS_BUILD_DIR/install-jdk.sh --install oraclejdk8 --target $JAVA_HOME  # JDK 7 isn't supported anymore by Travis, so let's use JDK 8.
 
 script:
   - mvn clean install
