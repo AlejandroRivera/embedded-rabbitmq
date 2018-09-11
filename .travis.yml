@@ -1,11 +1,7 @@
-language: java
+sudo: required
 
-rvm:
- - 2.3
-
-matrix:
-  include:
-  - os: osx           # OS X (10.9) which comes with Oracle's Java 1.7.0_45
+services:
+  - docker
 
 env:
   global:
@@ -18,18 +14,12 @@ cache:
     - $HOME/.m2/repository
     - $HOME/.embeddedrabbitmq
 
-before_install:
-  - brew update
-  - brew install erlang      # Erlang 17 will be installed without even updating brew!
-  - export JAVA_HOME="$(/usr/libexec/java_home -v 1.7)"    # Required by Maven
-  - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
-
 script:
-  - mvn clean install
+  - make build
 
 after_success:
-  - mvn deploy -DskipTests -s maven-settings.xml
-  - mvn jacoco:report coveralls:report
+  - make deploy
+  - make report
 
 notifications:
   email:
