@@ -13,14 +13,17 @@ clean:
 image:
 	docker build -t $(DOCKER_IMAGE) .
 
-build: image
+build:
 	docker run $(DOCKER_OPTS) $(DOCKER_IMAGE) \
 			mvn install
 
-deploy: image
+deploy:
 	docker run $(DOCKER_OPTS) $(DOCKER_IMAGE) \
+		-e SONATYPE_NEXUS_USERNAME \
+		-e SONATYPE_NEXUS_PASSWORD \
 			mvn deploy -DskipTests -s maven-settings.xml
 
-report: image
+report:
 	docker run $(DOCKER_OPTS) $(DOCKER_IMAGE) \
+		-e COVERALLS_TOKEN \
 			mvn jacoco:report coveralls:report

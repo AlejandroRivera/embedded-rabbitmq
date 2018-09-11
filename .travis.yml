@@ -15,6 +15,7 @@ cache:
     - $HOME/.embeddedrabbitmq
 
 script:
+  - make image
   - make build
 
 after_success:
