@@ -5,7 +5,7 @@ rvm:
 
 matrix:
   include:
-  - os: osx           # OS X (10.9) which comes with Oracle's Java 1.7.0_45
+  - os: osx           # OS X (10.13.3) which comes with Oracle's Java 10.0.1
 
 env:
   global:
@@ -21,8 +21,9 @@ cache:
 before_install:
   - brew update
   - brew install erlang      # Erlang 17 will be installed without even updating brew!
-  - export JAVA_HOME="$(/usr/libexec/java_home -v 1.7)"    # Required by Maven
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
+  - export JAVA_HOME=$HOME/oraclejdk8
+  - $TRAVIS_BUILD_DIR/install-jdk.sh --install oraclejdk8 --target $JAVA_HOME  # JDK 7 isn't supported anymore by Travis, so let's use JDK 8.
 
 script:
   - mvn clean install
