@@ -15,8 +15,8 @@ import java.util.Map;
  */
 public enum OfficialArtifactRepository implements ArtifactRepository {
 
-  GITHUB("https://github.com/rabbitmq/rabbitmq-server/releases/download/%sv%s/rabbitmq-server-%s-%s.%s", VersionSupport.ANY),
   RABBITMQ("http://www.rabbitmq.com/releases/rabbitmq-server/%sv%s/rabbitmq-server-%s-%s.%s", VersionSupport.BELOW),
+  GITHUB("https://github.com/rabbitmq/rabbitmq-server/releases/download/%sv%s/rabbitmq-server-%s-%s.%s", VersionSupport.ANY),
   BINTRAY("https://dl.bintray.com/rabbitmq/all/rabbitmq-server/%s%s/rabbitmq-server-%s-%s.%s", VersionSupport.ANY),
   ;
 
