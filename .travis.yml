@@ -7,7 +7,8 @@ matrix:
   include:
   - os: osx           # OS X (10.13.3) which comes with Oracle's Java 10.0.1
     jdk: oraclejdk8   # ... but we want JDK 8 (since JDK 7 is no longer supported by Travis)
-    osx_image: xcode8 # ... and JDK 8 comes with the XCode 8 image
+    osx_image: xcode9.3 # ... and JDK 8 comes with the XCode 9.3 image (9.4 claims JDK 1.8 but when tested, it was JDK 10)
+                        # Read more here: https://docs.travis-ci.com/user/reference/osx/
 
 env:
   global:
