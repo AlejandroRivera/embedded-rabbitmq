@@ -51,7 +51,7 @@ public class EmbeddedRabbitMqTest {
     writer.close();
 
     EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
-        .version(PredefinedVersion.V3_7_3)
+        .version(PredefinedVersion.V3_7_7)
         .randomPort()
         .downloadFrom(OfficialArtifactRepository.GITHUB)
 //        .downloadFrom(new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_6_milestone1/rabbitmq-server-mac-standalone-3.6.5.901.tar.xz"), "rabbitmq_server-3.6.5.901")
