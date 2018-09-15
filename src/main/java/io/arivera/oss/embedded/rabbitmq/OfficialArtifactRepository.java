@@ -15,8 +15,44 @@ import java.util.Map;
  */
 public enum OfficialArtifactRepository implements ArtifactRepository {
 
-  RABBITMQ("http://www.rabbitmq.com/releases/rabbitmq-server/v%s.%s.%s/rabbitmq-server-%s-%s.%s"),
-  GITHUB("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v%s_%s_%s/rabbitmq-server-%s-%s.%s"),
+  /**
+   * @deprecated in favor of {@link #GITHUB} since starting with v3.7.0, this repository is no longer updated.
+   *        More info: <a href="http://www.rabbitmq.com/blog/2018/02/05/whats-new-in-rabbitmq-3-7/">Package Distribution Changes</a>.
+   */
+  @Deprecated
+  RABBITMQ("http://www.rabbitmq.com/releases/rabbitmq-server/%sv%s/rabbitmq-server-%s-%s.%s") {
+    @Override
+    public URL getUrl(Version version, OperatingSystem operatingSystem) {
+      if (Version.VERSION_COMPARATOR.compare(version, PredefinedVersion.V3_7_0) >= 0) {
+        throw new IllegalStateException(name() + " Repository does not store distributions for "
+            + PredefinedVersion.V3_7_0.getVersionAsString() + " or higher. See 'Package Distribution' in "
+            + "http://www.rabbitmq.com/blog/2018/02/05/whats-new-in-rabbitmq-3-7/ for more info"
+        );
+      }
+
+      return super.getUrl(version, operatingSystem);
+    }
+  },
+  GITHUB("https://github.com/rabbitmq/rabbitmq-server/releases/download/%sv%s/rabbitmq-server-%s-%s.%s") {
+
+    @Override
+    protected String getFolderPrefix(Version version) {
+      if (Version.VERSION_COMPARATOR.compare(version, PredefinedVersion.V3_7_0) < 0) {
+        return "rabbitmq_";
+      }
+      return super.getFolderPrefix(version);
+    }
+
+    @Override
+    protected String getFolderVersion(Version version) {
+      if (Version.VERSION_COMPARATOR.compare(version, PredefinedVersion.V3_7_0) < 0) {
+        return version.getVersionAsString("_");
+      }
+      return super.getFolderVersion(version);
+    }
+
+  },
+  BINTRAY("https://dl.bintray.com/rabbitmq/all/rabbitmq-server/%s%s/rabbitmq-server-%s-%s.%s"),
   ;
 
   private static Map<OperatingSystem, String> downloadPlatformName = new HashMap<>(3);
@@ -38,15 +74,25 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
     String artifactPlatform = downloadPlatformName.get(operatingSystem);
     ArchiveType archiveType = version.getArchiveType(operatingSystem);
 
-    String versionAsString = version.getVersionAsString();
-    String[] versionParts = versionAsString.split("\\.");
-    String url = String.format(urlPattern, versionParts[0], versionParts[1], versionParts[2], artifactPlatform,
-        versionAsString, archiveType.getExtension());
+    String filenameVersion = version.getVersionAsString();
+    String folderPrefix = getFolderPrefix(version);
+    String folderVersion = getFolderVersion(version);
+
+    String url = String.format(urlPattern,
+        folderPrefix, folderVersion, artifactPlatform, filenameVersion, archiveType.getExtension());
     try {
       return new URL(url);
     } catch (MalformedURLException e) {
       throw new IllegalStateException("Download URL is invalid: " + url, e);
     }
+  }
+
+  protected String getFolderVersion(Version version) {
+    return version.getVersionAsString();
+  }
+
+  protected String getFolderPrefix(Version version) {
+    return "";
   }
 
 }

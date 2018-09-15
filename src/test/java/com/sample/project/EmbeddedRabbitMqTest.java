@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessResult;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
@@ -44,18 +44,19 @@ public class EmbeddedRabbitMqTest {
 
   @Test
   public void start() throws Exception {
-    File configFile = temporaryFolder.newFile("rabbitmq.config");
-    FileOutputStream fileOutputStream = new FileOutputStream(configFile);
-    fileOutputStream.write("[{rabbit,[{log_levels,[{connection,debug},{channel,debug}]}]}].".getBytes("utf-8"));
-    fileOutputStream.close();
+    File configFile = temporaryFolder.newFile("rabbitmq.conf");
+    PrintWriter writer = new PrintWriter(configFile, "UTF-8");
+    writer.println("log.connection.level = debug");
+    writer.println("log.channel.level = debug");
+    writer.close();
 
     EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
-        .version(PredefinedVersion.V3_5_7)
+        .version(PredefinedVersion.V3_7_3)
         .randomPort()
-        .downloadFrom(OfficialArtifactRepository.RABBITMQ)
+        .downloadFrom(OfficialArtifactRepository.GITHUB)
 //        .downloadFrom(new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_6_milestone1/rabbitmq-server-mac-standalone-3.6.5.901.tar.xz"), "rabbitmq_server-3.6.5.901")
 //        .envVar(RabbitMqEnvVar.NODE_PORT, String.valueOf(PORT))
-        .envVar(RabbitMqEnvVar.CONFIG_FILE, configFile.toString().replace(".config", ""))
+        .envVar(RabbitMqEnvVar.CONFIG_FILE, configFile.toString().replace(".conf", ""))
         .extractionFolder(temporaryFolder.newFolder("extracted"))
         .rabbitMqServerInitializationTimeoutInMillis(TimeUnit.SECONDS.toMillis(20))
         .defaultRabbitMqCtlTimeoutInMillis(TimeUnit.SECONDS.toMillis(20))
