@@ -3,6 +3,8 @@ package io.arivera.oss.embedded.rabbitmq;
 import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
 
+import java.util.List;
+
 /**
  * Class used when user wants to define a custom RabbitMQ version and/or download source.
  *
@@ -23,6 +25,11 @@ class CustomVersion implements Version {
   }
 
   @Override
+  public String getVersionAsString(CharSequence separator) {
+    throw new RuntimeException("This value isn't needed for custom downloads.");
+  }
+
+  @Override
   public ArchiveType getArchiveType(OperatingSystem operatingSystem) {
     throw new RuntimeException("This value isn't needed for custom downloads.");
   }
@@ -39,4 +46,10 @@ class CustomVersion implements Version {
   public String getMinimumErlangVersion() {
     return null;
   }
+
+  @Override
+  public List<Integer> getVersionComponents() {
+    throw new RuntimeException("This isn't needed for custom downloads.");
+  }
+
 }

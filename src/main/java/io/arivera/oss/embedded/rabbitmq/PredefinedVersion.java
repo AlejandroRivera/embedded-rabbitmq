@@ -2,6 +2,10 @@ package io.arivera.oss.embedded.rabbitmq;
 
 import io.arivera.oss.embedded.rabbitmq.util.ArchiveType;
 import io.arivera.oss.embedded.rabbitmq.util.OperatingSystem;
+import io.arivera.oss.embedded.rabbitmq.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A list of RabbitMQ versions pre-configured to match the binaries distributed officially by RabbitMQ.
@@ -68,29 +72,44 @@ public enum PredefinedVersion implements Version {
 
   private static final String EXTRACTION_FOLDER = "rabbitmq_server-%s";
 
-  final String version;
+  final List<Integer> versionComponents;
   final ArchiveType unixArchiveType;
   final ArchiveType windowsArchiveType;
   final String minErlangVersion;
 
   PredefinedVersion(ArchiveType unixArchiveType, ArchiveType windowsArchiveType, String minErlangVersion) {
-    this.version = name().replaceAll("V", "").replaceAll("_", ".");
+    String[] versionComponents = name().replaceAll("V", "").split("_");
+    this.versionComponents = new ArrayList<>(versionComponents.length);
+    for (int i = 0; i < versionComponents.length; i++) {
+      this.versionComponents.add(Integer.parseInt(versionComponents[i]));
+    }
     this.unixArchiveType = unixArchiveType;
     this.windowsArchiveType = windowsArchiveType;
     this.minErlangVersion = minErlangVersion;
   }
 
   PredefinedVersion(PredefinedVersion version) {
-    this.version = version.getVersionAsString();
+    this.versionComponents =  version.getVersionComponents();
     this.unixArchiveType = version.getArchiveType(OperatingSystem.UNIX);
     this.windowsArchiveType = version.getArchiveType(OperatingSystem.WINDOWS);
     this.minErlangVersion = version.getMinimumErlangVersion();
   }
 
   @Override
-  public String getVersionAsString() {
-    return version;
+  public List<Integer> getVersionComponents() {
+    return versionComponents;
   }
+
+  @Override
+  public String getVersionAsString() {
+    return getVersionAsString(".");
+  }
+
+  @Override
+  public String getVersionAsString(CharSequence separator) {
+    return StringUtils.join(versionComponents, separator);
+  }
+
 
   @Override
   public ArchiveType getArchiveType(OperatingSystem operatingSystem) {

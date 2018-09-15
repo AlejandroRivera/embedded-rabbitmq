@@ -15,6 +15,14 @@ public class PredefinedVersionTest {
 
   @Test
   public void latestEnumIsNewestVersion() throws Exception {
-    assertThat(PredefinedVersion.LATEST.version, equalTo(PredefinedVersion.values()[0].getVersionAsString()));
+    PredefinedVersion firstDefinedEnumValue = PredefinedVersion.values()[0];
+    assertThat(PredefinedVersion.LATEST.getVersionAsString(), equalTo(firstDefinedEnumValue.getVersionAsString()));
+  }
+
+  @Test
+  public void testCompareTo() {
+    assertThat(Version.VERSION_COMPARATOR.compare(PredefinedVersion.V3_7_5, PredefinedVersion.V3_7_5), equalTo(0));
+    assertThat(Version.VERSION_COMPARATOR.compare(PredefinedVersion.V3_7_7, PredefinedVersion.V3_7_5), equalTo(1));
+    assertThat(Version.VERSION_COMPARATOR.compare(PredefinedVersion.V3_6_13, PredefinedVersion.V3_7_7), equalTo(-1));
   }
 }

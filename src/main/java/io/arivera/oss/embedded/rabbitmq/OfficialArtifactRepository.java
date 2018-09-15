@@ -16,19 +16,44 @@ import java.util.Map;
 public enum OfficialArtifactRepository implements ArtifactRepository {
 
   /**
-   * @deprecated in favor of {@link #GITHUB}. More info: <a href="http://www.rabbitmq.com/blog/2018/02/05/whats-new-in-rabbitmq-3-7/">Package Distribution Changes</a>
+   * @deprecated in favor of {@link #GITHUB} since starting with v3.7.0, this repository is no longer updated.
+   *        More info: <a href="http://www.rabbitmq.com/blog/2018/02/05/whats-new-in-rabbitmq-3-7/">Package Distribution Changes</a>.
    */
   @Deprecated
-  RABBITMQ("http://www.rabbitmq.com/releases/rabbitmq-server/%sv%s/rabbitmq-server-%s-%s.%s", VersionSupport.BELOW),
-  GITHUB("https://github.com/rabbitmq/rabbitmq-server/releases/download/%sv%s/rabbitmq-server-%s-%s.%s", VersionSupport.ANY),
-  BINTRAY("https://dl.bintray.com/rabbitmq/all/rabbitmq-server/%s%s/rabbitmq-server-%s-%s.%s", VersionSupport.ANY),
-  ;
+  RABBITMQ("http://www.rabbitmq.com/releases/rabbitmq-server/%sv%s/rabbitmq-server-%s-%s.%s") {
+    @Override
+    public URL getUrl(Version version, OperatingSystem operatingSystem) {
+      if (Version.VERSION_COMPARATOR.compare(version, PredefinedVersion.V3_7_0) >= 0) {
+        throw new IllegalStateException(name() + " Repository does not store distributions for "
+            + PredefinedVersion.V3_7_0.getVersionAsString() + " or higher. See 'Package Distribution' in "
+            + "http://www.rabbitmq.com/blog/2018/02/05/whats-new-in-rabbitmq-3-7/ for more info"
+        );
+      }
 
-  private enum VersionSupport {
-    BELOW,
-    ANY,
-    ;
-  }
+      return super.getUrl(version, operatingSystem);
+    }
+  },
+  GITHUB("https://github.com/rabbitmq/rabbitmq-server/releases/download/%sv%s/rabbitmq-server-%s-%s.%s") {
+
+    @Override
+    protected String getFolderPrefix(Version version) {
+      if (Version.VERSION_COMPARATOR.compare(version, PredefinedVersion.V3_7_0) < 0) {
+        return "rabbitmq_";
+      }
+      return super.getFolderPrefix(version);
+    }
+
+    @Override
+    protected String getFolderVersion(Version version) {
+      if (Version.VERSION_COMPARATOR.compare(version, PredefinedVersion.V3_7_0) < 0) {
+        return version.getVersionAsString("_");
+      }
+      return super.getFolderVersion(version);
+    }
+
+  },
+  BINTRAY("https://dl.bintray.com/rabbitmq/all/rabbitmq-server/%s%s/rabbitmq-server-%s-%s.%s"),
+  ;
 
   private static Map<OperatingSystem, String> downloadPlatformName = new HashMap<>(3);
   static {
@@ -39,11 +64,8 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
 
   private final String urlPattern;
 
-  private VersionSupport versionSupport;
-
-  OfficialArtifactRepository(String urlPattern, VersionSupport versionSupport) {
+  OfficialArtifactRepository(String urlPattern) {
     this.urlPattern = urlPattern;
-    this.versionSupport = versionSupport;
   }
 
   @Override
@@ -52,30 +74,25 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
     String artifactPlatform = downloadPlatformName.get(operatingSystem);
     ArchiveType archiveType = version.getArchiveType(operatingSystem);
 
-    String versionAsString = version.getVersionAsString();
-    String[] versionParts = versionAsString.split("\\.");
+    String filenameVersion = version.getVersionAsString();
+    String folderPrefix = getFolderPrefix(version);
+    String folderVersion = getFolderVersion(version);
 
-    String prefix = "";
-    String stringVersion = versionAsString;
-    
-    if (Integer.parseInt(versionParts[0]) <= 3 && Integer.parseInt(versionParts[1]) < 7) {
-      if (this == GITHUB) {
-        stringVersion = String.format("%s_%s_%s", versionParts[0], versionParts[1], versionParts[2]);
-        prefix = "rabbitmq_";
-      }
-    } else {
-      if (versionSupport == VersionSupport.BELOW) {
-        throw new IllegalStateException(String.format("Repository %s doesn't support versions above 3.7", name()));
-      }
-    }
-
-    String url = String.format(urlPattern, prefix, stringVersion, artifactPlatform,
-        versionAsString, archiveType.getExtension());
+    String url = String.format(urlPattern,
+        folderPrefix, folderVersion, artifactPlatform, filenameVersion, archiveType.getExtension());
     try {
       return new URL(url);
     } catch (MalformedURLException e) {
       throw new IllegalStateException("Download URL is invalid: " + url, e);
     }
+  }
+
+  protected String getFolderVersion(Version version) {
+    return version.getVersionAsString();
+  }
+
+  protected String getFolderPrefix(Version version) {
+    return "";
   }
 
 }
