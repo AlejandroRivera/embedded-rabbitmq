@@ -9,6 +9,8 @@ matrix:
     jdk: oraclejdk8   # ... but we want JDK 8 (since JDK 7 is no longer supported by Travis)
     osx_image: xcode9.3 # ... and JDK 8 comes with the XCode 9.3 image (9.4 claims JDK 1.8 but when tested, it was JDK 10)
                         # Read more here: https://docs.travis-ci.com/user/reference/osx/
+  - os: linux
+    jdk: oraclejdk8
 
 env:
   global:
@@ -23,16 +25,22 @@ cache:
     - $HOME/Library/Caches/Homebrew
 
 before_install:
-  - brew update
-  - brew install erlang      # Erlang 21 will be installed
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install erlang; fi      # Erlang 21 will be installed
+
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i erlang-solutions_1.0_all.deb; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install erlang; fi
+
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
 
 script:
   - mvn clean install
 
 after_success:
-  - mvn deploy -DskipTests -s maven-settings.xml
-  - mvn jacoco:report coveralls:report
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mvn deploy -DskipTests -s maven-settings.xml; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mvn jacoco:report coveralls:report; fi
 
 notifications:
   email:
