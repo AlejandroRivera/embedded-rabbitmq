@@ -10,7 +10,7 @@ test:
     - sudo dpkg -i erlang-solutions_1.0_all.deb
     - sudo apt-get update
     - sudo apt show erlang -a
-    - sudo apt-get install erlang=1:19.3-1
+    - sudo apt-get install esl-erlang=1:19.3-1
     - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
     - mvn clean install
 
