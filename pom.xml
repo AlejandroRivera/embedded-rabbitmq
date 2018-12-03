@@ -66,13 +66,13 @@
             <!-- Logging Facade -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
+            <version>1.7.25</version>
         </dependency>
         <dependency>
             <!-- Used to decompress TAR (+GZ) files -->
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.9</version>
+            <version>1.18</version>
         </dependency>
         <dependency>
             <!-- Used to decompress XZ files -->
@@ -98,7 +98,7 @@
             <!-- Useful for testing connectivity to the RabbitMQ process started by this library -->
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
-            <version>3.6.4</version>
+            <version>4.8.0</version>
             <scope>test</scope>
         </dependency>
 
