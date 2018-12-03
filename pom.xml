@@ -300,7 +300,7 @@
                 <!-- Using FindBugs to prevent bugs that are identifiable by static analysis -->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.0.4</version>
                 <configuration>
                     <onlyAnalyze>io.arivera.-</onlyAnalyze>
                     <fork>false</fork>
