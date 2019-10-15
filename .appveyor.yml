@@ -43,7 +43,7 @@ environment:
 install:
   - cmd: echo %PATH%
 #  - cmd: werl -eval 'erlang:system_info(system_version), halt().'  -noshell
-  - cmd: choco install maven -version 3.3.9.1 -y -f
+  - cmd: choco install maven -version 3.5.4 -y -f
 #  RefreshEnv is necessary to pick up new env. vars in the same shell session
   - cmd: refreshenv
 
