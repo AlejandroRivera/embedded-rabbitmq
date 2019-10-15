@@ -70,8 +70,7 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
 
   @Override
   public URL getUrl(Version version, OperatingSystem operatingSystem) {
-
-    String artifactPlatform = downloadPlatformName.get(operatingSystem);
+    String artifactPlatform = getArtifactPlatform(version, operatingSystem);
     ArchiveType archiveType = version.getArchiveType(operatingSystem);
 
     String filenameVersion = version.getVersionAsString();
@@ -85,6 +84,25 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
     } catch (MalformedURLException e) {
       throw new IllegalStateException("Download URL is invalid: " + url, e);
     }
+  }
+
+  /**
+   * RabbitMQ releases used to include a special binary package for macOS that bundled a supported version of
+   * Erlang/OTP. As of September 2019, this package has been discontinued.
+   * It will no longer be produced for new RabbitMQ releases.
+   * <p/>
+   * MacOS users should use the Homebrew formula or the generic binary build (requires a supported version of Erlang
+   * to be installed separately) to provision RabbitMQ.
+   *
+   * @see <a href="https://www.rabbitmq.com/install-standalone-mac.html">Announcement</a>
+   */
+  protected String getArtifactPlatform(Version version, OperatingSystem operatingSystem) {
+    if (operatingSystem == OperatingSystem.MAC_OS && version instanceof PredefinedVersion
+        && PredefinedVersion.V3_7_18.compareTo((PredefinedVersion) version) >= 0) {
+      // v3.7.18 was the first Sep. 2019 release
+      return downloadPlatformName.get(OperatingSystem.UNIX);
+    }
+    return downloadPlatformName.get(operatingSystem);
   }
 
   protected String getFolderVersion(Version version) {

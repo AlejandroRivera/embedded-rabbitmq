@@ -63,6 +63,23 @@ public class OfficialArtifactRepositoryTest {
   }
 
   @Test
+  public void githubRepoNewForMacAfterV3_7_18() throws Exception {
+    URL url = OfficialArtifactRepository.GITHUB
+        .getUrl(PredefinedVersion.V3_7_18, OperatingSystem.MAC_OS);
+
+    assertThat(url.toString(),
+        equalTo("https://github.com/rabbitmq/rabbitmq-server/releases/download"
+            + "/v3.7.18/rabbitmq-server-generic-unix-3.7.18.tar.xz"));
+
+    url = OfficialArtifactRepository.GITHUB
+        .getUrl(PredefinedVersion.V3_8_0, OperatingSystem.MAC_OS);
+
+    assertThat(url.toString(),
+        equalTo("https://github.com/rabbitmq/rabbitmq-server/releases/download"
+            + "/v3.8.0/rabbitmq-server-generic-unix-3.8.0.tar.xz"));
+  }
+
+  @Test
   public void githubRepoOldForUnix() throws Exception {
     URL url = OfficialArtifactRepository.GITHUB
         .getUrl(PredefinedVersion.V3_6_13, OperatingSystem.UNIX);

@@ -17,6 +17,8 @@ import java.util.List;
  */
 public enum PredefinedVersion implements Version {
 
+  V3_8_0(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_8_0_MIN_ERLANG_VERSION),
+  V3_7_18(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_18_MIN_ERLANG_VERSION),
   V3_7_7(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_7_MIN_ERLANG_VERSION),
   V3_7_6(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_X_MIN_ERLANG_VERSION),
   V3_7_5(ArchiveType.TAR_XZ, ArchiveType.ZIP, Constants.V3_7_X_MIN_ERLANG_VERSION),
@@ -59,9 +61,11 @@ public enum PredefinedVersion implements Version {
   V3_4_1(ArchiveType.TAR_GZ, ArchiveType.ZIP, Constants.V3_4_X_MIN_ERLANG_VERSION),
   V3_4_0(ArchiveType.TAR_GZ, ArchiveType.ZIP, Constants.V3_4_X_MIN_ERLANG_VERSION),
 
-  LATEST(V3_7_7);
+  LATEST(V3_8_0);
 
   private static class Constants {
+    static final String V3_8_0_MIN_ERLANG_VERSION = "21.3";
+    static final String V3_7_18_MIN_ERLANG_VERSION = "20.3";
     static final String V3_7_7_MIN_ERLANG_VERSION = "19.3.6.4";
     static final String V3_7_X_MIN_ERLANG_VERSION = "19.3";
     static final String V3_6_15_MIN_ERLANG_VERSION = "19.3";
