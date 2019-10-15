@@ -45,7 +45,7 @@ install:
 #  - cmd: werl -eval 'erlang:system_info(system_version), halt().'  -noshell
   - cmd: choco install maven -version 3.5.4 -y -f
 #  RefreshEnv is necessary to pick up new env. vars in the same shell session
-  - cmd: refreshenv
+#  - cmd: refreshenv
 
 build_script:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
