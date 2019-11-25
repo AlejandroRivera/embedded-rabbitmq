@@ -134,7 +134,7 @@ public class RabbitMqCommandTest {
 
     configBuilder.envVars(envVars);
 
-    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command);
+    rabbitMqCommand = new RabbitMqCommand(configBuilder.build(), command).enableEnvVars();
     rabbitMqCommand.call();
 
     verify(processExecutor).environment(envVars);

@@ -85,6 +85,7 @@ public class RabbitMqServer {
     return new RabbitMqCommand(config, COMMAND, arguments)
         .writeOutputTo(outputStream)
         .listenToEvents(listener)
+        .enableEnvVars()
         .call()
         .getFuture();
   }
