@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -67,6 +68,14 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
   private boolean storeOutput;
   private Level stdOutLogLevel;
   private Level stdErrLogLevel;
+
+  /**
+   * Used to control if env vars should be passed to the process.
+   * <p>
+   * Commands like 'rabbitmqctl' or 'rabbitmq-plugins' seem to have conflicts when vars like 'RABBITMQ_NODE_PORT' is
+   * set.
+   */
+  private boolean enableEnvVars;
 
   /**
    * Constructs a new instance this class to execute arbitrary RabbitMQ commands with arbitrary arguments.
@@ -166,7 +175,7 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
   /**
    * Used to define if the output of the process should be stored for retrieval after the ProcessResult future is
    * completed.
-   *
+   * <p>
    * Default is {@code true}
    */
   public RabbitMqCommand storeOutput(boolean storeOutput) {
@@ -204,7 +213,7 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
     LoggingProcessListener loggingListener = new LoggingProcessListener(processOutputLogger);
 
     ProcessExecutor processExecutor = processExecutorFactory.createInstance()
-        .environment(config.getEnvVars())
+        .environment(enableEnvVars ? config.getEnvVars() : Collections.EMPTY_MAP)
         .directory(config.getAppFolder())
         .command(fullCommand)
         .destroyOnExit()
@@ -221,6 +230,11 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
     } catch (IOException e) {
       throw new RabbitMqCommandException("Failed to execute: " + StringUtils.join(fullCommand, " "), e);
     }
+  }
+
+  public RabbitMqCommand enableEnvVars() {
+    this.enableEnvVars = true;
+    return this;
   }
 
   public static class ProcessExecutorFactory {

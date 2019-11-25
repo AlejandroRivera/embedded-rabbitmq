@@ -20,6 +20,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.zip.GZIPInputStream;
 
@@ -142,6 +145,8 @@ class BasicExtractor implements Extractor {
 
         if (fileToExtract.isDirectory()) {
           makeDirectory(destPath);
+        } else if (fileToExtract.isLink()) {
+          createLink(fileToExtract, destPath);
         } else {
           createNewFile(destPath);
 
@@ -178,6 +183,17 @@ class BasicExtractor implements Extractor {
             extractionFolder);
       }
 
+    }
+
+    private void createLink(TarArchiveEntry fileToExtract, File destPath) {
+      Path link = Paths.get(destPath.toURI());
+      Path existingFile = Paths.get(config.getExtractionFolder().toString(), fileToExtract.getLinkName());
+      try {
+        LOGGER.debug("Extracting '{}'...", destPath);
+        Files.createLink(link, existingFile);
+      } catch (IOException e) {
+        LOGGER.warn("Could not create link '{}' to '{}'", link, existingFile, e);
+      }
     }
 
   }
