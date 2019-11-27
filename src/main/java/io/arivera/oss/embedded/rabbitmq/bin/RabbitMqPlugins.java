@@ -5,6 +5,7 @@ import io.arivera.oss.embedded.rabbitmq.bin.plugins.Plugin;
 
 import org.zeroturnaround.exec.ProcessResult;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -17,37 +18,36 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A wrapper around the RabbitMqCommand to execute '{@value #EXECUTABLE}' commands.
+ * This is a helper class meant to facilitate invoking commands from {@code rabbitmq-plugins}.
  *
- * @see <a href="https://www.rabbitmq.com/man/rabbitmq-plugins.1.man.html">rabbitmq-plugins(1) manual page</a>
+ * @see <a href="https://www.rabbitmq.com/rabbitmq-plugins.8.html">rabbitmq-plugins(8) manual page</a>
  */
-public class RabbitMqPlugins {
+public class RabbitMqPlugins extends RabbitMqDiagnostics {
 
   private static final String LIST_COMMAND = "list";
-  private static final String EXECUTABLE = "rabbitmq-plugins";
+  private static final String COMMAND = "rabbitmq-plugins";
 
-  private final EmbeddedRabbitMqConfig config;
+  private final long timeoutInMillis;
 
   public RabbitMqPlugins(EmbeddedRabbitMqConfig config) {
-    this.config = config;
+    super(config);
+    this.timeoutInMillis = config.getDefaultRabbitMqCtlTimeoutInMillis();
   }
 
-  /**
-   * This method exposes a way to invoke '{@value EXECUTABLE}' command with any arguments.
-   * This is useful when the class methods don't expose the desired functionality.
-   * <p>
-   * For example:
-   * <pre><code>
-   * RabbitMqPlugins command = new RabbitMqPlugins(config);
-   * command.execute("list", "-v", "management");
-   * </code></pre>
-   *
-   * @throws RabbitMqCommandException if the command cannot be executed
-   */
-  public Future<ProcessResult> execute(String... arguments) throws RabbitMqCommandException {
-    return new RabbitMqCommand(config, EXECUTABLE, arguments)
-        .call()
-        .getFuture();
+  public RabbitMqPlugins(EmbeddedRabbitMqConfig config, Map<String, String> extraEnvVars) {
+    super(config, extraEnvVars);
+    this.timeoutInMillis = config.getDefaultRabbitMqCtlTimeoutInMillis();
+  }
+
+  public RabbitMqPlugins(EmbeddedRabbitMqConfig config, Set<String> envVarsToDiscard, Map<String, String> envVarsToAdd) {
+    super(config, envVarsToDiscard, envVarsToAdd);
+    this.timeoutInMillis = config.getDefaultRabbitMqCtlTimeoutInMillis();
+  }
+
+  public RabbitMqPlugins(RabbitMqCommand.ProcessExecutorFactory processExecutorFactory, File appFolder,
+                         Map<String, String> envVars, long timeoutInMillis) {
+    super(processExecutorFactory, appFolder, envVars);
+    this.timeoutInMillis = timeoutInMillis;
   }
 
   /**
@@ -84,7 +84,7 @@ public class RabbitMqPlugins {
    */
   public Map<String, Plugin> list() {
     String[] args = {LIST_COMMAND};
-    String executionErrorMessage = String.format("Error executing: %s %s", EXECUTABLE, LIST_COMMAND);
+    String executionErrorMessage = String.format("Error executing: %s %s", COMMAND, LIST_COMMAND);
     String unexpectedExitCodeMessage = "Listing of plugins failed with exit code: ";
 
     ProcessResult processResult = getProcessResult(args, executionErrorMessage, unexpectedExitCodeMessage);
@@ -146,7 +146,7 @@ public class RabbitMqPlugins {
     ProcessResult processResult;
     try {
       Future<ProcessResult> startedProcess = execute(args);
-      processResult = startedProcess.get(config.getDefaultRabbitMqCtlTimeoutInMillis(), TimeUnit.MILLISECONDS);
+      processResult = startedProcess.get(timeoutInMillis, TimeUnit.MILLISECONDS);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
       throw new RabbitMqCommandException(executionErrorMessage, e);
     }
@@ -156,6 +156,11 @@ public class RabbitMqPlugins {
       throw new RabbitMqCommandException(unexpectedExitCodeMessage + exitValue);
     }
     return processResult;
+  }
+
+  @Override
+  protected String getCommand() {
+    return COMMAND;
   }
 
 }

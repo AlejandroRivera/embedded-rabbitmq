@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -54,12 +54,13 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
   private static final String WIN_EXT = ".bat";
   private static final String UNIT_EXT = "";
 
-  private final EmbeddedRabbitMqConfig config;
   private final String command;
   private final File executableFile;
   private final List<String> arguments;
 
   private final ProcessExecutorFactory processExecutorFactory;
+  private final File appFolder;
+  private final Map<String, String> envVars;
 
   private Logger processOutputLogger;
   private OutputStream outputStream;
@@ -68,14 +69,6 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
   private boolean storeOutput;
   private Level stdOutLogLevel;
   private Level stdErrLogLevel;
-
-  /**
-   * Used to control if env vars should be passed to the process.
-   * <p>
-   * Commands like 'rabbitmqctl' or 'rabbitmq-plugins' seem to have conflicts when vars like 'RABBITMQ_NODE_PORT' is
-   * set.
-   */
-  private boolean enableEnvVars;
 
   /**
    * Constructs a new instance this class to execute arbitrary RabbitMQ commands with arbitrary arguments.
@@ -111,10 +104,19 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
    *                  "{@code ./rabbitmq-plugins enable foo}", utilize {@code ["enable", "foo"]} as value
    */
   public RabbitMqCommand(EmbeddedRabbitMqConfig config, String command, String... arguments) {
-    this.processExecutorFactory = config.getProcessExecutorFactory();
-    this.config = config;
+    this(config.getProcessExecutorFactory(), config.getEnvVars(), config.getAppFolder(), command, arguments);
+  }
+
+  /**
+   * An alternative constructor that allows for more control.
+   */
+  public RabbitMqCommand(ProcessExecutorFactory processExecutorFactory, Map<String, String> envVars, File appFolder,
+                         String command, String... arguments) {
+    this.processExecutorFactory = processExecutorFactory;
     this.command = command + getCommandExtension();
-    this.executableFile = new File(new File(config.getAppFolder(), BINARIES_FOLDER), this.command);
+    this.envVars = envVars;
+    this.appFolder = appFolder;
+    this.executableFile = new File(new File(this.appFolder, BINARIES_FOLDER), this.command);
     if (!(executableFile.exists())) {
       throw new IllegalArgumentException("The given command could not be found using the path: " + executableFile);
     }
@@ -125,7 +127,7 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
 
     this.outputStream = NULL_OUTPUT_STREAM;
     this.errorOutputStream = NULL_OUTPUT_STREAM;
-    this.eventsListener = NULL_LISTENER;  // Null listener
+    this.eventsListener = NULL_LISTENER;
 
     this.storeOutput = true;
     this.stdOutLogLevel = Level.INFO;
@@ -213,8 +215,8 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
     LoggingProcessListener loggingListener = new LoggingProcessListener(processOutputLogger);
 
     ProcessExecutor processExecutor = processExecutorFactory.createInstance()
-        .environment(enableEnvVars ? config.getEnvVars() : Collections.EMPTY_MAP)
-        .directory(config.getAppFolder())
+        .environment(envVars)
+        .directory(appFolder)
         .command(fullCommand)
         .destroyOnExit()
         .addListener(loggingListener)               // Logs process events (like start, stop...)
@@ -230,11 +232,6 @@ public class RabbitMqCommand implements Callable<StartedProcess> {
     } catch (IOException e) {
       throw new RabbitMqCommandException("Failed to execute: " + StringUtils.join(fullCommand, " "), e);
     }
-  }
-
-  public RabbitMqCommand enableEnvVars() {
-    this.enableEnvVars = true;
-    return this;
   }
 
   public static class ProcessExecutorFactory {

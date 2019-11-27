@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +52,7 @@ public class EmbeddedRabbitMqTest {
     writer.close();
 
     EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
-        .version(PredefinedVersion.V3_7_18)
+        .version(PredefinedVersion.V3_8_0)
         .randomPort()
         .downloadFrom(OfficialArtifactRepository.GITHUB)
 //        .downloadFrom(new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_6_milestone1/rabbitmq-server-mac-standalone-3.6.5.901.tar.xz"), "rabbitmq_server-3.6.5.901")
@@ -80,7 +81,7 @@ public class EmbeddedRabbitMqTest {
     Channel channel = connection.createChannel();
     assertThat(channel.isOpen(), equalTo(true));
 
-    ProcessResult listUsersResult = new RabbitMqCtl(config)
+    ProcessResult listUsersResult = new RabbitMqCtl(config, Collections.singletonMap("TEST_ENV_VAR", "FooBar"))
         .execute("list_users")
         .get();
 
