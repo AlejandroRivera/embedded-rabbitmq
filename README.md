@@ -180,7 +180,7 @@ where:
 * `command` is something like `"rabbitmq-ctl"` (no need for `.bat` extension in Windows since it will be automatically appended).
 * `args` is a variable-length array list, where each element is a word (eg. `"-n", "nodeName", "list_users"`)
 
-See the JavaDocs for more information on `RabbitMqCommand` and other helper classes like `RabbitMqCtl`, 
+See the JavaDocs for more information on `RabbitMqCommand` and other helper classes like `RabbitMqDiagnostics`, `RabbitMqCtl`, 
 `RabbitMqPlugins` and `RabbitMqServer` which aim at making it easier to execute common commands.
 
 ### Enabling RabbitMQ Plugins:
