@@ -265,18 +265,18 @@ public class EmbeddedRabbitMqConfig {
      * @see #version(Version)
      */
     public Builder downloadFrom(final URL downloadSource, final String appFolderName) {
-      this.artifactRepository = new CustomArtifactRepository(downloadSource);
-
-      this.version = new CustomVersion(appFolderName);
+      this.artifactRepository = new SingleArtifactRepository(downloadSource);
+      this.version = new UnknownVersion(appFolderName);
       return this;
     }
 
     /**
-     * Use a predefined version of RabbitMQ.
+     * Use a specific version of RabbitMQ.
      * <p>
      * {@link PredefinedVersion} establishes the download URL using the official RabbitMQ artifact repository,
      * the appropriate artifact type depending on the current Operating System, and information about the extraction
-     * folder.
+     * folder. Use {@link BaseVersion} if the version you look for isn't predefined but the artifact still follows
+     * the expected distribution conventions.
      * <p>
      * Default value if none is specified: {@link PredefinedVersion#LATEST}
      *
