@@ -128,10 +128,15 @@ You can change the download source from the official `rabbitmq.com` servers and 
 configBuilder.downloadFrom(OfficialArtifactRepository.GITHUB)
 ```
 
-Similarly, if you wish to download another version and/or use another server:
+Similarly, if you wish to download another version and/or use another server by specifying a URL:
 ```java
 String url = "https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_6_milestone1/rabbitmq-server-mac-standalone-3.6.5.901.tar.xz";
 configBuilder.downloadFrom(new URL(url), "rabbitmq_server-3.6.5.901")
+```
+
+or if you are okay with the existing artifact repositories but you just need a released version not listed in the `PredefinedVersion` enum:
+```java
+configBuilder.version(new BaseVersion("3.8.1"))
 ```
 
 ### Downloaded files:
