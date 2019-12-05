@@ -97,8 +97,8 @@ public enum OfficialArtifactRepository implements ArtifactRepository {
    * @see <a href="https://www.rabbitmq.com/install-standalone-mac.html">Announcement</a>
    */
   protected String getArtifactPlatform(Version version, OperatingSystem operatingSystem) {
-    if (operatingSystem == OperatingSystem.MAC_OS && version instanceof PredefinedVersion
-        && PredefinedVersion.V3_7_18.compareTo((PredefinedVersion) version) >= 0) {
+    if (operatingSystem == OperatingSystem.MAC_OS
+        && Version.VERSION_COMPARATOR.compare(PredefinedVersion.V3_7_18, version) <= 0) {
       // v3.7.18 was the first Sep. 2019 release
       return downloadPlatformName.get(OperatingSystem.UNIX);
     }
