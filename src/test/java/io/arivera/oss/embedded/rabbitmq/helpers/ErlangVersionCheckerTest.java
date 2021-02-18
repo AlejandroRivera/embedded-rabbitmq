@@ -1,5 +1,6 @@
 package io.arivera.oss.embedded.rabbitmq.helpers;
 
+import io.arivera.oss.embedded.rabbitmq.ErlangVersion;
 import io.arivera.oss.embedded.rabbitmq.bin.ErlangShell;
 import io.arivera.oss.embedded.rabbitmq.bin.ErlangShellException;
 
@@ -99,6 +100,14 @@ public class ErlangVersionCheckerTest {
   public void versionCannotBeParsedFromActual() throws ErlangShellException {
     when(shell.getErlangVersion()).thenReturn("ABC");
     String minErlangVersion = "R14B01-3";
+    ErlangVersionChecker checker = new ErlangVersionChecker(minErlangVersion, shell);
+    checker.check();
+  }
+
+  @Test
+  public void versionFromConstantsInLowerCase() throws ErlangShellException {
+    when(shell.getErlangVersion()).thenReturn("20");
+    String minErlangVersion = ErlangVersion.R13B03;
     ErlangVersionChecker checker = new ErlangVersionChecker(minErlangVersion, shell);
     checker.check();
   }

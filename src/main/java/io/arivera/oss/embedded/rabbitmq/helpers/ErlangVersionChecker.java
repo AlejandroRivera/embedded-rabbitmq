@@ -22,7 +22,7 @@ public class ErlangVersionChecker {
   }
 
   public ErlangVersionChecker(String minErlangVersion, ErlangShell erlangShell) {
-    this.minErlangVersion = minErlangVersion;
+    this.minErlangVersion = minErlangVersion.toUpperCase();
     this.erlangShell = erlangShell;
   }
 
