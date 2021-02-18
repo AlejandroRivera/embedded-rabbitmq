@@ -7,6 +7,8 @@ import io.arivera.oss.embedded.rabbitmq.bin.ErlangShellException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
+
 /**
  * A class that helps enforce the existence and version requirements of Erlang to run RabbitMQ.
  */
@@ -22,7 +24,7 @@ public class ErlangVersionChecker {
   }
 
   public ErlangVersionChecker(String minErlangVersion, ErlangShell erlangShell) {
-    this.minErlangVersion = minErlangVersion.toUpperCase();
+    this.minErlangVersion = minErlangVersion != null ? minErlangVersion.toUpperCase(Locale.getDefault()) : null;
     this.erlangShell = erlangShell;
   }
 
