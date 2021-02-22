@@ -42,6 +42,16 @@ public class ErlangVersionCheckerTest {
   }
 
   @Test
+  public void parseConstants() {
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.R16B03), equalTo(new int[] {16, 66, 3, 0, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.R13B03), equalTo(new int[] {13, 66, 3, 0, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.V19_3), equalTo(new int[] {19, 3, 0, 0, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.V19_3_6_4), equalTo(new int[] {19, 3, 6, 4, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.V20_3), equalTo(new int[] {20, 3, 0, 0, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.V21_3), equalTo(new int[] {21, 3, 0, 0, 0}));
+  }
+
+  @Test
   public void minVersionNotMet() throws ErlangShellException {
     when(shell.getErlangVersion()).thenReturn("R11B");
     expectedException.expect(ErlangVersionException.class);
@@ -100,14 +110,6 @@ public class ErlangVersionCheckerTest {
   public void versionCannotBeParsedFromActual() throws ErlangShellException {
     when(shell.getErlangVersion()).thenReturn("ABC");
     String minErlangVersion = "R14B01-3";
-    ErlangVersionChecker checker = new ErlangVersionChecker(minErlangVersion, shell);
-    checker.check();
-  }
-
-  @Test
-  public void versionFromConstantsInLowerCase() throws ErlangShellException {
-    when(shell.getErlangVersion()).thenReturn("20");
-    String minErlangVersion = ErlangVersion.R13B03;
     ErlangVersionChecker checker = new ErlangVersionChecker(minErlangVersion, shell);
     checker.check();
   }

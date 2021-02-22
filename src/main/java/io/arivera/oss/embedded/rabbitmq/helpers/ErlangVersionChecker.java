@@ -24,7 +24,7 @@ public class ErlangVersionChecker {
   }
 
   public ErlangVersionChecker(String minErlangVersion, ErlangShell erlangShell) {
-    this.minErlangVersion = minErlangVersion != null ? minErlangVersion.toUpperCase(Locale.getDefault()) : null;
+    this.minErlangVersion = minErlangVersion;
     this.erlangShell = erlangShell;
   }
 
@@ -79,11 +79,12 @@ public class ErlangVersionChecker {
    */
   static int[] parse(String erlangVersion) {
     int[] version = {0, 0, 0, 0, 0};
-    if (erlangVersion.startsWith("R")) {
+    if (erlangVersion.startsWith("r") || erlangVersion.startsWith("R") ) {
       erlangVersion = erlangVersion.substring(1);                     // "R15B03-1" -> "15B03-1"
       String[] components = erlangVersion.split("\\D", 2);            // "15B03-1" -> ["15", "03-1"]
       version[0] = Integer.parseInt(components[0]);                        // "15" -> 15
-      version[1] = erlangVersion.replaceAll("[^A-Z]", "").charAt(0);       // "15B03-1-" -> "B" -> 66
+      version[1] = erlangVersion.toUpperCase(Locale.US)
+                                .replaceAll("[^A-Z]", "").charAt(0);       // "15B03-1-" -> "B" -> 66
       if (components.length >= 2
           && !components[1].isEmpty()
           && components[1].indexOf("-") != 0) {
