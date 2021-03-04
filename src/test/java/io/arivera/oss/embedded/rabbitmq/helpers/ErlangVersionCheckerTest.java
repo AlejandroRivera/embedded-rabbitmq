@@ -1,5 +1,6 @@
 package io.arivera.oss.embedded.rabbitmq.helpers;
 
+import io.arivera.oss.embedded.rabbitmq.ErlangVersion;
 import io.arivera.oss.embedded.rabbitmq.bin.ErlangShell;
 import io.arivera.oss.embedded.rabbitmq.bin.ErlangShellException;
 
@@ -38,6 +39,16 @@ public class ErlangVersionCheckerTest {
     assertThat(ErlangVersionChecker.parse("18.2.1"), equalTo(new int[] {18, 2, 1, 0, 0}));
     assertThat(ErlangVersionChecker.parse("18.3"), equalTo(new int[] {18, 3, 0, 0, 0}));
     assertThat(ErlangVersionChecker.parse("19.3.6.4"), equalTo(new int[] {19, 3, 6, 4, 0}));
+  }
+
+  @Test
+  public void parseConstants() {
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.R16B03), equalTo(new int[] {16, 66, 3, 0, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.R13B03), equalTo(new int[] {13, 66, 3, 0, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.V19_3), equalTo(new int[] {19, 3, 0, 0, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.V19_3_6_4), equalTo(new int[] {19, 3, 6, 4, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.V20_3), equalTo(new int[] {20, 3, 0, 0, 0}));
+    assertThat(ErlangVersionChecker.parse(ErlangVersion.V21_3), equalTo(new int[] {21, 3, 0, 0, 0}));
   }
 
   @Test
