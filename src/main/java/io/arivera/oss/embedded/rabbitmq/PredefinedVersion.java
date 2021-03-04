@@ -15,6 +15,23 @@ import java.util.List;
  */
 public enum PredefinedVersion implements Version {
 
+  V3_8_14(new BaseVersion("3.8.14", ErlangVersion.V22_3)),
+  V3_8_13(new BaseVersion("3.8.13", ErlangVersion.V22_3)),
+  V3_8_12(new BaseVersion("3.8.12", ErlangVersion.V22_3)),
+  V3_8_11(new BaseVersion("3.8.11", ErlangVersion.V22_3)),
+  V3_8_10(new BaseVersion("3.8.10", ErlangVersion.V22_3)),
+  V3_8_9( new BaseVersion("3.8.9",  ErlangVersion.V22_3)),
+
+  V3_8_8(new BaseVersion("3.8.8", ErlangVersion.V21_3)),
+  V3_8_7(new BaseVersion("3.8.7", ErlangVersion.V21_3)),
+  V3_8_6(new BaseVersion("3.8.6", ErlangVersion.V21_3)),
+  V3_8_5(new BaseVersion("3.8.5", ErlangVersion.V21_3)),
+  V3_8_4(new BaseVersion("3.8.4", ErlangVersion.V21_3)),
+
+
+  V3_8_3(new BaseVersion("3.8.3", ErlangVersion.V21_3)),
+  V3_8_2(new BaseVersion("3.8.2", ErlangVersion.V21_3)),
+  V3_8_1(new BaseVersion("3.8.1", ErlangVersion.V21_3)),
   V3_8_0(new BaseVersion("3.8.0", ErlangVersion.V21_3)),
 
   V3_7_18(new BaseVersion("3.7.18", ErlangVersion.V20_3)),
@@ -60,7 +77,7 @@ public enum PredefinedVersion implements Version {
   V3_4_1(new BaseVersion("3.4.1", ErlangVersion.UNKNOWN, ArchiveType.TAR_GZ)),
   V3_4_0(new BaseVersion("3.4.0", ErlangVersion.UNKNOWN, ArchiveType.TAR_GZ)),
 
-  LATEST(V3_8_0);
+  LATEST(V3_8_14);
 
   final Version version;
 

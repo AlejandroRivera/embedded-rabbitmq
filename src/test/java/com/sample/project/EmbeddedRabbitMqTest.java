@@ -1,9 +1,9 @@
 package com.sample.project;
 
-import io.arivera.oss.embedded.rabbitmq.BaseVersion;
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMq;
 import io.arivera.oss.embedded.rabbitmq.EmbeddedRabbitMqConfig;
 import io.arivera.oss.embedded.rabbitmq.OfficialArtifactRepository;
+import io.arivera.oss.embedded.rabbitmq.PredefinedVersion;
 import io.arivera.oss.embedded.rabbitmq.RabbitMqEnvVar;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqCtl;
 import io.arivera.oss.embedded.rabbitmq.bin.RabbitMqPlugins;
@@ -45,6 +45,8 @@ public class EmbeddedRabbitMqTest {
 
   @Test
   public void start() throws Exception {
+    java.lang.System.setProperty("https.protocols", "TLSv1.2");
+
     File configFile = temporaryFolder.newFile("rabbitmq.conf");
     PrintWriter writer = new PrintWriter(configFile, "UTF-8");
     writer.println("log.connection.level = debug");
@@ -52,9 +54,9 @@ public class EmbeddedRabbitMqTest {
     writer.close();
 
     EmbeddedRabbitMqConfig config = new EmbeddedRabbitMqConfig.Builder()
-//        .version(PredefinedVersion.V3_8_0)
-        .version(new BaseVersion("3.8.1"))
-        .randomPort()
+        .version(PredefinedVersion.LATEST)
+//        .version(new BaseVersion("3.8.1"))
+//        .randomPort()
         .downloadFrom(OfficialArtifactRepository.GITHUB)
 //        .downloadFrom(new URL("https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_6_milestone1/rabbitmq-server-mac-standalone-3.6.5.901.tar.xz"), "rabbitmq_server-3.6.5.901")
 //        .envVar(RabbitMqEnvVar.NODE_PORT, String.valueOf(PORT))
